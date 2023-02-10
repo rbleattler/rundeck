@@ -37,6 +37,8 @@ import rundeck.services.execution.ExecutionReferenceImpl
 class Execution extends ExecutionContext implements EmbeddedJsonData, org.rundeck.app.data.model.v1.execution.Execution {
 
     ScheduledExecution scheduledExecution
+    String uuid = UUID.randomUUID().toString()
+    String jobUuid
     Date dateStarted
     Date dateCompleted
     String status
