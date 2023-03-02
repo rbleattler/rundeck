@@ -107,7 +107,6 @@ import org.rundeck.app.components.RundeckJobDefinitionManager
 import org.rundeck.app.components.JobXMLFormat
 import org.rundeck.app.components.JobYAMLFormat
 import org.rundeck.app.data.providers.GormExecReportDataProvider
-import org.rundeck.app.data.execution.RdJobExecutionCreator
 import org.rundeck.app.data.jobfilerecord.AdaptingJobFileRecordValidator
 import org.rundeck.app.data.options.DefaultJobOptionUrlExpander
 import org.rundeck.app.data.options.DefaultRemoteJsonOptionRetriever
@@ -353,6 +352,7 @@ beans={
     baseAuthContextEvaluator(BaseAuthContextEvaluator){
         authContextEvaluatorCacheManager = ref('authContextEvaluatorCacheManager')
         nodeSupport = ref('rundeckNodeSupport')
+        rdJobService = ref('rdJobService')
     }
     rundeckAuthContextEvaluator(TimedAuthContextEvaluator){
         rundeckAuthContextEvaluator = ref('baseAuthContextEvaluator')
@@ -900,7 +900,6 @@ beans={
     jobFileRecordValidator(AdaptingJobFileRecordValidator)
     executionOptionProcessor(ExecutionOptionProcessor)
 
-    executionCreator(RdJobExecutionCreator)
     //provider implementations
     tokenDataProvider(GormTokenDataProvider)
     projectDataProvider(GormProjectDataProvider)

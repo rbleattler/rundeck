@@ -90,6 +90,10 @@ class LogFileStorageServiceTests extends Specification implements DataTest, Serv
         testLogFile1.deleteOnExit()
         testLogFileDNE = File.createTempFile("LogFileStorageServiceTests", ".txt")
         testLogFileDNE.delete()
+
+        service.executionService = Mock(ExecutionService) {
+            exportContextForExecution(_,_) >> [:]
+        }
     }
 
     void cleanup() {
@@ -1538,7 +1542,7 @@ class LogFileStorageServiceTests extends Specification implements DataTest, Serv
                 project:"tsetprojz", workflow: new Workflow(commands:[])
         )
         def e = new Execution(
-                scheduledExecution: se,
+                jobUuid: se.uuid,
                 argString: "-test args", user: "testuser", project: "testprojz", loglevel: 'WARN', doNodedispatch: false)
         if(null!=clos){
             e.with(clos)

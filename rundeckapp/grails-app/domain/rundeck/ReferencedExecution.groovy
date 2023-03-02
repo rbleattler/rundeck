@@ -26,17 +26,19 @@ class ReferencedExecution implements RdReferencedExecution{
     }
 
     static List<ScheduledExecution> parentList(ScheduledExecution se, int max = 0){
+        if(!se) return []
         return createCriteria().list(max: (max!=0)?max:null) {
             createAlias('execution', 'e', JoinType.LEFT_OUTER_JOIN)
-            isNotNull( 'e.scheduledExecution')
+            isNotNull( 'e.jobUuid')
             eq("jobUuid", se.uuid)
             projections {
-                distinct('e.scheduledExecution')
+                distinct('e.jobUuid')
             }
         } as List<ScheduledExecution>
     }
 
     static List executionProjectList(ScheduledExecution se, int max = 0){
+        if(!se) return []
         return createCriteria().list(max: (max!=0)?max:null) {
             createAlias('execution', 'e', JoinType.LEFT_OUTER_JOIN)
             eq("jobUuid", se.uuid)

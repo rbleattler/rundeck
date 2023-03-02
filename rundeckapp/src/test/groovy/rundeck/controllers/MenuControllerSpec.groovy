@@ -36,6 +36,7 @@ import com.dtolabs.rundeck.core.authorization.providers.Validator
 import com.dtolabs.rundeck.core.common.IFramework
 import com.dtolabs.rundeck.server.AuthContextEvaluatorCacheManager
 import grails.test.hibernate.HibernateSpec
+import grails.testing.gorm.DataTest
 import grails.testing.web.controllers.ControllerUnitTest
 import grails.web.Action
 import org.rundeck.app.acl.ACLFileManager
@@ -44,9 +45,11 @@ import org.rundeck.app.auth.CoreTypedRequestAuthorizer
 import org.rundeck.app.authorization.AppAuthContextProcessor
 import org.rundeck.app.authorization.domain.AppAuthorizer
 import org.rundeck.app.components.RundeckJobDefinitionManager
+import org.rundeck.app.data.model.v1.job.JobData
 import org.rundeck.app.data.model.v1.project.RdProject
 import org.rundeck.app.data.providers.GormJobStatsDataProvider
 import org.rundeck.app.data.providers.GormProjectDataProvider
+import org.rundeck.app.data.providers.v1.job.JobDataProvider
 import org.rundeck.app.gui.JobListLinkHandler
 import org.rundeck.core.auth.AuthConstants
 import com.dtolabs.rundeck.core.common.Framework
@@ -68,6 +71,7 @@ import rundeck.ScheduledExecution
 import rundeck.ScheduledExecutionStats
 import rundeck.User
 import rundeck.Workflow
+import rundeck.data.paging.RdPage
 import rundeck.services.ApiService
 import rundeck.services.AclFileManagerService
 import rundeck.services.ConfigurationService
@@ -76,6 +80,7 @@ import rundeck.services.FrameworkService
 import rundeck.services.JobSchedulesService
 import rundeck.services.LocalJobSchedulesManager
 import rundeck.services.ProjectService
+import rundeck.services.RdJobService
 import rundeck.services.ScheduledExecutionService
 import rundeck.services.ScmService
 import rundeck.services.UserService
@@ -85,6 +90,7 @@ import rundeck.services.scm.ScmPluginConfig
 import rundeck.services.scm.ScmPluginConfigData
 import rundeck.services.StorageService
 import spock.lang.Ignore
+import spock.lang.Specification
 import spock.lang.Unroll
 import testhelper.RundeckHibernateSpec
 
@@ -96,11 +102,17 @@ import java.nio.file.Files
 /**
  * Created by greg on 3/15/16.
  */
-class MenuControllerSpec extends RundeckHibernateSpec implements ControllerUnitTest<MenuController> {
+class MenuControllerSpec extends Specification implements ControllerUnitTest<MenuController>, DataTest {
 
-    List<Class> getDomainClasses() { [ScheduledExecution, CommandExec, Workflow, Project, Execution, User, AuthToken, ScheduledExecutionStats, UserService] }
+   // List<Class> getDomainClasses() { [ScheduledExecution, CommandExec, Workflow, Project, Execution, User, AuthToken, ScheduledExecutionStats, UserService] }
+
+    def setupSpec() {
+        mockDomains ScheduledExecution, CommandExec, Workflow, Project, Execution, User, AuthToken, ScheduledExecutionStats
+        //mockDataService(UserService)
+    }
 
     def setup(){
+
         session.subject=new Subject()
 
         grailsApplication.config.clear()
@@ -239,6 +251,7 @@ class MenuControllerSpec extends RundeckHibernateSpec implements ControllerUnitT
 
     private Map createJobParams(Map overrides=[:]){
         [
+                uuid: UUID.randomUUID().toString(),
                 jobName: 'blue',
                 project: 'AProject',
                 groupPath: 'some/where',
@@ -255,7 +268,11 @@ class MenuControllerSpec extends RundeckHibernateSpec implements ControllerUnitT
         controller.apiService = Mock(ApiService)
         controller.frameworkService = Mock(FrameworkService)
         controller.jobSchedulesService = new JobSchedulesService()
-        controller.jobSchedulesService.rundeckJobSchedulesManager = new LocalJobSchedulesManager()
+        def localScheduleManager = new LocalJobSchedulesManager()
+        localScheduleManager.rdJobService = Mock(RdJobService) {
+            getJobDataProvider() >> Mock(JobDataProvider)
+        }
+        controller.jobSchedulesService.rundeckJobSchedulesManager = localScheduleManager
 
             controller.rundeckAuthContextProcessor=Mock(AppAuthContextProcessor)
                     ScheduledExecution job1 = new ScheduledExecution(createJobParams(jobName:'job1'))
@@ -279,6 +296,7 @@ class MenuControllerSpec extends RundeckHibernateSpec implements ControllerUnitT
         then:
         1 * controller.apiService.requireApi(_, _, 17) >> true
         _ * controller.frameworkService.getServerUUID() >> testUUID
+        1 * localScheduleManager.rdJobService.jobDataProvider.getAllScheduledJobs(_,_,_) >> new RdPage<JobData>(results: [job1], total: 1)
         1 * controller.rundeckAuthContextProcessor.getAuthContextForSubjectAndProject(_,'AProject') >> Mock(UserAndRolesAuthContext)
         1 * controller.rundeckAuthContextProcessor.authorizeProjectJobAny(_,job1,['read','view'],'AProject')>>true
         0 * controller.rundeckAuthContextProcessor.authorizeProjectJobAny(_,unscheduledJob,['read','view'],'AProject')
@@ -292,7 +310,11 @@ class MenuControllerSpec extends RundeckHibernateSpec implements ControllerUnitT
         def uuid2 = UUID.randomUUID().toString()
         controller.apiService = Mock(ApiService)
         controller.jobSchedulesService = new JobSchedulesService()
-        controller.jobSchedulesService.rundeckJobSchedulesManager = new LocalJobSchedulesManager()
+        def localScheduleManager = new LocalJobSchedulesManager()
+        localScheduleManager.rdJobService = Mock(RdJobService) {
+            getJobDataProvider() >> Mock(JobDataProvider)
+        }
+        controller.jobSchedulesService.rundeckJobSchedulesManager = localScheduleManager
         controller.frameworkService = Mock(FrameworkService)
             controller.rundeckAuthContextProcessor=Mock(AppAuthContextProcessor)
                     ScheduledExecution job1 = new ScheduledExecution(createJobParams(jobName:'job1'))
@@ -316,6 +338,7 @@ class MenuControllerSpec extends RundeckHibernateSpec implements ControllerUnitT
         then:
         1 * controller.apiService.requireApi(_, _, 17) >> true
         _ * controller.frameworkService.getServerUUID() >> testUUID
+        1 * localScheduleManager.rdJobService.jobDataProvider.getAllScheduledJobs(_,_,_) >> new RdPage<JobData>(results: [job2], total: 1)
         1 * controller.rundeckAuthContextProcessor.getAuthContextForSubjectAndProject(_,'AProject') >> Mock(UserAndRolesAuthContext)
         1 * controller.rundeckAuthContextProcessor.authorizeProjectJobAny(_,job2,['read','view'],'AProject')>>true
         0 * controller.rundeckAuthContextProcessor.authorizeProjectJobAny(_,unscheduledJob,['read','view'],'AProject')
@@ -1327,6 +1350,11 @@ class MenuControllerSpec extends RundeckHibernateSpec implements ControllerUnitT
         controller.menuService = Mock(MenuService)
         controller.scheduledExecutionService = Mock(ScheduledExecutionService)
         GormProjectDataProvider provider = new GormProjectDataProvider()
+        controller.executionService = Mock(ExecutionService) {
+            countFailedExecutionsByProjectGreaterThanDate(_) >> []
+            countExecutionsByProjectGreaterThanDate(_) >> []
+            countExecutionsByUserAndProjectGreaterThanDate(_) >> []
+        }
 
         controller.projectService = Mock(ProjectService){
             findProjectByName(_) >>  prj
@@ -1358,6 +1386,11 @@ class MenuControllerSpec extends RundeckHibernateSpec implements ControllerUnitT
         controller.configurationService = Mock(ConfigurationService)
         controller.menuService = Mock(MenuService)
         controller.scheduledExecutionService = Mock(ScheduledExecutionService)
+        controller.executionService = Mock(ExecutionService) {
+            countFailedExecutionsByProjectGreaterThanDate(_) >> []
+            countExecutionsByProjectGreaterThanDate(_) >> []
+            countExecutionsByUserAndProjectGreaterThanDate(_) >> []
+        }
         controller.projectService = Mock(ProjectService){
             projectDataProvider >>  new GormProjectDataProvider()
 
@@ -1389,6 +1422,11 @@ class MenuControllerSpec extends RundeckHibernateSpec implements ControllerUnitT
         controller.configurationService = Mock(ConfigurationService)
         controller.menuService = Mock(MenuService)
         controller.scheduledExecutionService = Mock(ScheduledExecutionService)
+        controller.executionService = Mock(ExecutionService) {
+            countFailedExecutionsByProjectGreaterThanDate(_) >> []
+            countExecutionsByProjectGreaterThanDate(_) >> []
+            countExecutionsByUserAndProjectGreaterThanDate(_) >> []
+        }
         controller.projectService = Mock(ProjectService)
         request.addHeader('x-rundeck-ajax', 'true')
 
@@ -1422,6 +1460,11 @@ class MenuControllerSpec extends RundeckHibernateSpec implements ControllerUnitT
         controller.projectService = Mock(ProjectService){
             projectDataProvider >>  new GormProjectDataProvider()
 
+        }
+        controller.executionService = Mock(ExecutionService) {
+            countFailedExecutionsByProjectGreaterThanDate(_) >> []
+            countExecutionsByProjectGreaterThanDate(_) >> []
+            countExecutionsByUserAndProjectGreaterThanDate(_) >> []
         }
 
         request.addHeader('x-rundeck-ajax', 'true')
@@ -1786,6 +1829,11 @@ class MenuControllerSpec extends RundeckHibernateSpec implements ControllerUnitT
         controller.configurationService = Mock(ConfigurationService)
         controller.menuService = Mock(MenuService)
         controller.scheduledExecutionService = Mock(ScheduledExecutionService)
+        controller.executionService = Mock(ExecutionService) {
+            countFailedExecutionsByProjectGreaterThanDate(_) >> []
+            countExecutionsByProjectGreaterThanDate(_) >> []
+            countExecutionsByUserAndProjectGreaterThanDate(_) >> []
+        }
         controller.projectService = Mock(ProjectService){
             projectDataProvider >>  new GormProjectDataProvider()
 
@@ -2101,7 +2149,9 @@ class MenuControllerSpec extends RundeckHibernateSpec implements ControllerUnitT
                     controller.aclFileManagerService = Mock(AclFileManagerService)
         controller.scheduledExecutionService = Mock(ScheduledExecutionService)
         controller.scmService = Mock(ScmService)
-        controller.userService = Mock(UserService)
+        controller.userService = Mock(UserService) {
+            findOrCreateUser(_) >> new User()
+        }
         controller.jobSchedulesService = Mock(JobSchedulesService)
         controller.authContextEvaluatorCacheManager = new AuthContextEvaluatorCacheManager()
         def query = new ScheduledExecutionQuery()
@@ -2123,9 +2173,9 @@ class MenuControllerSpec extends RundeckHibernateSpec implements ControllerUnitT
                                                                           paginateParams: [:],
                                                                           displayParams : [:]]
         1 * controller.jobSchedulesService.isScheduled(testUUID) >> true
-        1 * controller.scheduledExecutionService.nextExecutionTimes([job1]) >> [(job1.id):new Date()]
+        1 * controller.scheduledExecutionService.nextExecutionTimes([job1.uuid]) >> [(job1.uuid):new Date()]
         model.nextExecutions!=null
-        model.nextExecutions[job1.id]!=null
+        model.nextExecutions[job1.uuid]!=null
     }
 
 

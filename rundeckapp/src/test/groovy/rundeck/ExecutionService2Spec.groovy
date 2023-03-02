@@ -35,7 +35,10 @@ import groovy.mock.interceptor.StubFor
 import org.grails.plugins.metricsweb.MetricService
 import org.rundeck.app.authorization.AppAuthContextProcessor
 import org.rundeck.app.data.providers.GormUserDataProvider
+import org.rundeck.utils.UUIDPropertyValidator
 import org.springframework.context.MessageSource
+import rundeck.data.exceptions.ExecutionServiceExecutionException
+import rundeck.data.execution.ExecutionOptionProcessor
 import rundeck.services.*
 import rundeck.services.data.UserDataService
 import spock.lang.Specification
@@ -54,6 +57,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
         mockDataService(UserDataService)
         GormUserDataProvider provider = new GormUserDataProvider()
         service.userDataProvider = provider
+        service.executionOptionProcessor = new ExecutionOptionProcessor()
     }
 
     /**
@@ -72,20 +76,26 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
         mock.proxyInstance()
     }
 
+    ScheduledExecution createScheduledExecution(params=[:]) {
+        ScheduledExecution se = new ScheduledExecution(
+                jobName: 'blue',
+                uuid: UUID.randomUUID().toString(),
+                project: 'AProject',
+                groupPath: 'some/where',
+                description: 'a job',
+                argString: '-a b -c d',
+                workflow: new Workflow(keepgoing: true, commands: [new CommandExec([adhocRemoteString: 'test buddy', argString: '-delay 12 -monkey cheese -particle'])]),
+        )
+        params.each { k, v -> se[k] = v}
+        return se
+    }
+
     void testCreateExecutionRunning(){
         when:
-        ScheduledExecution se = new ScheduledExecution(
-            jobName: 'blue',
-            uuid: UUID.randomUUID().toString(),
-            project: 'AProject',
-            groupPath: 'some/where',
-            description: 'a job',
-            argString: '-a b -c d',
-            workflow: new Workflow(keepgoing: true, commands: [new CommandExec([adhocRemoteString: 'test buddy', argString: '-delay 12 -monkey cheese -particle'])]),
-        )
+        ScheduledExecution se = createScheduledExecution()
         assertNotNull(se.workflow.save())
         assertNotNull(se.save())
-        Execution e = new Execution(project:"AProject",user:'bob',dateStarted: new Date(),dateCompleted: null,scheduledExecution: se,workflow: new Workflow(keepgoing: true, commands: [new CommandExec([adhocRemoteString: 'test buddy', argString: '-delay 12 -monkey cheese -particle'])]))
+        Execution e = new Execution(project:"AProject",user:'bob',dateStarted: new Date(),dateCompleted: null,jobUuid: se.uuid,workflow: new Workflow(keepgoing: true, commands: [new CommandExec([adhocRemoteString: 'test buddy', argString: '-delay 12 -monkey cheese -particle'])]))
         def valid=e.validate()
         e.errors.allErrors.each {println it.toString() }
         assertTrue(valid)
@@ -104,7 +114,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
             }
         }
         svc.scheduledExecutionService = mockWith(ScheduledExecutionService){
-            getNodes(1..1){scheduledExecution, filter, authContext ->
+            getNodes(1..1){scheduledExecution, filter, authContext, actions ->
                 null
             }
             getOptionsFromScheduleExecutionMap(1..1){scheduledExecutionMap ->
@@ -115,10 +125,12 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
         svc.jobLifecycleComponentService = mockWith(JobLifecycleComponentService){
             beforeJobExecution(1..1){job,event->}
         }
+
         try{
-            svc.createExecution(se,createAuthContext("user1"),null)
+            svc.createExecution(se,createAuthContext("user1"),null,[executionType:'user'])
             fail("should fail")
-        }catch(ExecutionServiceException ex){
+        }catch(ExecutionServiceExecutionException ex){
+            ex.printStackTrace()
             assertTrue(ex.message.contains('running executions has been reached'))
         }
 
@@ -128,17 +140,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
     }
     void testCreateExecutionRunningMultiple(){
         when:
-        ScheduledExecution se = new ScheduledExecution(
-            jobName: 'blue',
-            project: 'AProject',
-            adhocExecution: true,
-            adhocFilepath: '/this/is/a/path',
-            groupPath: 'some/where',
-            description: 'a job',
-            argString: '-a b -c d',
-            multipleExecutions: true,
-            workflow: new Workflow(keepgoing: true, commands: [new CommandExec([adhocRemoteString: 'test buddy', argString: '-delay 12 -monkey cheese -particle'])]),
-        )
+        ScheduledExecution se = createScheduledExecution()
         assertNotNull(se.save())
 
         Execution e = new Execution(project: "AProject", user: 'bob', dateStarted: new Date(), dateCompleted: null, scheduledExecution: se, workflow: new Workflow(keepgoing: true, commands: [new CommandExec([adhocRemoteString: 'test buddy', argString: '-delay 12 -monkey cheese -particle'])]))
@@ -178,14 +180,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
         1 == 1
     }
     void testCreateExecutionSimple(){
-        ScheduledExecution se = new ScheduledExecution(
-            jobName: 'blue',
-            project: 'AProject',
-            groupPath: 'some/where',
-            description: 'a job',
-            argString: '-a b -c d',
-            workflow: new Workflow(keepgoing: true, commands: [new CommandExec([adhocRemoteString: 'test buddy', argString: '-delay 12 -monkey cheese -particle'])]),
-        )
+        ScheduledExecution se = createScheduledExecution()
         assert null!=se.save()
 
 
@@ -199,6 +194,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
         svc.jobLifecycleComponentService = Mock(JobLifecycleComponentService){
             1 * beforeJobExecution(_,_)
         }
+        svc.executionOptionProcessor = new ExecutionOptionProcessor()
 
         when:
         Execution e2=svc.createExecution(se,createAuthContext("user1"),null,[executionType:'scheduled'])
@@ -206,31 +202,16 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
         then:
             null != (e2)
             e2.argString == '-a b -c d'
-            e2.scheduledExecution == se
+            e2.jobUuid == se.uuid
             null != (e2.dateStarted)
             null == (e2.dateCompleted)
             e2.user == 'user1'
             e2.executionType == 'scheduled'
-            def execs = se.executions
-            null != execs
-            execs.contains(e2)
     }
 
     void testCreateExecutionSimple_userRoles() {
 
-        ScheduledExecution se = new ScheduledExecution(
-                jobName: 'blue',
-                project: 'AProject',
-                groupPath: 'some/where',
-                description: 'a job',
-                argString: '-a b -c d',
-                workflow: new Workflow(
-                        keepgoing: true,
-                        commands: [new CommandExec(
-                                [adhocRemoteString: 'test buddy', argString: '-delay 12 -monkey cheese -particle']
-                        )]
-                ),
-                )
+        ScheduledExecution se = createScheduledExecution()
         se.save()
 
 
@@ -270,19 +251,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
 
     void testCreateExecutionSimple_userRolesWithCommas() {
 
-        ScheduledExecution se = new ScheduledExecution(
-                jobName: 'blue',
-                project: 'AProject',
-                groupPath: 'some/where',
-                description: 'a job',
-                argString: '-a b -c d',
-                workflow: new Workflow(
-                        keepgoing: true,
-                        commands: [new CommandExec(
-                                [adhocRemoteString: 'test buddy', argString: '-delay 12 -monkey cheese -particle']
-                        )]
-                ),
-                )
+        ScheduledExecution se = createScheduledExecution()
         se.save()
 
 
@@ -321,14 +290,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
     }
     void testCreateExecutionSimpleUserExecutionType(){
 
-        ScheduledExecution se = new ScheduledExecution(
-            jobName: 'blue',
-            project: 'AProject',
-            groupPath: 'some/where',
-            description: 'a job',
-            argString: '-a b -c d',
-            workflow: new Workflow(keepgoing: true, commands: [new CommandExec([adhocRemoteString: 'test buddy', argString: '-delay 12 -monkey cheese -particle'])]),
-        )
+        ScheduledExecution se = createScheduledExecution()
         se.save()
 
 
@@ -361,14 +323,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
     }
     void testCreateExecutionScheduledUserExecutionType(){
 
-        ScheduledExecution se = new ScheduledExecution(
-            jobName: 'blue',
-            project: 'AProject',
-            groupPath: 'some/where',
-            description: 'a job',
-            argString: '-a b -c d',
-            workflow: new Workflow(keepgoing: true, commands: [new CommandExec([adhocRemoteString: 'test buddy', argString: '-delay 12 -monkey cheese -particle'])]),
-        )
+        ScheduledExecution se = createScheduledExecution()
         se.save()
 
 
@@ -402,15 +357,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
     }
     void testCreateExecutionRetryBasic(){
 
-        ScheduledExecution se = new ScheduledExecution(
-            jobName: 'blue',
-            project: 'AProject',
-            groupPath: 'some/where',
-            description: 'a job',
-            argString: '-a b -c d',
-            workflow: new Workflow(keepgoing: true, commands: [new CommandExec([adhocRemoteString: 'test buddy', argString: '-delay 12 -monkey cheese -particle'])]),
-            retry:'1'
-        )
+        ScheduledExecution se = createScheduledExecution([retry:'1'])
         se.save()
 
 
@@ -444,14 +391,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
     void testAddOptionDefaults_EmptyValueShouldNotBeReplaced(){
         ExecutionService svc = new ExecutionService()
 
-        ScheduledExecution se = new ScheduledExecution(
-                jobName: 'blue',
-                project: 'AProject',
-                groupPath: 'some/where',
-                description: 'a job',
-                uuid: 'abc',
-                workflow: new Workflow(keepgoing: true, commands: [new CommandExec([adhocRemoteString: 'test buddy', argString: '-delay 12 -monkey cheese -particle'])])
-        )
+        ScheduledExecution se = createScheduledExecution()
         def opt1 = new Option(name: 'test', enforced: false, defaultValue: 'defValue')
         se.addToOptions(opt1)
         if (!se.validate()) {
@@ -550,7 +490,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
 
         assertNotNull(e2)
         assertEquals(argString, e2.argString)
-        assertEquals(se, e2.scheduledExecution)
+        assertEquals(se.uuid, e2.jobUuid)
         assertNotNull(e2.dateStarted)
         assertNull(e2.dateCompleted)
         assertEquals('12', e2.retry)
@@ -596,7 +536,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
         try{
             Execution e2 = svc.createExecution(se,createAuthContext("user1"),null, [executionType:'user',('option.test'): testOptionValue])
             fail("expected exception")
-        }catch (ExecutionServiceException e){
+        }catch (ExecutionServiceExecutionException e){
             assertEquals(exceptionMessage,e.message)
         }
 
@@ -604,16 +544,8 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
 
     void testCreateExecutionOverrideNodefilter(){
 
-        ScheduledExecution se = new ScheduledExecution(
-            jobName: 'blue',
-            project: 'AProject',
-            groupPath: 'some/where',
-            description: 'a job',
-            argString: '-a b -c d',
-            doNodedispatch: true,
-            filter: ".*",
-            workflow: new Workflow(keepgoing: true, commands: [new CommandExec([adhocRemoteString: 'test buddy', argString: '-delay 12 -monkey cheese -particle'])]),
-        )
+        ScheduledExecution se = createScheduledExecution([doNodedispatch: true,
+                                                          filter: ".*"])
         se.save()
 
         ExecutionService svc = service
@@ -645,16 +577,8 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
     }
     void testCreateExecutionOverrideNodefilterOldParams(){
 
-        ScheduledExecution se = new ScheduledExecution(
-            jobName: 'blue',
-            project: 'AProject',
-            groupPath: 'some/where',
-            description: 'a job',
-            argString: '-a b -c d',
-            doNodedispatch: true,
-            filter: ".*",
-            workflow: new Workflow(keepgoing: true, commands: [new CommandExec([adhocRemoteString: 'test buddy', argString: '-delay 12 -monkey cheese -particle'])]),
-        )
+        ScheduledExecution se = createScheduledExecution([doNodedispatch: true,
+                                                          filter: ".*"])
         se.save()
 
         ExecutionService svc = service
@@ -686,16 +610,8 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
     }
     void testCreateExecutionOverrideNodefilterOldParamsMulti(){
 
-        ScheduledExecution se = new ScheduledExecution(
-            jobName: 'blue',
-            project: 'AProject',
-            groupPath: 'some/where',
-            description: 'a job',
-            argString: '-a b -c d',
-            doNodedispatch: true,
-            filter: ".*",
-            workflow: new Workflow(keepgoing: true, commands: [new CommandExec([adhocRemoteString: 'test buddy', argString: '-delay 12 -monkey cheese -particle'])]),
-        )
+        ScheduledExecution se = createScheduledExecution([doNodedispatch: true,
+                                                          filter: ".*"])
         se.save()
 
         ExecutionService svc = service
@@ -726,15 +642,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
     }
     void testCreateExecutionJobUser(){
 
-        ScheduledExecution se = new ScheduledExecution(
-            jobName: 'blue',
-            project: 'AProject',
-            user:'bob',
-            groupPath: 'some/where',
-            description: 'a job',
-            argString: '-a b -c d',
-            workflow: new Workflow(keepgoing: true, commands: [new CommandExec([adhocRemoteString: 'test buddy', argString: '-delay 12 -monkey cheese -particle'])]),
-        )
+        ScheduledExecution se = createScheduledExecution([user:'bob'])
         se.save()
 
         ScheduledExecution.metaClass.static.lock={id-> return se}
@@ -769,22 +677,14 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
         then:
         assertNotNull(e)
         assertEquals('-a b -c d',e.argString)
-        assertEquals(se, e.scheduledExecution)
+        assertEquals(se.uuid, e.jobUuid)
         assertNotNull(e.dateStarted)
         assertNull(e.dateCompleted)
         assertEquals('bob',e.user)
     }
     void testCreateExecutionAsUser(){
 
-        ScheduledExecution se = new ScheduledExecution(
-            jobName: 'blue',
-            project: 'AProject',
-            user:'bob',//created or scheduled job has user setting
-            groupPath: 'some/where',
-            description: 'a job',
-            argString: '-a b -c d',
-            workflow: new Workflow(keepgoing: true, commands: [new CommandExec([adhocRemoteString: 'test buddy', argString: '-delay 12 -monkey cheese -particle'])]),
-        )
+        ScheduledExecution se = createScheduledExecution([user:'bob'])
         se.save()
 
         ScheduledExecution.metaClass.static.lock={id-> return se}
@@ -818,7 +718,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
         then:
         assertNotNull(e)
         assertEquals('-a b -c d',e.argString)
-        assertEquals(se, e.scheduledExecution)
+        assertEquals(se.uuid, e.jobUuid)
         assertNotNull(e.dateStarted)
         assertNull(e.dateCompleted)
         assertEquals('user1', e.user)
@@ -943,7 +843,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
         ms.demand.asBoolean(0..99) { -> true  }
         ms.demand.asBoolean(0..99) { obj -> true  }
         ms.demand.getMessage(2) { error, data,locale -> error.toString()  }
-        svc.messageSource = ms.proxyInstance()
+        svc.executionOptionProcessor.messageSource = ms.proxyInstance()
 //        svc.messageSource = mockWith(MessageSource){
 //            asBoolean(0..99) { -> true }
 //            asBoolean(0..99) { obj -> true }
@@ -955,7 +855,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
         try {
             Execution e = svc.createExecution(se,createAuthContext("user1"),null, [executionType:'user',argString: '-test2 val2D -test3 monkey4'])
             fail("shouldn't succeed")
-        } catch (ExecutionServiceException e) {
+        } catch (ExecutionServiceExecutionException e) {
             assertTrue(e.message,e.message.contains("domain.Option.validation.allowed.invalid"))
         }
 
@@ -992,12 +892,12 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
         ms.demand.asBoolean(0..99) { -> true  }
         ms.demand.asBoolean(0..99) { obj -> true  }
         ms.demand.getMessage(2) { error, data,locale -> error.toString()  }
-        svc.messageSource = ms.proxyInstance()
+        svc.executionOptionProcessor.messageSource = ms.proxyInstance()
             //regex failure on test3
             try {
                 Execution e = svc.createExecution(se,createAuthContext("user1"),null, [executionType:'user',argString: '-test2 val2b -test3 monkey4'])
                 fail("shouldn't succeed")
-            } catch (ExecutionServiceException e) {
+            } catch (ExecutionServiceExecutionException e) {
                 assertTrue(e.message,e.message.contains("domain.Option.validation.regex.invalid"))
             }
         expect:
@@ -1011,6 +911,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
      */
     private ScheduledExecution prepare() {
         ScheduledExecution se = new ScheduledExecution(
+                uuid: UUID.randomUUID().toString(),
                 jobName: 'blue',
                 project: 'AProject',
                 groupPath: 'some/where',
@@ -2150,6 +2051,8 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
                                           .dataContext(['option':[:],'job':['execid':'123']])
                                           .user('aUser')
                                           .build()
+        service.rdJobService = Mock(RdJobService)
+        service.rdJobService.getJobByUuid(job.uuid) >> job
         service.frameworkService=mockWith(FrameworkService){
             parseOptsFromArray(1..2){String[] args->
                 ['test1':'value']
@@ -2196,7 +2099,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
 
         //expected job data context
         assertEquals("expected job data size incorrect", 8, newCtxt.dataContext['job'].size())
-        assertEquals(['id': "${job.id}",
+        assertEquals(['id': "${job.uuid}",
                       'execid': '123',
                       'project': 'AProject',
                       'username':'aUser',
@@ -2218,6 +2121,8 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
                                           .dataContext(['option':[:],'job':['execid':'123']])
                                           .user('aUser')
                                           .build()
+        service.rdJobService = Mock(RdJobService)
+        service.rdJobService.getJobByUuid(job.uuid) >> job
         service.frameworkService=mockWith(FrameworkService){
             parseOptsFromArray(1..2){String[] args->
                 ['test1':'value']
@@ -2272,7 +2177,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
 
         //expected job data context
         assertEquals("expected job data size incorrect", 8, newCtxt.dataContext['job'].size())
-        assertEquals(['id': job.id,
+        assertEquals(['id': job.uuid,
                       'execid': '123',
                       'project': 'AProject',
                       'username':'aUser',
@@ -2296,6 +2201,8 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
                                           .dataContext(['option':['monkey':'wakeful'],'job':['execid':'123']])
                                           .user('aUser')
                                           .build()
+        service.rdJobService = Mock(RdJobService)
+        service.rdJobService.getJobByUuid(job.uuid) >> job
         def parseOptsCount=0
         service.frameworkService=mockWith(FrameworkService){
             parseOptsFromArray(1..2){String[] args->
@@ -2356,7 +2263,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
 
         //expected job data context
         assertEquals("expected job data size incorrect", 8, newCtxt.dataContext['job'].size())
-        assertEquals(['id': job.id,
+        assertEquals(['id': job.uuid,
                       'execid': '123',
                       'project': 'AProject',
                       'username':'aUser',
@@ -2384,6 +2291,8 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
                                           .user('aUser')
                                           .build()
         def parseOptsCount=0
+        service.rdJobService = Mock(RdJobService)
+        service.rdJobService.getJobByUuid(job.uuid) >> job
         service.frameworkService=mockWith(FrameworkService){
             parseOptsFromArray(1..2){String[] args->
                 def argsl=args as List
@@ -2457,7 +2366,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
 
         //expected job data context
         assertEquals("expected job data size incorrect", 8, newCtxt.dataContext['job'].size())
-        assertEquals(['id': job.id,
+        assertEquals(['id': job.uuid,
                       'execid': '123',
                       'project': 'AProject',
                       'username':'aUser',
@@ -2475,16 +2384,8 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
 
     void testCreateExecutionOverrideNodeCustomfilter(){
 
-        ScheduledExecution se = new ScheduledExecution(
-            jobName: 'blue',
-            project: 'AProject',
-            groupPath: 'some/where',
-            description: 'a job',
-            argString: '-a b -c d',
-            doNodedispatch: true,
-            filter: ".*",
-            workflow: new Workflow(keepgoing: true, commands: [new CommandExec([adhocRemoteString: 'test buddy', argString: '-delay 12 -monkey cheese -particle'])]),
-        )
+        ScheduledExecution se = createScheduledExecution([doNodedispatch: true,
+                                                        filter: ".*"])
         se.save()
 
         ExecutionService svc = service
@@ -2513,7 +2414,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
         assertNotNull(e2)
         assertEquals('tags: linux', e2.filter)
         assertEquals('-a b -c d', e2.argString)
-        assertEquals(se, e2.scheduledExecution)
+        assertEquals(se.uuid, e2.jobUuid)
         assertNotNull(e2.dateStarted)
         assertNull(e2.dateCompleted)
         assertEquals('user1', e2.user)
@@ -2521,16 +2422,8 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
 
     void testCreateExecutionRetryWithDelay(){
 
-        ScheduledExecution se = new ScheduledExecution(
-                jobName: 'blue',
-                project: 'AProject',
-                groupPath: 'some/where',
-                description: 'a job',
-                argString: '-a b -c d',
-                workflow: new Workflow(keepgoing: true, commands: [new CommandExec([adhocRemoteString: 'test buddy', argString: '-delay 12 -monkey cheese -particle'])]),
-                retry:'1',
-                retryDelay: '3s'
-        )
+        ScheduledExecution se = createScheduledExecution([retry:'1',
+                                                        retryDelay: '3s'])
         se.save()
 
 
@@ -2558,7 +2451,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
         then:
         assertNotNull(ex)
         assertEquals('-a b -c d', ex.argString)
-        assertEquals(se, ex.scheduledExecution)
+        assertEquals(se.uuid, ex.jobUuid)
         assertNotNull(ex.dateStarted)
         assertNull(ex.dateCompleted)
         assertEquals('1',ex.retry)
@@ -2619,7 +2512,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
 
         assertNotNull(e2)
         assertEquals(argString, e2.argString)
-        assertEquals(se, e2.scheduledExecution)
+        assertEquals(se.uuid, e2.jobUuid)
         assertNotNull(e2.dateStarted)
         assertNull(e2.dateCompleted)
         assertEquals(testOptionValue, e2.retryDelay)
@@ -2644,7 +2537,7 @@ class ExecutionService2Spec extends Specification implements ServiceUnitTest<Exe
         def lg = new MockFor(LinkGenerator)
         lg.demand.link(2..2) { return '' }
 
-        def jobcontext = ExecutionService.exportContextForExecution(ex, lg.proxyInstance())
+        def jobcontext = service.exportContextForExecution(ex, lg.proxyInstance())
 
         assertEquals(filterFixture, jobcontext.filter)
 

@@ -504,7 +504,7 @@ class ScheduledExecutionController2Spec extends RundeckHibernateSpec implements 
                     assertEquals('adhoc', it[0].groupPath)
                     [failed: false, scheduledExecution: se]
                 }
-                1 * userAuthorizedForAdhoc(_, _, _) >> true
+                1 * userAuthorizedForAdhoc( _, _) >> true
                 1 * isProjectExecutionEnabled(_) >> true
                 1 * scheduleTempJob(_, _) >> [id: exec.id, execution: exec, success: true]
 
@@ -575,7 +575,7 @@ class ScheduledExecutionController2Spec extends RundeckHibernateSpec implements 
             assertEquals('adhoc', params.groupPath)
             [failed: false, scheduledExecution: se]
         }
-        seServiceControl.demand.userAuthorizedForAdhoc { request, scheduledExecution, framework -> return true }
+        seServiceControl.demand.userAuthorizedForAdhoc { scheduledExecution, framework -> return true }
         seServiceControl.demand.getByIDorUUID { id -> return se }
         seServiceControl.demand.scheduleTempJob { auth, exec ->
             [id: exec.id, execution: exec, success: true]
@@ -662,7 +662,7 @@ class ScheduledExecutionController2Spec extends RundeckHibernateSpec implements 
             assertEquals('adhoc',params.groupPath)
             [failed: false, scheduledExecution: se]
         }
-        seServiceControl.demand.userAuthorizedForAdhoc {request, scheduledExecution, framework -> return true }
+        seServiceControl.demand.userAuthorizedForAdhoc { scheduledExecution, framework -> return true }
         seServiceControl.demand.isProjectExecutionEnabled{ project -> true
         }
         seServiceControl.demand.scheduleTempJob { auth, exec ->
@@ -746,7 +746,7 @@ class ScheduledExecutionController2Spec extends RundeckHibernateSpec implements 
                 [failed: true, scheduledExecution: se]
             }
             seServiceControl.demand.getByIDorUUID {id -> return se }
-            seServiceControl.demand.userAuthorizedForAdhoc {request, scheduledExecution, framework -> return true }
+            seServiceControl.demand.userAuthorizedForAdhoc { scheduledExecution, framework -> return true }
             seServiceControl.demand.scheduleTempJob { auth, exec ->
                 [id:exec.id,execution:exec,success:true]
             }
@@ -1132,7 +1132,7 @@ class ScheduledExecutionController2Spec extends RundeckHibernateSpec implements 
         sec.frameworkService = fwkControl.proxyInstance()
         def seServiceControl = new MockFor(ScheduledExecutionService, true)
 
-        seServiceControl.demand.userAuthorizedForAdhoc(1..1) { request, scheduledExecution, framework ->
+        seServiceControl.demand.userAuthorizedForAdhoc(1..1) { scheduledExecution, framework ->
             true
         }
 
@@ -1301,7 +1301,7 @@ class ScheduledExecutionController2Spec extends RundeckHibernateSpec implements 
 
             [scheduledExecution:new ScheduledExecution(),failed:false]
         }
-        seServiceControl.demand.userAuthorizedForAdhoc(1..1){ request, scheduledExecution, framework->
+        seServiceControl.demand.userAuthorizedForAdhoc(1..1){ scheduledExecution, framework->
             true
         }
 
@@ -1392,7 +1392,7 @@ class ScheduledExecutionController2Spec extends RundeckHibernateSpec implements 
 
             [scheduledExecution:new ScheduledExecution(),failed:false]
         }
-        seServiceControl.demand.userAuthorizedForAdhoc(1..1){ request, scheduledExecution, framework->
+        seServiceControl.demand.userAuthorizedForAdhoc(1..1){ scheduledExecution, framework->
             true
         }
 
@@ -1478,7 +1478,7 @@ class ScheduledExecutionController2Spec extends RundeckHibernateSpec implements 
 
             [scheduledExecution:new ScheduledExecution(),failed:false]
         }
-        seServiceControl.demand.userAuthorizedForAdhoc(1..1){ request, scheduledExecution, framework->
+        seServiceControl.demand.userAuthorizedForAdhoc(1..1){ scheduledExecution, framework->
             true
         }
 
@@ -1561,7 +1561,7 @@ class ScheduledExecutionController2Spec extends RundeckHibernateSpec implements 
 
             [scheduledExecution:new ScheduledExecution(),failed:false]
         }
-        seServiceControl.demand.userAuthorizedForAdhoc(1..1){ request, scheduledExecution, framework->
+        seServiceControl.demand.userAuthorizedForAdhoc(1..1){ scheduledExecution, framework->
             true
         }
 
@@ -1642,7 +1642,7 @@ class ScheduledExecutionController2Spec extends RundeckHibernateSpec implements 
 
             [scheduledExecution:new ScheduledExecution(),failed:false]
         }
-        seServiceControl.demand.userAuthorizedForAdhoc(1..1){ request, scheduledExecution, framework->
+        seServiceControl.demand.userAuthorizedForAdhoc(1..1){ scheduledExecution, framework->
             true
         }
 
@@ -1731,7 +1731,7 @@ class ScheduledExecutionController2Spec extends RundeckHibernateSpec implements 
 
             [scheduledExecution:new ScheduledExecution(),failed:false]
         }
-        seServiceControl.demand.userAuthorizedForAdhoc(1..1){ request, scheduledExecution, framework->
+        seServiceControl.demand.userAuthorizedForAdhoc(1..1){ scheduledExecution, framework->
             true
         }
 
@@ -1815,7 +1815,7 @@ class ScheduledExecutionController2Spec extends RundeckHibernateSpec implements 
 
             [scheduledExecution: new ScheduledExecution(), failed: false]
         }
-        seServiceControl.demand.userAuthorizedForAdhoc(1..1) { request, scheduledExecution, framework ->
+        seServiceControl.demand.userAuthorizedForAdhoc(1..1) { scheduledExecution, framework ->
             true
         }
 
@@ -2037,7 +2037,7 @@ class ScheduledExecutionController2Spec extends RundeckHibernateSpec implements 
             ]
         }
         mock2.demand.issueJobChangeEvents {event->}
-        mock2.demand.isScheduled {job-> job.scheduled}
+        mock2.demand.isScheduled {job-> false }
         mock2.demand.nextExecutionTimes { joblist -> return [] }
         sec.scheduledExecutionService = mock2.proxyInstance()
 
@@ -2127,15 +2127,16 @@ class ScheduledExecutionController2Spec extends RundeckHibernateSpec implements 
         mock2.demand.parseUploadedFile { input,format ->
             [jobset:[expectedJob]]
         }
-        mock2.demand.loadJobs { jobset, dupeOption, uuidOption, changeinfo, authctx, validateJobref ->
-            assert jobset==[expectedJob]
-            [
-                    jobs: [expectedJob],
-                    jobsi: [scheduledExecution: expectedJob, entrynum: 0],
-                    errjobs: [],
-                    skipjobs: []
-            ]
-        }
+        //Demands a deprecated method - TODO: remove?
+//        mock2.demand.loadJobs { jobset, dupeOption, uuidOption, changeinfo, authctx, validateJobref ->
+//            assert jobset==[expectedJob]
+//            [
+//                    jobs: [expectedJob],
+//                    jobsi: [scheduledExecution: expectedJob, entrynum: 0],
+//                    errjobs: [],
+//                    skipjobs: []
+//            ]
+//        }
         sec.scheduledExecutionService = mock2.proxyInstance()
 
         def xml = '''
@@ -2220,7 +2221,7 @@ class ScheduledExecutionController2Spec extends RundeckHibernateSpec implements 
             ]
         }
         mock2.demand.issueJobChangeEvents {event->}
-        mock2.demand.isScheduled { job -> job.scheduled }
+        mock2.demand.isScheduled { uuid -> false }
         mock2.demand.nextExecutionTimes { joblist -> return [] }
         sec.scheduledExecutionService = mock2.proxyInstance()
 
@@ -2314,7 +2315,7 @@ class ScheduledExecutionController2Spec extends RundeckHibernateSpec implements 
             ]
         }
         mock2.demand.issueJobChangeEvents {event->}
-        mock2.demand.isScheduled { job -> job.scheduled }
+        mock2.demand.isScheduled { uuid -> false }
         mock2.demand.nextExecutionTimes { joblist -> return [] }
         sec.scheduledExecutionService = mock2.proxyInstance()
 
@@ -2419,7 +2420,7 @@ class ScheduledExecutionController2Spec extends RundeckHibernateSpec implements 
             ]
         }
         mock2.demand.issueJobChangeEvents {event->}
-        mock2.demand.isScheduled { job -> job.scheduled }
+        mock2.demand.isScheduled { uuid -> false }
         mock2.demand.nextExecutionTimes { joblist -> return [] }
         sec.scheduledExecutionService = mock2.proxyInstance()
         def xml = '''
@@ -2525,7 +2526,7 @@ class ScheduledExecutionController2Spec extends RundeckHibernateSpec implements 
             ]
         }
         mock2.demand.issueJobChangeEvents {event->}
-        mock2.demand.isScheduled { job -> job.scheduled }
+        mock2.demand.isScheduled { uuid -> false }
         mock2.demand.nextExecutionTimes { joblist -> return [] }
         sec.scheduledExecutionService = mock2.proxyInstance()
 
