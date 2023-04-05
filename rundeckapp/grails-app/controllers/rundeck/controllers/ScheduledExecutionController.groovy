@@ -5535,7 +5535,7 @@ return.''',
      * API: /api/job/{id}/executions , version 1
      */
     private def apiJobExecutionsResult(boolean apiRequest) {
-        def ScheduledExecution scheduledExecution = scheduledExecutionService.getByIDorUUID(params.id)
+        JobData scheduledExecution = scheduledExecutionService.getByIDorUUID(params.id)
         if (!apiService.requireExists(response, scheduledExecution, ['Job ID', params.id])) {
             return
         }
