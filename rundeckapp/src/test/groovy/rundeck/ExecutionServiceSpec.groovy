@@ -3091,6 +3091,7 @@ class ExecutionServiceSpec extends Specification implements ServiceUnitTest<Exec
                 jobName: jobname,
                 project: project,
                 groupPath: group,
+                uuid: 'job_uuid',
                 description: 'a job',
                 argString: '-test1 b',
                 workflow: new Workflow(
