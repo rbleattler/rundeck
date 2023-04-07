@@ -3906,7 +3906,7 @@ class ExecutionService implements ApplicationContextAware, StepExecutor, NodeSte
             }
             if(!jitem.ignoreNotifications) {
                 if (averageDuration > 0 && duration > averageDuration) {
-                    avgDurationExceeded(id, [
+                    avgDurationExceeded(uuid, [
                             execution: execution,
                             context  : newContext,
                             jobref   : jitem.jobIdentifier,
