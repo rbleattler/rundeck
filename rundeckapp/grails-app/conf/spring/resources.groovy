@@ -112,6 +112,7 @@ import org.rundeck.app.data.providers.GormPluginMetaDataProvider
 import org.rundeck.app.data.providers.GormProjectDataProvider
 import org.rundeck.app.data.providers.GormJobDataProvider
 import org.rundeck.app.data.providers.GormTokenDataProvider
+import org.rundeck.app.data.providers.logstorage.GormLogFileStorageRequestProvider
 import org.rundeck.app.data.providers.storage.GormStorageDataProvider
 import org.rundeck.app.data.providers.GormUserDataProvider
 import org.rundeck.app.data.providers.GormWebhookDataProvider
@@ -901,5 +902,6 @@ beans={
     webhookDataProvider(GormWebhookDataProvider)
     jobDataProvider(GormJobDataProvider)
     pluginMetaDataProvider(GormPluginMetaDataProvider)
+    logFileStorageRequestProvider(GormLogFileStorageRequestProvider)
 
 }
