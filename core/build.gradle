@@ -36,6 +36,9 @@ description = 'The Rundeck Core API project'
 archivesBaseName = 'rundeck-core'
 defaultTasks 'clean'
 apply plugin: "groovy"
+
+apply from: "${rootDir}/gradle/java-version.gradle"
+
 configurations {
      provided
 }

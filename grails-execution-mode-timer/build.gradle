@@ -40,6 +40,7 @@ configurations{
     provided
 }
 
+apply from: "${rootDir}/gradle/java-version.gradle"
 
 dependencies {
 

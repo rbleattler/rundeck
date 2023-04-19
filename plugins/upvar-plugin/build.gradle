@@ -20,6 +20,7 @@ ext.pluginDescription = 'Uplift variables to global'
 
 apply plugin: 'groovy'
 
+apply from: "${rootDir}/gradle/java-version.gradle"
 
 dependencies {
 
