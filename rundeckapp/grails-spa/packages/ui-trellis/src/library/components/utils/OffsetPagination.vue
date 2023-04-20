@@ -15,10 +15,12 @@
   -->
 <template>
   <pagination v-model="currentPage" :total-pages="totalPages" @change="changePage($event)" :disabled="disabled" v-if="pagination.total">
-    <span slot="prefix" v-if="showPrefix">
+    <template v-if="showPrefix" v-slot:prefix>
+    <span>
       <span class="text-info">{{pagination.offset + 1}}-{{pagination.offset + pagination.max}}</span>
       <span class="text-muted">of {{pagination.total}}</span>
     </span>
+    </template>
   </pagination>
 </template>
 <script lang="ts">

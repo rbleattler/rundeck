@@ -29,8 +29,10 @@ export const filterList = () => {
     return Vue.extend({
         template: `
         <FilterList v-bind="$data">
-            <template slot="item" scope="{item}"><i class="fa fas fa-beer"/>Foo: {{item.name}}</template>
-            <div slot="footer">I'm a footer</div>
+            <template v-slot:item="item"><i class="fa fas fa-beer"/>Foo: {{item.name}}</template>
+            <template v-slot="footer">
+              <div>I'm a footer</div>
+            </template>
         </FilterList>
         `,
         provide: {rootStore},

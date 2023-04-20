@@ -18,7 +18,7 @@
                     :items="projects.search(searchTerm)"
                     :item-size="25"
                     :key="projects.search(searchTerm).length"
-                    v-slot="{ item }"
+                    v-slot:default="{ item }"
                     key-field="name"
                     class="scroller"
                 >

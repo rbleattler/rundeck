@@ -28,7 +28,9 @@
 
       >
       <slot name="titlePrefix"></slot>
-      <span slot="suffix"><slot name="titleSuffix"></slot></span>
+      <template v-slot:suffix>
+        <slot name="titleSuffix"></slot>
+      </template>
       </pluginInfo>
 
     <div class="row" v-if="!isTitleMode">

@@ -10,10 +10,10 @@
 <script lang="ts">
 import KeyStorageView from "./KeyStorageView.vue";
 import KeyStorageEdit from "./KeyStorageEdit.vue";
-import Vue from "vue";
+import Vue, {defineComponent} from "vue";
 import { getRundeckContext } from "../../index"
 
-export default Vue.extend({
+export default defineComponent({
   name: "KeyStoragePage",
   components: { KeyStorageEdit, KeyStorageView },
   props: [
@@ -25,7 +25,7 @@ export default Vue.extend({
   ],
   data() {
     return {
-      bus: new Vue(),
+      bus: window._rundeck.eventBus,
       modalEdit: false,
       path: '',
       uploadSetting: {},

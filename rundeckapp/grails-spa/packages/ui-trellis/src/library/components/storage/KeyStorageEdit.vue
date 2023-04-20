@@ -116,7 +116,8 @@
     </div>
   </div>
 
-  <div slot="footer">
+  <template v-slot:footer>
+  <div>
     <div class="text-right">
       <button type="button" class="btn btn-default mr-3" @click="handleCancel">Cancel</button>
       <button type="button" class="btn btn-cta" :disabled="validInput()===false"
@@ -125,6 +126,7 @@
       </button>
     </div>
   </div>
+  </template>
 </div>
 </template>
 
@@ -132,7 +134,7 @@
 import {getRundeckContext} from "../../index"
 import KeyType from "./KeyType"
 import InputType from "./InputType"
-import Vue from "vue"
+import Vue, {defineComponent} from "vue"
 import type { PropType } from 'vue'
 
 interface UploadSetting {
@@ -150,7 +152,7 @@ interface UploadSetting {
   dontOverwrite: boolean
 }
 
-export default Vue.extend({
+export default defineComponent({
   name: "KeyStorageEdit",
   props: {
     storageFilter: String,

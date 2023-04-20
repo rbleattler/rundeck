@@ -6,7 +6,7 @@
                 <i style="" :class="item.class"/>
                 <div>{{label}}</div>
             </a>
-            <template slot="content">
+            <template v-slot:content>
                 <ul 
                     :class="{
                         'navbar__container--icons': item.style == 'icon',

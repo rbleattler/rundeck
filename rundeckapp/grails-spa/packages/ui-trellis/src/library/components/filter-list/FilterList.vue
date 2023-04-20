@@ -18,7 +18,7 @@
                     :items="filtered()"
                     :item-size="itemSize"
                     :key="items.length"
-                    v-slot="{ item }"
+                    v-slot:default="{ item }"
                     key-field="id"
                     class="scroller"
                 >

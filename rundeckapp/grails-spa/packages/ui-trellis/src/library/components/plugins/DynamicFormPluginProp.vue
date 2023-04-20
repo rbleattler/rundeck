@@ -81,7 +81,8 @@
             </div>
 
 
-            <div slot="footer">
+          <template v-slot:footer>
+            <div>
                 <button type="button" class="btn btn-default reset_page_confirm" @click="modalAddField=false">
                     {{ $t('message.cancel') }}
                 </button>
@@ -90,6 +91,7 @@
                     {{ $t('message.add') }}
                 </button>
             </div>
+          </template>
         </modal>
     </div>
 </template>

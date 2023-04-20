@@ -3,7 +3,7 @@
             v-model="open"
             tag="section"
             :position-element="inputEl">
-    <template slot="dropdown">
+    <template v-slot:dropdown>
       <slot name="item" :items="items"  :select="selectItem" :highlight="highlight">
         <li v-for="(item,index) in items" >
           <a href="#" @click.prevent="selectItem(item)">

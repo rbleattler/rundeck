@@ -58,9 +58,11 @@
 
         </div>
       </div>
-      <div slot="footer">
+      <template v-slot:footer>
+      <div>
         <btn @click="modalOpen=false">Cancel</btn>
       </div>
+      </template>
 
     </modal>
   </div>

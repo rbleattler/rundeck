@@ -1,15 +1,12 @@
-import Vue from 'vue'
+import {createApp} from 'vue'
 import KeyStoragePage from "../../../library/components/storage/KeyStoragePage.vue";
 import KeyStorageView from "../../../library/components/storage/KeyStorageView.vue";
 import KeyStorageEdit from "../../../library/components/storage/KeyStorageEdit.vue";
 
 import * as uiv from 'uiv'
-import VueI18n from 'vue-i18n'
+import {createI18n} from 'vue-i18n'
 import uivLang from '../../../library/utilities/uivi18n'
 import international from './i18n'
-
-Vue.use(uiv)
-Vue.use(VueI18n)
 
 let messages = international.messages
 let locale = window['_rundeck'].locale || 'en_US'
@@ -24,7 +21,7 @@ const consolidatedMessages = {
     )
 }
 
-const i18n = new VueI18n({
+const i18n = createI18n({
     silentTranslationWarn: false,
     locale: locale, // set locale
     messages: { ...consolidatedMessages } // set locale messages,
@@ -33,8 +30,9 @@ const i18n = new VueI18n({
 
 const elm = document.getElementById('keyStoragePage')
 
-const vue = new Vue({
-    el: elm as Element,
+const vue = createApp({
     components: { KeyStoragePage, KeyStorageView, KeyStorageEdit },
-    i18n
 })
+vue.use(uiv)
+vue.use(i18n)
+vue.mount(elm)

@@ -302,9 +302,11 @@
           </div>
         </li>
       </ul>
-      <div slot="footer">
+      <template v-slot:footer>
+      <div>
         <btn @click="handleModalClose">Close</btn>
       </div>
+      </template>
     </modal>
   </div>
 </template>

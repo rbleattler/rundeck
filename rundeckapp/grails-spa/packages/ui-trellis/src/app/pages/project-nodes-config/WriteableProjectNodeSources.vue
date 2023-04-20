@@ -10,10 +10,14 @@
           :key="source.type+'title/'+source.index"
           :show-description="!source.resources.description"
         >
-          <span slot="titlePrefix" :title="'Source #'+source.index">{{source.index}}.</span>
-          <span v-if="source.resources.description" slot="titleSuffix">
+          <template v-slot:titlePrefix>
+            <span :title="'Source #'+source.index">{{source.index}}.</span>
+          </template>
+          <template v-if="source.resources.description" v-slot:titleSuffix>
+            <span>
             <code>{{source.resources.description}}</code>
           </span>
+          </template>
         </plugin-config>
 
         <div v-if="source.resources.syntaxMimeType" class="item-section">

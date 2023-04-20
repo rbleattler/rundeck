@@ -38,7 +38,7 @@
       <span v-else class="configpair">
         <template v-if="prop.options && prop.options['displayType']==='CODE'">
           <expandable >
-            <template slot="label"><span :title="prop.desc">{{ prop.title }}:</span> <span class="text-info">{{value.split(/\r?\n/).length}} lines</span></template>
+            <template v-slot:label><span :title="prop.desc">{{ prop.title }}:</span> <span class="text-info">{{value.split(/\r?\n/).length}} lines</span></template>
              <ace-editor
               v-model="value"
               :lang="prop.options['codeSyntaxMode']"
@@ -50,7 +50,7 @@
         </template>
         <template v-else-if="prop.options && prop.options['displayType']==='MULTI_LINE'" >
           <expandable>
-            <template slot="label"><span :title="prop.desc">{{ prop.title }}:</span> <span class="text-info">{{value.split(/\r?\n/).length}} lines</span></template>
+            <template v-slot:label><span :title="prop.desc">{{ prop.title }}:</span> <span class="text-info">{{value.split(/\r?\n/).length}} lines</span></template>
             <ace-editor
               v-model="value"
               height="200"

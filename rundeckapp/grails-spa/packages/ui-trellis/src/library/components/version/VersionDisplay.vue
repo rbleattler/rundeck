@@ -22,7 +22,7 @@
 
             <version-icon-name-display :icon="versionIcon" :text="versionText" :color="versionColor" v-if="showName"/>
         </span>
-        <template slot="popover">
+        <template v-slot:popover>
             {{version}}
             <version-date-display :date="date"/>
             <version-icon-name-display :icon="versionIcon" :text="versionText" :color="versionColor"/>

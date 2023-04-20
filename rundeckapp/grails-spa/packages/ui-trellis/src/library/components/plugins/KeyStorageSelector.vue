@@ -30,12 +30,12 @@
 
 
 <script lang="ts">
-    import Vue from 'vue';
+import {defineComponent} from 'vue';
 
     import KeyStorageView from "../../components/storage/KeyStorageView.vue"
     import KeyStorageEdit from "../../components/storage/KeyStorageEdit.vue"
 
-    export default Vue.extend({
+    export default defineComponent({
       name: 'KeyStorageSelector',
       components: { KeyStorageEdit, KeyStorageView },
       props: [
@@ -55,9 +55,6 @@
               errorMsg: '',
               uploadSetting: {}
           };
-      },
-      mounted() {
-        console.log("==> initial value: ", this.value)
       },
       methods: {
         cleanPath(path: any) {
