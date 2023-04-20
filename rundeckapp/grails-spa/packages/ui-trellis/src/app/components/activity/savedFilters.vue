@@ -11,7 +11,7 @@
         {{$t('Filters')}}
         <span class="caret"></span>
       </span>
-      <template slot="dropdown">
+      <template v-slot:dropdown>
 
         <li v-if="query && query.filterName">
           <a role="button"  @click="deleteFilter" >

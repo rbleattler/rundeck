@@ -22,7 +22,6 @@ export default {
       count: 0
     };
   },
-  methods: {},
   mounted() {
     this.RundeckContext = getRundeckContext();
     let cookie = this.$cookies.get("communityNews");

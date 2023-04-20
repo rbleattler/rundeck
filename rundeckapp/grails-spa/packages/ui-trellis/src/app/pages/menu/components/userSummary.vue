@@ -2,7 +2,7 @@
   <div>
     <!-- -->
     <modal v-model="openModal" ref="modal" append-to-body>
-        <span slot="title">Search</span>
+        <template v-slot:title><span>Search</span></template>
         <div class="row">
           <div class="col-xs-12">
             <div class="form-group" style="padding-top:10px">
@@ -53,10 +53,12 @@
             <button style="display:none;" type="submit">Submit</button>
           </form>
         </div>
-        <div slot="footer">
-          <btn @click="openModal=false">Cancel</btn>
-          <btn type="cta" @click="loadUsersList(0)">{{ $t("message.pageFilterBtnSearch")}}</btn>
-        </div>
+        <template v-slot:footer>
+          <div>
+            <btn @click="openModal=false">Cancel</btn>
+            <btn type="cta" @click="loadUsersList(0)">{{ $t("message.pageFilterBtnSearch")}}</btn>
+          </div>
+        </template>
     </modal>
 
     <p class="help-block">{{ $t('message.userSummary.desc')}}</p>

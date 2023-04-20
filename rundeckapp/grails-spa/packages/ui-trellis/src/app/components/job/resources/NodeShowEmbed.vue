@@ -25,7 +25,7 @@
 
     <node-status :node="node"/>
   </a>
-    <template slot="popover">
+    <template v-slot:popover>
       <div class=" detailpopup node_entry tooltipcontent" :class="{server:node.islocal}">
         <div class="node-header">
 

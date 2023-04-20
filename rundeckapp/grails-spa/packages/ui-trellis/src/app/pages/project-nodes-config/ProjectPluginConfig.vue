@@ -37,7 +37,7 @@
               :show-description="true"
               @hasKeyStorageAccess="hasKeyStorageAccess"
             >
-              <span slot="titlePrefix">{{index+1}}.</span>
+              <template v-slot:titlePrefix><span>{{index+1}}.</span></template>
             </plugin-config>
 
             <div v-if="additionalProps && additionalProps.props.length>0">
@@ -64,53 +64,55 @@
               :validation-warning-text="$t('Validation errors')"
               @input="configUpdated"
             >
-              <div slot="extra" class="row" v-if="mode==='edit'">
-                <div class="col-xs-12 col-sm-12">
-                  <span v-if="editFocus===-1">
-                    <a
-                      class="btn btn-default btn-xs"
-                      @click="editFocus=index"
-                      :key="'edit'"
-                    >{{$t('Edit')}}</a>
-                  </span>
-                  <span v-if="editFocus===index">
-                    <a
-                      class="btn btn-cta btn-xs"
-                      @click="savePlugin(plugin,index)"
-                      :key="'save'"
-                    >{{$t('Save')}}</a>
-                    <a class="btn btn-default btn-xs" @click="editFocus=-1">{{$t('Cancel')}}</a>
-                  </span>
-                  <span class="small text-info" v-if="plugin.modified">
-                    <i class="fas fa-pen-square"></i>
-                    Modified
-                  </span>
-                  <div class="btn-group pull-right" v-if="(editFocus===-1||editFocus===index)">
-                    <btn
-                      class="btn-xs btn-danger"
-                      @click="removePlugin(plugin,index)"
-                      :disabled="editFocus!==-1&&editFocus!==(index)"
-                    >
-                      {{$t('Delete')}}
-                      <i class="fas fa-minus"></i>
-                    </btn>
-                    <btn
-                      class="btn-xs"
-                      @click="movePlugin(index,plugin,-1)"
-                      :disabled="editFocus!==-1 || index==0"
-                    >
-                      <i class="fas fa-arrow-up"></i>
-                    </btn>
-                    <btn
-                      class="btn-xs"
-                      @click="movePlugin(index,plugin,1)"
-                      :disabled="editFocus!==-1 || index>=pluginConfigs.length-1"
-                    >
-                      <i class="fas fa-arrow-down"></i>
-                    </btn>
+              <template v-slot:extra v-if="mode==='edit'">
+                <div class="row">
+                  <div class="col-xs-12 col-sm-12">
+                    <span v-if="editFocus===-1">
+                      <a
+                        class="btn btn-default btn-xs"
+                        @click="editFocus=index"
+                        :key="'edit'"
+                      >{{$t('Edit')}}</a>
+                    </span>
+                    <span v-if="editFocus===index">
+                      <a
+                        class="btn btn-cta btn-xs"
+                        @click="savePlugin(plugin,index)"
+                        :key="'save'"
+                      >{{$t('Save')}}</a>
+                      <a class="btn btn-default btn-xs" @click="editFocus=-1">{{$t('Cancel')}}</a>
+                    </span>
+                    <span class="small text-info" v-if="plugin.modified">
+                      <i class="fas fa-pen-square"></i>
+                      Modified
+                    </span>
+                    <div class="btn-group pull-right" v-if="(editFocus===-1||editFocus===index)">
+                      <btn
+                        class="btn-xs btn-danger"
+                        @click="removePlugin(plugin,index)"
+                        :disabled="editFocus!==-1&&editFocus!==(index)"
+                      >
+                        {{$t('Delete')}}
+                        <i class="fas fa-minus"></i>
+                      </btn>
+                      <btn
+                        class="btn-xs"
+                        @click="movePlugin(index,plugin,-1)"
+                        :disabled="editFocus!==-1 || index==0"
+                      >
+                        <i class="fas fa-arrow-up"></i>
+                      </btn>
+                      <btn
+                        class="btn-xs"
+                        @click="movePlugin(index,plugin,1)"
+                        :disabled="editFocus!==-1 || index>=pluginConfigs.length-1"
+                      >
+                        <i class="fas fa-arrow-down"></i>
+                      </btn>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </template>
             </plugin-config>
             <slot name="item-extra" :plugin="plugin" :editFocus="editFocus===index" :mode="mode"></slot>
           </div>
@@ -155,9 +157,11 @@
                 </plugin-info>
               </a>
             </div>
-            <div slot="footer">
-              <btn @click="modalAddOpen=false">{{$t('Cancel')}}</btn>
-            </div>
+            <template v-slot:footer>
+              <div>
+                <btn @click="modalAddOpen=false">{{$t('Cancel')}}</btn>
+              </div>
+            </template>
           </modal>
         </div>
         <div class="card-footer" v-if="mode==='edit' && editFocus===-1">

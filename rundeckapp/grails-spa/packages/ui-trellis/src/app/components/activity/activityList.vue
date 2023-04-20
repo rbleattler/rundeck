@@ -78,20 +78,22 @@
         <strong>{{bulkSelectedIds.length}}</strong>
       </i18n>
 
-      <div slot="footer">
-        <btn data-dismiss="modal" @click="showBulkEditCleanSelections=false">{{$t('cancel')}}</btn>
-        <button type="submit"
-                class="btn btn-default  "
-                data-dismiss="modal"
-                @click="bulkEditDeselectAll">
-            {{$t('Only shown executions')}}
-        </button>
-        <button class="btn btn-danger "
-                data-dismiss="modal"
-                @click="bulkEditDeselectAllPages">
-            {{$t('all')}}
-        </button>
-      </div>
+      <template v-slot:footer>
+        <div>
+          <btn data-dismiss="modal" @click="showBulkEditCleanSelections=false">{{$t('cancel')}}</btn>
+          <button type="submit"
+                  class="btn btn-default  "
+                  data-dismiss="modal"
+                  @click="bulkEditDeselectAll">
+              {{$t('Only shown executions')}}
+          </button>
+          <button class="btn btn-danger "
+                  data-dismiss="modal"
+                  @click="bulkEditDeselectAllPages">
+              {{$t('all')}}
+          </button>
+        </div>
+      </template>
     </modal>
 
     <modal v-model="showBulkEditConfirm" id="bulkexecdelete" :title="$t('Bulk Delete Executions')" append-to-body>
@@ -100,16 +102,18 @@
         <span>{{$tc('execution',bulkSelectedIds.length)}}</span>
       </i18n>
 
-      <div slot="footer">
-          <btn @click="showBulkEditConfirm=false">
-              {{$t('cancel')}}
-          </btn>
-          <btn type="danger"
-                @click="performBulkDelete"
-                data-dismiss="modal">
-              {{$t('Delete Selected')}}
-          </btn>
-      </div>
+      <template v-slot:footer>
+        <div>
+            <btn @click="showBulkEditConfirm=false">
+                {{$t('cancel')}}
+            </btn>
+            <btn type="danger"
+                  @click="performBulkDelete"
+                  data-dismiss="modal">
+                {{$t('Delete Selected')}}
+            </btn>
+        </div>
+      </template>
     </modal>
 
     <modal v-model="showBulkEditResults" id="bulkexecdeleteresult" :title="$t('Bulk Delete Executions: Results')" append-to-body>
@@ -158,9 +162,11 @@
                     </div>
 
                 </div>
-              <div slot="footer">
-                <btn @click="showBulkEditResults=false">{{$t('close')}}</btn>
-              </div>
+              <template v-slot:footer>
+                <div>
+                  <btn @click="showBulkEditResults=false">{{$t('close')}}</btn>
+                </div>
+              </template>
     </modal>
     <div class="card-content-full-width">
     <table class=" table table-hover table-condensed " >

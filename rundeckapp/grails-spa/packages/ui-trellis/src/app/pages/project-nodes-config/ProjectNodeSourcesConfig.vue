@@ -10,24 +10,26 @@
     :edit-mode="editMode"
     :mode-toggle="modeToggle"
   >
-    <div slot="item-extra" slot-scope="{plugin,mode}">
-      <div
-        v-if="isWriteable(plugin.origIndex) && (showWriteableLinkMode==='any' || showWriteableLinkMode===mode)"
-      >
-        <a :href="editPermalink(plugin.origIndex)" class="btn btn-sm btn-default">
-          <i class="glyphicon glyphicon-pencil"></i>
-          {{$t('Edit Nodes')}}
-        </a>
-      </div>
-      <div class="row row-space" v-if="sourceErrors(plugin.origIndex)">
-        <div class="col-sm-12">
-          <div class="well well-sm">
-            <div class="text-info">{{$t('The Node Source had an error')}}:</div>
-            <span class="text-danger">{{sourceErrors(plugin.origIndex)}}</span>
+    <template v-slot:item-extra="{plugin,mode}">
+      <div>
+        <div
+          v-if="isWriteable(plugin.origIndex) && (showWriteableLinkMode==='any' || showWriteableLinkMode===mode)"
+        >
+          <a :href="editPermalink(plugin.origIndex)" class="btn btn-sm btn-default">
+            <i class="glyphicon glyphicon-pencil"></i>
+            {{$t('Edit Nodes')}}
+          </a>
+        </div>
+        <div class="row row-space" v-if="sourceErrors(plugin.origIndex)">
+          <div class="col-sm-12">
+            <div class="well well-sm">
+              <div class="text-info">{{$t('The Node Source had an error')}}:</div>
+              <span class="text-danger">{{sourceErrors(plugin.origIndex)}}</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </template>
   </project-plugin-config>
 </template>
 <script lang="ts">

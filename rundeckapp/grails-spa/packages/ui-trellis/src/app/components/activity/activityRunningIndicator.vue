@@ -16,7 +16,7 @@
 
 <template>
 <span v-if="count>0" @click="clickAction">
-    <slot :count="count">{{count}}</slot>
+    <slot v-bind:count="count">{{count}}</slot>
 </span>
 </template>
 

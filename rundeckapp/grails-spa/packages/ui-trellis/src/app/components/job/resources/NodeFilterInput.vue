@@ -61,9 +61,11 @@
                   :node-filter="filter.filter"
                   @nodefilterclick="handleNodefilter"
               >
-              <span slot="suffix" v-if="selectedFilterName===filter.name">
-                <i class="fa fa-check"></i>
-              </span>
+                <template v-slot:suffix v-if="selectedFilterName===filter.name">
+                  <span>
+                    <i class="fa fa-check"></i>
+                  </span>
+                </template>
               </node-filter-link>
             </li>
           </template>
@@ -89,7 +91,7 @@
         </btn>
       </div>
       <popover target="#filterSearchHelpBtn" trigger="focus" placement="bottom" v-if="helpButton">
-        <template slot="popover">
+        <template v-slot:popover>
           <div class="help-block">
             <strong>{{ $t('select.nodes.by.name') }}:</strong>
             <p>
@@ -146,10 +148,12 @@
         </div>
 
       </div>
-      <div slot="footer">
-        <btn @click="saveFilterModal=false">{{$t('button.action.Cancel')}}</btn>
-        <btn type="primary" @click="saveFilter">{{ $t('save.filter.ellipsis') }}</btn>
-      </div>
+      <template v-slot:footer>
+        <div>
+          <btn @click="saveFilterModal=false">{{$t('button.action.Cancel')}}</btn>
+          <btn type="primary" @click="saveFilter">{{ $t('save.filter.ellipsis') }}</btn>
+        </div>
+      </template>
     </modal>
     <modal v-model="deleteFilterModal" :title="$t('delete.saved.node.filter')">
 
@@ -176,10 +180,12 @@
         </div>
 
       </div>
-      <div slot="footer">
-        <btn @click="deleteFilterModal=false">{{$t('no')}}</btn>
-        <btn type="danger" @click="deleteFilter">{{$t('yes')}}</btn>
-      </div>
+      <template v-slot:footer>
+        <div>
+          <btn @click="deleteFilterModal=false">{{$t('no')}}</btn>
+          <btn type="danger" @click="deleteFilter">{{$t('yes')}}</btn>
+        </div>
+      </template>
     </modal>
   </div>
 </template>

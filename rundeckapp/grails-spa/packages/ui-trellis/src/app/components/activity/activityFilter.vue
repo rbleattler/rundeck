@@ -5,7 +5,7 @@
         <i18n :path="'period.label.'+period.name" />
         <span class="caret"></span>
       </span>
-      <template slot="dropdown">
+      <template v-slot:dropdown>
         <li v-for="perobj in periods" :key="perobj.name">
           <a role="button" @click="changePeriod(perobj)">
             <i18n :path="'period.label.'+perobj.name" />
@@ -168,7 +168,7 @@
           </div>
         </div>
       </div>
-      <template slot="footer">
+      <template v-slot:footer>
         <btn @click="filterOpen=false">{{$t('cancel')}}</btn>
         <btn @click="search" type="primary" class="btn btn-primary">{{$t('search')}}</btn>
         <btn @click="saveFilter" type="default" class="btn-default pull-right">

@@ -45,7 +45,7 @@
                   </div>
 
                   <popover :title="$t('scheduledExecution.property.notifyAvgDurationThreshold.label')" target="#jobAvgInfoBtn">
-                    <template slot="popover">
+                    <template v-slot:popover>
                       <markdown-it-vue class="markdown-body" :content="$t('scheduledExecution.property.notifyAvgDurationThreshold.description')"/>
                     </template>
                   </popover>
@@ -59,7 +59,7 @@
                   <btn type="simple" class=" btn-hover  btn-secondary dropdown-toggle">
                     <span class="caret"></span>
                   </btn>
-                  <template slot="dropdown">
+                  <template v-slot:dropdown>
                     <li @click="doCopyNotification(notif)">
                       <a role="button">
                         {{$t('Duplicate...')}}
@@ -120,7 +120,7 @@
                   Select a Trigger
                 </span>
               </btn>
-              <template slot="dropdown">
+              <template v-slot:dropdown>
                 <li v-for="trigger in notifyTypes"
                     @click="setEditNotificationTrigger(trigger)"
                     :data-trigger="trigger"
@@ -162,7 +162,7 @@
                   Select a Notification
                   </span>
                 </btn>
-                <template slot="dropdown">
+                <template v-slot:dropdown>
                   <li v-for="plugin in sortedProviders" :key="plugin.name">
                     <a role="button"
                        @click="setEditNotificationType(plugin.name)"
@@ -211,7 +211,8 @@
 
       </div>
 
-      <div slot="footer">
+      <template v-slot:footer>
+      <div>
         <btn @click="cancelEditNotification" id="job-notifications-edit-modal-btn-cancel">{{ $t('Cancel') }}</btn>
         &nbsp;
         <btn @click="saveNotification"
@@ -226,6 +227,7 @@
           {{ editError }}
         </span>
       </div>
+      </template>
     </modal>
   </div>
 </template>

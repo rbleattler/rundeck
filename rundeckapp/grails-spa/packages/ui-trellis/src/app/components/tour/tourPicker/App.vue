@@ -24,9 +24,11 @@
             </div>
           </div>
         </div>
-        <div slot="footer">
-          <btn @click="tourSelectionModal=false">Close</btn>
-        </div>
+        <template v-slot:footer>
+          <div>
+            <btn @click="tourSelectionModal=false">Close</btn>
+          </div>
+        </template>
       </modal>
     </section>
   </li>

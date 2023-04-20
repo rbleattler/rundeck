@@ -46,9 +46,11 @@
           >{{$t("message.dismissMessage")}}</a>
         </p>
       </div>
-      <div slot="footer">
-        <btn @click="showNotificationModal=false">{{$t("message.close")}}</btn>
-      </div>
+      <template v-slot:footer>
+        <div>
+          <btn @click="showNotificationModal=false">{{$t("message.close")}}</btn>
+        </div>
+      </template>
     </modal>
   </div>
 </template>

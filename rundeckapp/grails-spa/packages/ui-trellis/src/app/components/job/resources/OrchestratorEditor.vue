@@ -21,7 +21,7 @@
                   Select an Orchestrator
                   </span>
         </btn>
-        <template slot="dropdown">
+        <template v-slot:dropdown>
           <li v-for="plugin in pluginProviders" :key="plugin.name">
             <a role="button"
                @click="setOrchestratorType(plugin.name)"
