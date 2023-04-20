@@ -241,44 +241,63 @@
 import {_genUrl} from '../../../utilities/genUrl'
 import axios from 'axios'
 import InlineValidationErrors from '../../form/InlineValidationErrors.vue'
-import Vue from 'vue'
-import Component from 'vue-class-component'
-import {Prop, Watch} from 'vue-property-decorator'
+import { defineComponent, ref } from 'vue'
+import type { PropType } from 'Vue'
 
 import {
   getRundeckContext,
   getAppLinks
 } from '../../../../library'
 
-@Component({components: {InlineValidationErrors}})
-export default class OtherEditor extends Vue {
-  @Prop({required: true})
-  value: any
-
-  @Prop({required: true})
-  eventBus!: Vue
-
-  labelColClass = 'col-sm-2 control-label'
-  fieldColSize = 'col-sm-10'
-  fieldColHalfSize = 'col-sm-5'
-  fieldColShortSize = 'col-sm-4'
-
-  modelData: any = {}
-
-  async mounted() {
-    this.modelData = Object.assign({}, this.value)
-    if(!this.modelData.defaultTab || this.modelData.defaultTab in ['summary','monitor','nodes']) {
-      this.modelData.defaultTab = 'nodes'
+export default defineComponent({
+  name: 'OtherEditor',
+  components: {
+    InlineValidationErrors,
+  },
+  props: {
+    modelValue: {
+      type: Object as PropType<any>,
+      required: true,
+    },
+    eventBus: {
+      type: Object as PropType<Vue>,
+      required: true,
     }
+  },
+  computed:{
+      labelColClass() { return 'col-sm-2 control-label' },
+      fieldColSize() { return 'col-sm-10' },
+      fieldColHalfSize() { return 'col-sm-5' },
+      fieldColShortSize() { return 'col-sm-4' },
+  },
+  methods: {
+    async onMounted() {
+      this.modelData = Object.assign({}, this.modelValue)
+      if(!this.modelData.defaultTab || this.modelData.defaultTab in ['summary','monitor','nodes']) {
+        this.modelData.defaultTab = 'nodes'
+      }
 
-    if(!this.modelData.logOutputThresholdAction) {
-      this.modelData.logOutputThresholdAction = 'halt'
+      if(!this.modelData.logOutputThresholdAction) {
+        this.modelData.logOutputThresholdAction = 'halt'
+      }
     }
+  },
+  setup() {
+    const modelData = ref({})
+    return {
+      modelData,
+    }
+  },
+  mounted() {
+    this.onMounted()
+  },
+  watch: {
+    modelData: {
+      handler() {
+        this.$emit('input', this.modelData)
+      },
+      deep: true
+    },
   }
-
-  @Watch('modelData', {deep: true})
-  wasChanged() {
-    this.$emit('input', this.modelData)
-  }
-}
+})
 </script>

@@ -123,23 +123,25 @@
               <page-confirm :event-bus="EventBus" class="project-plugin-config-vue pull-right"
                 message="${enc(attr:message(code:'page.unsaved.changes'))}" :display="true"
                 style="display: inline-block">
-                <div class="well well-sm" slot="default" slot-scope="{confirm}">
-                  <span class="text-warning">
-                    <g:message code="page.unsaved.changes" />:
-                  </span>
-                  <span v-if="confirm.indexOf('Node Sources')>=0">
-                    <a href="#node_sources" onclick="jQuery('#tab_link_sources').tab('show')">
-                      <i class="fas fa-hdd fa-edit"></i>
-                      <g:message code="project.node.sources.title.short" />
-                    </a>
-                  </span>
-                  <span v-if="confirm.indexOf('Node Enhancers')>=0">
-                    <a href="#plugins" >
-                      <i class="fas fa-puzzle-piece"></i>
-                      <g:message code="framework.service.NodeEnhancer.label.short.plural" />
-                    </a>
-                  </span>
-                </div>
+                <template v-slot:default="{confirm}">
+                  <div class="well well-sm">
+                    <span class="text-warning">
+                      <g:message code="page.unsaved.changes" />:
+                    </span>
+                    <span v-if="confirm.indexOf('Node Sources')>=0">
+                      <a href="#node_sources" onclick="jQuery('#tab_link_sources').tab('show')">
+                        <i class="fas fa-hdd fa-edit"></i>
+                        <g:message code="project.node.sources.title.short" />
+                      </a>
+                    </span>
+                    <span v-if="confirm.indexOf('Node Enhancers')>=0">
+                      <a href="#plugins" >
+                        <i class="fas fa-puzzle-piece"></i>
+                        <g:message code="framework.service.NodeEnhancer.label.short.plural" />
+                      </a>
+                    </span>
+                  </div>
+                </template>
               </page-confirm>
               <div class="tab-content">
                       <div class="tab-pane" id="node_settings">
@@ -179,9 +181,11 @@
                           </div>
 
                           <writeable-project-node-sources :event-bus="EventBus" class="list-group" item-css="list-group-item">
-                            <div slot="empty" class="list-group-item">
-                              <span class="text-info"><i class="glyphicon glyphicon-info-sign"></i> <g:message code="no.modifiable.sources.found" /></span>
-                            </div>
+                            <template v-slot:empty>
+                              <div class="list-group-item">
+                                <span class="text-info"><i class="glyphicon glyphicon-info-sign"></i> <g:message code="no.modifiable.sources.found" /></span>
+                              </div>
+                            </template>
                           </writeable-project-node-sources>
 
                           <div class="well well-sm">

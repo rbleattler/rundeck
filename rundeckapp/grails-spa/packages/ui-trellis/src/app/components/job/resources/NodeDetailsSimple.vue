@@ -203,133 +203,158 @@
 import NodeFilterLink from '../../job/resources/NodeFilterLink.vue'
 import NodeIcon from '../../job/resources/NodeIcon.vue'
 import NodeStatus from '../../job/resources/NodeStatus.vue'
-import Vue from 'vue'
-import Component from 'vue-class-component'
-import {Prop} from 'vue-property-decorator'
+import { defineComponent, ref } from 'vue'
+import type { PropType } from "vue"
 
 const OsAttributeNames = 'nodename hostname username description tags osFamily osName osVersion osArch'.split(' ')
 
-@Component({
-  components: {NodeIcon, NodeStatus, NodeFilterLink}
-})
-export default class NodeDetailsSimple extends Vue {
-  @Prop({required: true})
-  attributes!: any
-  @Prop({required: false, default: () => []})
-  tags!: Array<string>
-  @Prop({required: false, default: false})
-  showExcludeFilterLinks!: boolean
-
-  @Prop({required: false, default: false})
-  useNamespace!: boolean
-  @Prop({required: false, default: false})
-  authrun!: boolean
-  @Prop({required: false, default: () => []})
-  filterColumns!: Array<string>
-  @Prop({required: false, default: false})
-  nodeColumns!: boolean
-
-  uiNs: { [name: string]: boolean } = {}
-
-  OsTestNames = 'osFamily osName osVersion osArch'.split(' ')
-
-  toggleNs(ns: string) {
-    let val = this.uiNs[ns]
-    console.log(`toggle ${ns} ${val} = ${!val}`)
-    Vue.set(this.uiNs, ns, !val)
-  }
-
-  hasOsData() {
-    return this.OsTestNames.findIndex((val) => this.attributes[val]) >= 0
-  }
-
-  get useDefaultColumns() {
-    return this.filterColumns.length < 1 && this.nodeColumns
-  }
-
-  filterClick(filter: any) {
-    this.$emit('filter', filter)
-  }
-
-  /**
-   * Return an object with only attributes for display, excluding ui: namespace, and osAttrs
-   *
-   * @param attrs
-   */
-  get displayAttributes() {
-    let result: any = {}
-    for (let e in this.attributes) {
-      if (e.indexOf(':') < 0 && OsAttributeNames.indexOf(e) < 0) {
-        result[e] = this.attributes[e]
-      }
-    }
-    return result
-  };
-
-  startsWith(a: string, b: string) {
-    return (a.length >= (b.length)) && a.substring(0, b.length) == b
-  }
-
-  attributesInNamespace(attrs: any, ns: string) {
-    let result = []
-    for (let e in attrs) {
-      if (this.startsWith(e, ns + ':') && attrs[e]) {
-        result.push({name: e, value: attrs[e], shortname: e.substring(ns.length + 1)})
-      }
-    }
-    result.sort(function(a, b) {
-      return a.shortname.localeCompare(b.shortname)
-    })
-    return result
-  };
-
-  attributeNamespaceRegex = /^(.+?):.+$/
-
-  attributeNamespaceNames(attrs: any) {
-    let namespaces = []
-    for (let e in attrs) {
-      let found = e.match(this.attributeNamespaceRegex)
-      if (found && found.length > 1) {
-        if (namespaces.indexOf(found[1]) < 0) {
-          namespaces.push(found[1])
+export default defineComponent({
+  name: 'NodeDetailsSimple',
+  components: {
+    NodeIcon,
+    NodeStatus,
+    NodeFilterLink,
+  },
+  props: {
+    attributes: {
+      type: Object as PropType<any>,
+      required: true,
+    },
+    tags: {
+      type: Array as PropType<string[]>,
+      required: false,
+      default: () => [],
+    },
+    showExcludeFilterLinks: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    useNamespace: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    authrun: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    filterColumns: {
+      type: Array as PropType<string[]>,
+      required: false,
+      default: () => [],
+    },
+    nodeColumns: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
+  computed: {
+    useDefaultColumns() {
+      return this.filterColumns.length < 1 && this.nodeColumns
+    },
+    /**
+     * Return an object with only attributes for display, excluding ui: namespace, and osAttrs
+     *
+     * @param attrs
+     */
+    displayAttributes() {
+      let result: any = {}
+      for (let e in this.attributes) {
+        if (e.indexOf(':') < 0 && OsAttributeNames.indexOf(e) < 0) {
+          result[e] = this.attributes[e]
         }
       }
-    }
-    namespaces.sort()
-    return namespaces
-  };
-
-  get attributeNamespaces() {
-    let index: any = {}
-    let names = []
-    for (let e in this.attributes) {
-      let found = e.match(this.attributeNamespaceRegex)
-      if (found && found.length > 1) {
-        if (!index[found[1]]) {
-          index[found[1]] = []
-          names.push(found[1])
+      return result
+    },
+    attributeNamespaces() {
+      let index: any = {}
+      let names = []
+      for (let e in this.attributes) {
+        let found = e.match(this.attributeNamespaceRegex)
+        if (found && found.length > 1) {
+          if (!index[found[1]]) {
+            index[found[1]] = []
+            names.push(found[1])
+          }
+          index[found[1]].push({
+            name: e,
+            value: this.attributes[e],
+            shortname: e.substring(found[1].length + 1)
+          })
         }
-        index[found[1]].push({
-          name: e,
-          value: this.attributes[e],
-          shortname: e.substring(found[1].length + 1)
+      }
+      names.sort()
+
+      let results = []
+      for (let i = 0; i < names.length; i++) {
+        let values = index[names[i]]
+        values.sort(function(a: any, b: any) {
+          return a.shortname.localeCompare(b.shortname)
         })
+        results.push({ns: names[i], values: values})
       }
+      return results
+    },
+    OsTestNames() {
+      return 'osFamily osName osVersion osArch'.split(' ')
+    },
+    attributeNamespaceRegex() {
+      return /^(.+?):.+$/
     }
-    names.sort()
+  },
+  setup() {
+    const uiNs = ref({} as { [name: string]: boolean })
+    return {
+      uiNs,
+    }
+  },
+  methods: {
+    toggleNs(ns: string) {
+      let val = this.uiNs[ns]
+      console.log(`toggle ${ns} ${val} = ${!val}`)
+      this.uiNs[ns] = !val
+    },
 
-    let results = []
-    for (let i = 0; i < names.length; i++) {
-      let values = index[names[i]]
-      values.sort(function(a: any, b: any) {
+    hasOsData() {
+      return this.OsTestNames.findIndex((val) => this.attributes[val]) >= 0
+    },
+
+    filterClick(filter: any) {
+      this.$emit('filter', filter)
+    },
+    startsWith(a: string, b: string) {
+      return (a.length >= (b.length)) && a.substring(0, b.length) == b
+    },
+    attributesInNamespace(attrs: any, ns: string) {
+      let result = []
+      for (let e in attrs) {
+        if (this.startsWith(e, ns + ':') && attrs[e]) {
+          result.push({name: e, value: attrs[e], shortname: e.substring(ns.length + 1)})
+        }
+      }
+      result.sort(function (a, b) {
         return a.shortname.localeCompare(b.shortname)
       })
-      results.push({ns: names[i], values: values})
-    }
-
-    return results
-  };
-}
+      return result
+    },
+    attributeNamespaceNames(attrs: any) {
+      let namespaces = []
+      for (let e in attrs) {
+        let found = e.match(this.attributeNamespaceRegex)
+        if (found && found.length > 1) {
+          if (namespaces.indexOf(found[1]) < 0) {
+            namespaces.push(found[1])
+          }
+        }
+      }
+      namespaces.sort()
+      return namespaces
+    },
+  },
+})
 </script>
 <style type="scss">
 .text-parenthetical:before {
