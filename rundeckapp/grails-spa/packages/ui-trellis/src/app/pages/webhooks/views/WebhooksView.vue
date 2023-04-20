@@ -165,8 +165,7 @@ import i18n from '../i18n'
 import axios from 'axios'
 
 import {observable, autorun, reaction} from 'mobx'
-import {deepObserve} from 'mobx-utils'
-import {observer} from 'mobx-vue'
+import {observer} from 'mobx-vue-lite'
 
 import PluginConfig from "../../../../library/components/plugins/pluginConfig.vue"
 import PluginInfo from "../../../../library/components/plugins/PluginInfo.vue"
@@ -179,9 +178,6 @@ import KeyStorageSelector from '../../../../library/components/plugins/KeyStorag
 
 import {getServiceProviderDescription,
   getPluginProvidersForService} from '../../../../library/modules/pluginService'
-
-import {ServiceType} from '../../../../library/stores/Plugins'
-
 
 import WebhookTitle from '../components/WebhookTitle.vue'
 

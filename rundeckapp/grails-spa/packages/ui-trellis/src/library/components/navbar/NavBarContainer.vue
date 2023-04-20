@@ -26,7 +26,7 @@ import {NavItem, NavBar, NavContainer} from '../../stores/NavBar'
 
 import NavBarItem from './NavBarItem.vue'
 import {Component, Inject, Prop} from 'vue-property-decorator'
-import { Observer } from 'mobx-vue'
+import { Observer } from 'mobx-vue-lite'
 import { RootStore } from '../../stores/RootStore'
 
 import NavBarDrawer from './NavBarDrawer.vue'

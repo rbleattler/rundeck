@@ -52,72 +52,65 @@
     </nav>
   </div>
 </template>
-<script lang="ts">
-import Vue from 'vue'
+<script setup lang="ts">
+import {computed} from 'vue'
 
-import {Component, Prop} from 'vue-property-decorator'
+  export interface Props {
+      modelValue: number,
+      totalPages: number,
+      disabled?: boolean,
+      navigationClass?: string
+      navigationDisabledClass?: string
+      currentPageClass?: string
+      skipClass?: string
+      pagingWindowSize?: number
+  }
 
-@Component
-export default class Pagination extends Vue {
-  // name: 'pagination',
-  @Prop({required: true, default: 1})
-  value!: number
-
-  @Prop({
-    required: true,
-    validator(value: number): boolean {
-      return value >= 0
-    },
-    default: 1
+  const props = withDefaults(defineProps<Props>(),{
+      disabled: false,
+      navigationClass:'page_nav_btn',
+      navigationDisabledClass:'page_nav_btn_disabled',
+      currentPageClass: 'page_current',
+      skipClass: 'text-muted',
+      pagingWindowSize: 7
   })
-  totalPages!: number
-
-  @Prop({default: false})
-  disabled!: boolean
-
-  @Prop({default: 'page_nav_btn'})
-  navigationClass!: string
-
-  @Prop({default: 'page_nav_btn_disabled'})
-  navigationDisabledClass!: string
-
-  @Prop({default: 'page_current'})
-  currentPageClass!: string
-
-  @Prop({default: 'text-muted'})
-  skipClass!: string
-
-  @Prop({default: 7})
-  pagingWindowSize!: number
-
-  changePage(page: number) {
-    if (!this.disabled && page > 0 && page <= this.totalPages && page !== this.value) {
-      this.$emit('input', page)
-      this.$emit('change', page)
+  const value = computed({
+      get() {
+          return props.modelValue
+      },
+      set(value) {
+          emit('update:modelValue', value)
+      }
+  })
+  const emit = defineEmits(['update:modelValue','change'])
+  function changePage(page: number) {
+    if (!props.disabled && page > 0 && page <= props.totalPages && page !== value) {
+      value.value = page
+      emit('change', page)
     }
   }
 
-  get maxPagesDisplay() {
-    return Math.min(this.totalPages, this.pagingWindowSize)
-  }
+  const maxPagesDisplay = computed(() => {
+    return Math.min(props.totalPages, props.pagingWindowSize)
+  })
 
-  get windowLeftPage() {
-    const leftNum = Math.floor(this.maxPagesDisplay / 2)
+  const windowLeftPage = computed(() => {
+    const leftNum = Math.floor(maxPagesDisplay / 2)
     const windowLeft = this.value - leftNum
 
     const adjustL = windowLeft < 1 ? 1 - windowLeft : 0
 
     return windowLeft + adjustL
-  }
+  })
 
-  get windowRightPage() {
-    return this.windowLeftPage + (this.maxPagesDisplay - 1)
-  }
+  const windowRightPage = computed(() => {
+    return windowLeftPage + (maxPagesDisplay - 1)
+  })
 
   /**
    * Create list of page links to display
    */
-  get pageList() {
+  const pageList = computed(() => {
     const pages: any[] = []
     let skipped = false
     const curPage = this.value
@@ -157,16 +150,16 @@ export default class Pagination extends Vue {
     pages.push({page: totalPages1})
 
     return pages
-  }
+  })
 
-  get hasPreviousButton(): boolean {
+  const hasPreviousButton = computed<boolean>(() => {
     return this.value > 1
-  }
+  })
 
-  get hasNextButton(): boolean {
+  const hasNextButton = computed<boolean>(() => {
     return this.value < this.totalPages
-  }
-}
+  })
+
 </script>
 <style scoped lang="scss">
 .pagination > li > a,

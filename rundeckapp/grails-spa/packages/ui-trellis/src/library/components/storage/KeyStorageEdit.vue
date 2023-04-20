@@ -116,7 +116,6 @@
     </div>
   </div>
 
-  <template v-slot:footer>
   <div>
     <div class="text-right">
       <button type="button" class="btn btn-default mr-3" @click="handleCancel">Cancel</button>
@@ -126,7 +125,6 @@
       </button>
     </div>
   </div>
-  </template>
 </div>
 </template>
 
@@ -134,7 +132,7 @@
 import {getRundeckContext} from "../../index"
 import KeyType from "./KeyType"
 import InputType from "./InputType"
-import Vue, {defineComponent} from "vue"
+import {defineComponent} from "vue"
 import type { PropType } from 'vue'
 
 interface UploadSetting {
@@ -308,6 +306,7 @@ export default defineComponent({
 
         if (result.resources != null) {
           result.resources.forEach((resource: any) => {
+            if(!resource) return
             if (resource.type === 'directory') {
               this.directories.push(resource);
 

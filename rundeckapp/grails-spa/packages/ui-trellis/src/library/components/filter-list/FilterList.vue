@@ -39,7 +39,7 @@
 import Vue from 'vue'
 import {Component, Inject, Prop} from 'vue-property-decorator'
 import { autorun } from 'mobx'
-import {Observer} from 'mobx-vue'
+import {Observer} from 'mobx-vue-lite'
 import PerfectScrollbar from 'perfect-scrollbar'
 import { RecycleScroller } from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'

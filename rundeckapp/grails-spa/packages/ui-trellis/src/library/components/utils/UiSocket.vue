@@ -8,38 +8,38 @@
         </template>
     </span>
 </template>
-<script lang="ts">
+<script setup lang="ts">
 
-import Vue from 'vue'
-import {Component, Prop, Watch} from 'vue-property-decorator'
+import Vue, {onMounted, onUnmounted, ref} from 'vue'
 
 import {
     getRundeckContext,
 } from '../../rundeckService'
 import {UIItem, UIWatcher} from '../../stores/UIStore'
+import {RundeckContext} from "../../interfaces/rundeckWindow";
 
 
-const rootStore = getRundeckContext().rootStore
+const rootStore = (getRundeckContext() as RundeckContext).rootStore
 
-@Component
-export default class UiSocket extends Vue {
-    @Prop({required: true}) readonly section!: string
-    @Prop({required: true}) readonly location!: string
-    @Prop({required: false}) readonly eventBus!: Vue
-    @Prop({required: false}) readonly socketData!: any
+    const props = defineProps<{
+        section: string,
+        location: string,
+        eventBus?: Vue,
+        socketData?: any
+    }>()
 
-    items: UIItem[] = []
+    const items = ref<UIItem[]>([])
 
-    loadItems() {
-        this.items = rootStore.ui.itemsForLocation(this.section, this.location).filter((a) => a.visible)
+    function loadItems() {
+        items.value = rootStore.ui.itemsForLocation(props.section, props.location).filter((a) => a.visible)
     }
 
-    destroyed() {
-        if(this.uiwatcher){
-            rootStore.ui.removeWatcher(this.uiwatcher)
+    onUnmounted(() => {
+        if(uiwatcher.value){
+            rootStore.ui.removeWatcher(uiwatcher.value)
         }
-    }
-    get itemData(){
+    })
+    function itemData(){
       if(typeof this.socketData === 'string'){
         try{
           return JSON.parse(this.socketData)
@@ -50,18 +50,17 @@ export default class UiSocket extends Vue {
       return this.socketData
     }
 
-    uiwatcher: UIWatcher|null=null
+    const uiwatcher = ref<UIWatcher|null>(null)
 
-    mounted() {
-        this.loadItems()
-        this.uiwatcher = {
-            section: this.section,
-            location: this.location,
+    onMounted(() => {
+        loadItems()
+        uiwatcher.value = {
+            section: props.section,
+            location: props.location,
             callback: (items: UIItem[])=>{
-                this.items=items
+                items=items
             }
-        }
+        } as UIWatcher
         rootStore.ui.addWatcher(this.uiwatcher)
-    }
-}
+    })
 </script>

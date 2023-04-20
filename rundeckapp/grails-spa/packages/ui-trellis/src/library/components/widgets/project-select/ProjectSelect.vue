@@ -40,82 +40,75 @@
     </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
-import {Component, Inject} from 'vue-property-decorator'
+<script setup lang="ts">
+import {computed, onBeforeMount, onMounted, ref, nextTick, getCurrentInstance } from 'vue'
 import { autorun } from 'mobx'
-import {Observer} from 'mobx-vue'
 import PerfectScrollbar from 'perfect-scrollbar'
 import { RecycleScroller } from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 
-import { getAppLinks } from '../../../rundeckService'
-import {RootStore} from '../../../stores/RootStore'
-import { ProjectStore, Project } from '../../../stores/Projects'
+import {getAppLinks, getRundeckContext} from '../../../rundeckService'
+import { ProjectStore } from '../../../stores/Projects'
 import Skeleton from '../../skeleton/Skeleton.vue'
 import {url} from '../../../rundeckService'
+import {RundeckContext} from "../../../interfaces/rundeckWindow";
+
+const scroller = ref(null)
 
 RecycleScroller.updated = function() {
-    if (!this.ps)
-        this.$nextTick().then(() => {this.ps = new PerfectScrollbar(this.$el, {minScrollbarLength: 20})})
+    if (!ps.value)
+        nextTick().then(() => {ps.value = new PerfectScrollbar(scroller.value, {minScrollbarLength: 20})})
     else
-        this.ps.update()
+        ps.value.update()
 }
 
 const destroy = RecycleScroller.beforeDestroy
 RecycleScroller.beforeDestroy = function() {
     destroy.bind(this)()
-    if (this.ps) {
+    if (ps.value) {
         try {
-            this.ps.destroy()
-            this.ps = null
+            ps.value.destroy()
+            ps.value = null
         } catch {}
     }
 }
 
-@Observer
-@Component({components: {
-    RecycleScroller,
-    Skeleton
-}})
-export default class ProjectSelect extends Vue {
-    @Inject()
-    private readonly rootStore!: RootStore
+    const instance = getCurrentInstance()
 
-    projects!: ProjectStore
+    const projects = ref<ProjectStore>()
 
-    ps!: PerfectScrollbar
+    const ps = ref<PerfectScrollbar>()
 
-    searchTerm: string = ''
+    const searchTerm = ref<string>('')
 
-    get allProjectsLink(): string {
+    const allProjectsLink = computed<string>(() => {
         return getAppLinks().menuHome
-    }
-    get createProjectLink() {
+    })
+    const createProjectLink = computed(() => {
         return url('resources/createProject')
-    }
-    itemHref(project:any){
+    })
+    function itemHref(project:any){
         return url(`?project=${project.name}`).href
     }
 
-    created() {
-        this.projects = this.rootStore.projects
-        this.projects.load()
-    }
+    onBeforeMount(() => {
+        projects.value = (getRundeckContext() as RundeckContext).rootStore.projects
+        projects.value.load()
+    })
 
-    mounted() {
+    const search = ref(null);
+    onMounted(() => {
         autorun(() => {
-            if (this.projects.projects.length) {
+            if (projects.value.projects.length) {
                 /** May be necessary for virtual scroller to update */
-                this.$forceUpdate()
+                instance?.proxy?.$forceUpdate()
             }
         })
-        this.$nextTick().then(() => {
-            (<HTMLElement>this.$refs['search']).focus()
+        nextTick().then(() => {
+            (<HTMLElement>search.value).focus()
         })
-    }
+    })
 
-}
 </script>
 
 <style scoped lang="scss">

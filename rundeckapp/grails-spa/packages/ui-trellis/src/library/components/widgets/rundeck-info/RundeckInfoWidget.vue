@@ -8,46 +8,37 @@
 </template>
 
 
-<script lang="ts">
-import Vue, {PropType} from 'vue'
-import { Observer } from 'mobx-vue'
-import {Component, Inject, Prop} from 'vue-property-decorator'
+<script setup lang="ts">
+import  {onBeforeMount, onMounted, ref} from 'vue'
 
-import { RootStore } from '../../../stores/RootStore'
 import { Releases } from '../../../stores/Releases'
 import { SystemStore } from '../../../stores/System'
 
 import InfoDisplay from './RundeckInfo.vue'
+import {getRundeckContext} from "../../../rundeckService";
+import {RundeckContext} from "../../../interfaces/rundeckWindow";
 
+    const system = ref<SystemStore>()
 
-@Observer
-@Component({components: {
-    InfoDisplay
-}})
-export default class RundeckInfoWidget extends Vue {
-    @Inject()
-    private readonly rootStore!: RootStore
+    const releases = ref<Releases>()
 
-    system!: SystemStore
+    const loaded = ref<boolean>(false)
 
-    releases!: Releases
+    onBeforeMount(() => {
+        const rootStore = (getRundeckContext() as RundeckContext).rootStore
+        system.value = rootStore.system
+        releases.value = rootStore.releases
+    })
 
-    loaded = false
+    onMounted(async () => {
 
-    created() {
-        this.system = this.rootStore.system
-        this.releases = this.rootStore.releases
-    }
-
-    async mounted() {
-        this.rootStore.releases.load()
+        releases.value.load()
         try {
             await Promise.all([
-                this.rootStore.system.load(),
+                system.value.load(),
             ])
         } catch(e) {}
         this.loaded = true
-    }
-}
+    })
 
 </script>

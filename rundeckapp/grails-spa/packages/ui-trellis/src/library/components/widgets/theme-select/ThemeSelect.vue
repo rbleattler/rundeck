@@ -11,36 +11,26 @@
     </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
+<script setup lang="ts">
+import  {onBeforeMount, ref, watch} from 'vue'
 
-import {Component, Inject, Prop, Watch} from 'vue-property-decorator'
-import {Observer} from 'mobx-vue'
-
-import {RootStore} from '../../../stores/RootStore'
 import { ThemeStore } from '../../../stores/Theme'
+import {getRundeckContext} from "../../../rundeckService";
+import {RundeckContext} from "../../../interfaces/rundeckWindow";
 
+    const themes = ['system', 'light', 'dark']
 
-@Observer
-@Component({components: {}})
-export default class ThemeSelect extends Vue {
-    @Inject()
-    private readonly rootStore!: RootStore
+    const theme = ref<string>('')
 
-    themes = ['system', 'light', 'dark']
+    const themeStore = ref<ThemeStore>()
 
-    theme = ''
+    onBeforeMount(() => {
+        themeStore.value = (getRundeckContext() as RundeckContext).rootStore.theme
+        this.theme = themeStore.value.userPreferences.theme!
+    })
 
-    themeStore!: ThemeStore
+   watch(theme, (newVal: any) => {
+       themeStore.value.setUserTheme(newVal)
+   })
 
-    created() {
-        this.themeStore = this.rootStore.theme
-        this.theme = this.themeStore.userPreferences.theme!
-    }
-
-    @Watch('theme')
-    handleThemeChange(newVal: any) {
-        this.themeStore.setUserTheme(newVal)
-    }
-}
 </script>

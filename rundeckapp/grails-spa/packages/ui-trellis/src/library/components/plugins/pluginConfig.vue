@@ -151,7 +151,7 @@ interface PropGroup{
   props:any[],
 }
 
-export default Vue.extend({
+export default {
   name: 'PluginConfig',
   components: {
     Expandable,
@@ -479,7 +479,7 @@ export default Vue.extend({
   beforeMount () {
     this.loadForMode()
   }
-})
+}
 </script>
 <style lang="scss" scoped>
 .header-reset{

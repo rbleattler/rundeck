@@ -12,29 +12,25 @@
 
     </details>
 </template>
-<script lang="ts">
-import Vue from 'vue'
-import {Collapse} from 'uiv'
-import { Component, Prop } from "vue-property-decorator"
+<script setup lang="ts">
+import {computed, ref} from 'vue'
 
-@Component({components:{Collapse}})
-export default class Expandable extends Vue {
-  @Prop({
-    type: Object as () => {open: boolean, iconOpen: string, iconClosed: string, linkCss: string},
-      default: () => {
-        return {open: false}
-      }
-  })
-  options!: any
+ const props = defineProps({
+    options: {
+        type: Object as () => { open: boolean, iconOpen: string, iconClosed: string, linkCss: string, css: string },
+        default: () => {
+            return {open: false}
+        }
+    }
+ })
 
-  open: boolean = !!this.options.open
-  linkCss: string =this.options.linkCss || ''
+  const open = ref<boolean>(!!props.options.open)
+  const linkCss = ref<string>(props.options.linkCss || '')
 
-  css: string=this.options.css || ''
+  const css = ref<string>(props.options.css || '')
 
-  get detailsCss (): string[] {
+  const detailsCss = computed(() => {
       return ['more-info','details-reset',this.css]
-  }
-}
+  })
 
 </script>

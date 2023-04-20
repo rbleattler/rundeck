@@ -104,7 +104,7 @@ import {LogBuilder} from './logBuilder'
 import { RootStore } from '../../stores/RootStore'
 import RdDrawer from '../containers/drawer/Drawer.vue'
 import { ExecutionOutput, ExecutionOutputEntry } from '../../stores/ExecutionOutput'
-import { Observer } from 'mobx-vue'
+import { Observer } from 'mobx-vue-lite'
 import UiSocket from "../utils/UiSocket.vue";
 import {getRundeckContext} from "../../rundeckService";
 

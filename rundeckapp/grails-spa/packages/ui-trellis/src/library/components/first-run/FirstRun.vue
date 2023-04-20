@@ -42,7 +42,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { Observer } from 'mobx-vue'
+import { Observer } from 'mobx-vue-lite'
 import {Component, Prop, Inject} from 'vue-property-decorator'
 
 import { ServerInfo, SystemStore } from '../../stores/System'

@@ -96,175 +96,160 @@
     </div>
 </template>
 
-<script lang="ts">
-    import Vue from 'vue'
-    import VueI18n from 'vue-i18n'
-    import i18n from './i18n'
-    Vue.use(VueI18n)
-    import Multiselect from 'vue-multiselect'
+<script setup lang="ts">
+//@ts-ignore
+import VueMultiselect from 'vue-multiselect'
+import {onMounted, onUnmounted, ref} from "vue";
 
-    const _window = window as any
-    const _i18n = i18n as any
-    const lang = _window._rundeck.language|| 'en'
-    const locale = _window._rundeck.locale|| 'en_US'
-
-    const messages = {
-      [locale]: {
-        ...(_i18n[lang] || _i18n.en),
-        ...(_window.Messages[lang])
-      }
+const props = defineProps({
+    fields: {
+        type: String,
+        required: true
+    },
+    options: {
+        type: String,
+        required: false
+    },
+    element: {
+        type: String,
+        required: true
+    },
+    hasOptions: {
+        type: String,
+        required: true
+    },
+    name: {
+        type: String,
+        required: true
     }
+})
 
-    const i18nInstance = new VueI18n({
-      silentTranslationWarn: true,
-      locale: locale,
-      messages
-    })
+let customFields = ref<any[]>([])
+let customOptions = ref<any[]>([])
+let useOptions = ref(false)
+let modalAddField = ref(false)
+let duplicate = ref(false)
+let newField = ref('')
+let newLabelField = ref('')
+let newFieldDescription = ref('')
+let selectedField = {value:"", label:""} as any
 
-    import {Component, Prop, Watch} from 'vue-property-decorator'
+function openNewField() {
+    modalAddField.value =true;
+}
 
-    Vue.component('Multiselect', Multiselect)
+function addField() {
+    let field = {} as any;
+    duplicate.value = false;
 
-    @Component({
-      i18n: i18nInstance
-    })
-    export default class DynamicFormPluginProp extends Vue{
-        @Prop({required:true}) readonly fields!: string
-        @Prop({required:false}) readonly options!: string
-        @Prop({required:true}) readonly element!: string
-        @Prop({required:true}) readonly hasOptions!: string
-        @Prop({required:true}) readonly name!: string
+    if(useOptions.value){
 
+        if(selectedField !== null){
 
-        customFields:  any[] = []
-        customOptions:  any[] = []
+            const newField = selectedField;
 
-        useOptions = false
-        modalAddField = false
-        duplicate = false
-        newField: string = ''
-        newLabelField: string = ''
-        newFieldDescription: string = ''
-        selectedField = {value:"", label:""} as any
-
-        openNewField() {
-            this.modalAddField =true;
-        }
-
-        addField() {
-            let field = {} as any;
-            this.duplicate = false;
-
-            if(this.useOptions){
-
-                if(this.selectedField !== null){
-
-                    const newField = this.selectedField;
-
-                    let description = this.newFieldDescription;
-                    if(description == ''){
-                      description = 'Field key ' + newField.value
-                    }else{
-                      description = description + ' (Field key: ' + newField.value + ')';
-                    }
-
-                    field = {key: newField.value, label: newField.label, desc: description } ;
-
-                }
-            }else {
-                let description = this.newFieldDescription;
-                if(description == ''){
-                    description = 'Field key ' + this.newField
-                }else{
-                    description = description + ' (Field key: ' + this.newField + ')';
-                }
-
-                field = {key: this.newField, label: this.newLabelField, value: '', desc: description}
-            }
-
-            let exists = false;
-            this.customFields.forEach((row: any) => {
-                if (field.key === row.key) {
-                    exists = true;
-                }
-            });
-
-
-            if(!exists){
-                this.customFields.push(field);
-                this.newField = '';
-                this.newLabelField = '';
-                this.newFieldDescription = '';
-                this.modalAddField = false;
-
-                this.refreshPlugin();
+            let description = newFieldDescription.value;
+            if(description == ''){
+                description = 'Field key ' + newField.value
             }else{
-                this.duplicate = true;
+                description = description + ' (Field key: ' + newField.value + ')';
             }
 
-        }
-
-        removeField(row: any) {
-            const fields = [] as any;
-
-            this.customFields.forEach((field: any) => {
-                if (field.key !== row.key) {
-                    fields.push(field);
-                }
-            });
-
-            this.customFields = fields;
-            this.refreshPlugin();
+            field = {key: newField.value, label: newField.label, desc: description } ;
 
         }
-
-        changeField(field: any){
-            this.refreshPlugin();
+    }else {
+        let description = newFieldDescription.value;
+        if(description == ''){
+            description = 'Field key ' + newField
+        }else{
+            description = description + ' (Field key: ' + newField + ')';
         }
 
-        refreshPlugin(){
-            const fieldsJson = JSON.stringify(this.customFields);
-            const customFields = document.getElementById(this.element) as HTMLInputElement;
-            customFields.value = fieldsJson;
-
-          this.$emit('input', fieldsJson);
-
-        }
-
-        mounted(){
-            if(this.hasOptions === 'true' ){
-                this.useOptions = true
-            }
-            if(this.fields!=null && this.fields !== '' ){
-                const customFieldsObject =  JSON.parse(this.fields);
-                if(customFieldsObject != null){
-                    const fields = Object.keys(customFieldsObject).map((key: any) => {
-                        const value = customFieldsObject[key];
-                        if (value.desc == null){
-                            value.desc = 'Field key: ' + value.key
-                        }
-                        return value;
-                    });
-                    this.customFields = fields;
-                }
-            }
-
-            if(this.hasOptions && this.options!=null && this.options !== '' ) {
-                const optionsObject =  JSON.parse(this.options);
-                const options = Object.keys(optionsObject).map((key: any) => {
-                    const data = optionsObject[key];
-                    return {value: key, label: data};
-                });
-                this.customOptions = options;
-            }
-        }
-
-        beforeDestroy () {
-            this.customFields = null as any;
-        }
-
-
+        field = {key: newField, label: newLabelField, value: '', desc: description}
     }
+
+    let exists = false;
+    customFields.value.forEach((row: any) => {
+        if (field.key === row.key) {
+            exists = true;
+        }
+    });
+
+
+    if(!exists){
+        customFields.value.push(field);
+        newField.value = '';
+        newLabelField.value = '';
+        newFieldDescription.value = '';
+        modalAddField.value = false;
+
+        refreshPlugin();
+    }else{
+        duplicate.value = true;
+    }
+
+}
+
+function removeField(row: any) {
+    const fields = [] as any;
+
+    customFields.value.forEach((field: any) => {
+        if (field.key !== row.key) {
+            fields.push(field);
+        }
+    });
+
+    customFields.value = fields;
+    refreshPlugin();
+}
+
+function changeField(field: any){
+    refreshPlugin();
+}
+
+const emit = defineEmits(['input'])
+function refreshPlugin(){
+    const fieldsJson = JSON.stringify(customFields);
+    const cFields = document.getElementById(props.element) as HTMLInputElement;
+    cFields.value = fieldsJson;
+
+    emit('input', fieldsJson);
+}
+
+onMounted(() =>{
+    if(props.hasOptions === 'true' ){
+        useOptions.value = true
+    }
+    if(props.fields!=null && props.fields !== '' ){
+        const customFieldsObject =  JSON.parse(props.fields);
+        if(customFieldsObject != null){
+            const fields = Object.keys(customFieldsObject).map((key: any) => {
+                const value = customFieldsObject[key];
+                if (value.desc == null){
+                    value.desc = 'Field key: ' + value.key
+                }
+                return value;
+            });
+            customFields.value = fields;
+        }
+    }
+
+    if(props.hasOptions && props.options!=null && props.options !== '' ) {
+        const optionsObject =  JSON.parse(props.options);
+        const options = Object.keys(optionsObject).map((key: any) => {
+            const data = optionsObject[key];
+            return {value: key, label: data};
+        });
+        customOptions.value = options;
+    }
+})
+
+onUnmounted(() => {
+    customFields.value = null as any;
+})
+
+
 </script>
 <style scoped src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 

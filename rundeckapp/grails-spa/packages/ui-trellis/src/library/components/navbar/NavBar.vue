@@ -25,7 +25,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import {Component, Inject} from 'vue-property-decorator'
-import {Observer} from 'mobx-vue'
+import {Observer} from 'mobx-vue-lite'
 
 import {NavBar} from '../../stores/NavBar'
 import {RootStore} from '../../stores/RootStore'

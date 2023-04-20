@@ -3,12 +3,12 @@
         <div class="rundeck-info-widget__group">
             <div class="rundeck-info-widget__more-link">
                 <a :href="welcomeUrl()">
-                    <RundeckLogo v-if="appInfo.title === 'Rundeck'"/>
+                    <RundeckLogo v-if="props.appInfo.title === 'Rundeck'"/>
                     <PagerdutyLogo v-else/>
                 </a>
             </div>
             <div class="rundeck-info-widget__header">
-                <RundeckVersion :app="false" :logo="false" :title="appInfo.title" :logocss="appInfo.logocss" :number="version.number" :tag="version.tag"/>
+                <RundeckVersion :app="false" :logo="false" :title="props.appInfo.title" :logocss="props.appInfo.logocss" :number="version.number" :tag="version.tag"/>
             </div>
             <div>
                 <VersionDisplay :text="`${version.name} ${version.color} ${version.icon}`" :icon="version.icon" :color="version.color" />
@@ -35,10 +35,7 @@
     </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
-import { Observer } from 'mobx-vue'
-import {Component, Prop} from 'vue-property-decorator'
+<script setup lang="ts">
 
 import {VersionInfo, ServerInfo, AppInfo} from '../../../stores/System'
 import { Release } from '../../../stores/Releases'
@@ -52,37 +49,22 @@ import Copyright from '../../version/Copyright.vue'
 import RundeckVersion from '../../version/RundeckVersionDisplay.vue'
 import VersionDisplay from '../../version/VersionIconNameDisplay.vue'
 import ServerDisplay from '../../version/ServerDisplay.vue'
+import {onMounted} from "vue";
 
-@Observer
-@Component({components: {
-    ServerDisplay,
-    VersionDisplay,
-    RundeckVersion,
-    RundeckLogo,
-    PagerdutyLogo,
-    Copyright
-}})
-export default class RundeckInfoWidget extends Vue {
-    @Prop()
-    version!: VersionInfo
+const props = defineProps( {
+    version: VersionInfo,
+    latest: Release,
+    server: ServerInfo,
+    appInfo: AppInfo
+})
 
-    @Prop()
-    latest!: Release
-
-    @Prop()
-    server!: ServerInfo
-
-    @Prop()
-    appInfo!: AppInfo
-
-    async mounted() {
+    onMounted(() => {
         const context = getRundeckContext()
-    }
+    })
 
-    welcomeUrl() {
+    function welcomeUrl() {
         return url('menu/welcome').toString()
     }
-}
 </script>
 
 <style scoped lang="scss">

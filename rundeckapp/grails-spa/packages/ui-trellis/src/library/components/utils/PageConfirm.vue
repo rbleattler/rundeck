@@ -1,44 +1,37 @@
 <template>
   <span ><slot v-if="display && needsConfirm" :confirm="confirmData" :needs-confirm="needsConfirm">{{message}}</slot></span>
 </template>
-<script lang="ts">
-import Vue from 'vue'
-import {Component, Prop} from 'vue-property-decorator'
+<script setup lang="ts">
+import Vue, {computed, onMounted, ref} from 'vue'
 
-@Component
-export default class PageConfirm extends Vue{
-  confirmData:  string[] = []
+  const confirmData = ref<string[]>([])
+  const props = defineProps<{
+      eventBus: Vue
+      message: string
+      display: boolean
+  }>()
 
-  @Prop({required:true})
-  eventBus!:Vue
-
-  @Prop({required:true})
-  message!:String
-
-  @Prop({required:true})
-  display!:Boolean
-
-  setConfirm(name:string){
-    const loc=this.confirmData.indexOf(name)
+  function setConfirm(name:string){
+    const loc=confirmData.value.indexOf(name)
     if(loc<0){
-      this.confirmData.push(name)
+      confirmData.value.push(name)
     }
   }
 
-  resetConfirm(name:string){
-    const loc=this.confirmData.indexOf(name)
+  function resetConfirm(name:string){
+    const loc=confirmData.value.indexOf(name)
     if (loc >= 0) {
-        this.confirmData.splice(loc, 1)
+        confirmData.value.splice(loc, 1)
     } else if (name === '*') {
-        this.confirmData.splice(0, this.confirmData.length)
+        confirmData.value.splice(0, confirmData.value.length)
     }
   }
 
-  get needsConfirm():boolean {
-    return this.confirmData.length>0
-  }
+  const needsConfirm = computed<boolean>(() => {
+    return confirmData.value.length>0
+  })
 
-  mounted() {
+  onMounted(() => {
       this.eventBus.$on('page-modified', this.setConfirm)
       this.eventBus.$on('page-reset', this.resetConfirm)
 
@@ -53,6 +46,5 @@ export default class PageConfirm extends Vue{
               return orighandler(ev)
           }
       }
-  }
-}
+  })
 </script>

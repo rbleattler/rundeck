@@ -17,40 +17,26 @@
     </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
-import {Component, Inject} from 'vue-property-decorator'
-import {Observer} from 'mobx-vue'
-import PerfectScrollbar from 'perfect-scrollbar'
+<script setup lang="ts">
+import {onBeforeMount, onMounted, ref} from 'vue'
 
-import { RecycleScroller } from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 
-import {RootStore} from '../../../stores/RootStore'
 import { NewsStore } from '../../../stores/News'
 
 import Skeleton from '../../skeleton/Skeleton.vue'
+import {RundeckContext} from "../../../interfaces/rundeckWindow";
+import {getRundeckContext} from "../../../rundeckService";
 
+    const news = ref<NewsStore>()
 
-@Observer
-@Component({components: {
-    RecycleScroller,
-    Skeleton
-}})
-export default class CommunityNews extends Vue {
-    @Inject()
-    private readonly rootStore!: RootStore
+    onBeforeMount(() => {
+        news.value = (getRundeckContext() as RundeckContext).rootStore.news
+    })
 
-    news!: NewsStore
-
-    created() {
-        this.news = this.rootStore.news
-    }
-
-    mounted() {
-        this.news.load()
-    }
-}
+    onMounted(() => {
+        news.value.load()
+    })
 </script>
 
 <style scoped lang="scss">

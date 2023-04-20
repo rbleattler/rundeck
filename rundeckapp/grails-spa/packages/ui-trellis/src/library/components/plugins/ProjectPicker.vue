@@ -16,42 +16,46 @@
 
 <template>
   <div>
-    <select v-bind:value="value" v-on:input="$emit('input',$event.target.value)" class="form-control">
+    <select v-model="value" class="form-control">
         <option v-for="project in projects" :key="project" v-bind:value="project">{{project}}</option>
     </select>
   </div>
 </template>
-<script lang="ts">
-import { JobReference } from '../../interfaces/JobReference'
-import { JobTree } from '../../types/JobTree'
-import { GroupedJobs, TreeItem } from '../../types/TreeItem'
-import { Job } from '@rundeck/client/dist/lib/models'
-import Vue from 'vue'
-import { Component, Prop, Watch } from 'vue-property-decorator'
+<script setup lang="ts">
+import {computed, onMounted, ref } from 'vue'
 import { client } from '../../modules/rundeckClient'
 
+  const props = defineProps({
+    modelValue: {
+      required: false,
+      default: ''
+    }
+  })
+  const emit = defineEmits(['update:modelValue'])
+  const value = computed({
+    get() {
+      return props.modelValue
+    },
+    set(value) {
+      emit('update:modelValue', value)
+    }
+  })
 
+  const projects = ref<string[]>([])
 
-@Component
-export default class ProjectPicker extends Vue {
-  @Prop({ required: false, default: '' })
-  value!: string
-
-  projects: string[] = []
-
-  loadProjects() {
-      this.projects.push('')
+  function loadProjects() {
+      projects.value.push('')
       client.projectList().then(result => {
           result.forEach(prj => {
-              if(prj.name) this.projects.push(prj.name)
+              if(prj.name) projects.value.push(prj.name)
           })
       })
   }
 
-  mounted() {
-    this.loadProjects()
-  }
-}
+  onMounted(() => {
+    loadProjects()
+  })
+
 </script>
 <style lang="scss">
 </style>

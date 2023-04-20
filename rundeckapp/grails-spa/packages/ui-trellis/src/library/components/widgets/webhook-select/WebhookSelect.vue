@@ -7,49 +7,40 @@
 </template>
 
 
-<script lang="ts">
-import Vue from 'vue'
+<script setup lang="ts">
+import {onBeforeMount, ref} from 'vue'
 
-import {Component, Inject, Prop} from 'vue-property-decorator'
-import {Observer} from 'mobx-vue'
-
-import {RootStore} from '../../../stores/RootStore'
 import { PluginStore } from '../../../stores/Plugins'
 import { WebhookStore } from '../../../stores/Webhooks'
-
-import PluginInfo from '../../plugins/PluginInfo.vue'
 
 import FilterList from '../../filter-list/FilterList.vue'
 
 import WebhookItem from './WebhookSelectItem.vue'
+import {RundeckContext} from "../../../interfaces/rundeckWindow";
+import {getRundeckContext} from "../../../rundeckService";
 
-@Observer
-@Component({components: {FilterList, PluginInfo, WebhookItem}})
-export default class PluginSelect extends Vue {
-    @Inject()
-    private readonly rootStore!: RootStore
+    const props = withDefaults(defineProps<{
+        project: string,
+        selected: string
+    }>(), { selected: ''})
 
-    @Prop()
-    project!: string
 
-    @Prop({default: ''})
-    selected!: string
+    const plugins = ref<PluginStore>()
 
-    plugins!: PluginStore
+    const webhooks = ref<WebhookStore>()
 
-    webhooks!: WebhookStore
+    onBeforeMount(() => {
+        const rootStore = (getRundeckContext() as RundeckContext).rootStore
+        plugins.value = rootStore.plugins
+        webhooks.value = rootStore.webhooks
 
-    created() {
-        this.plugins = this.rootStore.plugins
-        this.webhooks = this.rootStore.webhooks
+        webhooks.value.load(props.project)
+    })
 
-        this.webhooks.load(this.project)
-    }
-
-    itemUpdated() {
+    function itemUpdated() {
         console.log('Updated webhook select')
     }
-}
+
 </script>
 
 <style scoped lang="scss">
