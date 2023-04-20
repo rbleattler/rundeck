@@ -47,6 +47,20 @@ module.exports = {
     } : false
   },
   chainWebpack: config => {
+    config.resolve.alias.set('vue', '@vue/compat')
+    config.module
+        .rule('vue')
+        .use('vue-loader')
+        .tap((options) => {
+          return {
+            ...options,
+            compilerOptions: {
+              compatConfig: {
+                MODE: 2
+              }
+            }
+          }
+        })
     /** Do not create index pages for entry points */
     config.entryPoints.store.forEach( (_, entry) => {
       config.plugins.delete(`html-${entry}`)
