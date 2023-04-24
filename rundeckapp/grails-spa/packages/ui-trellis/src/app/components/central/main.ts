@@ -1,5 +1,5 @@
 import moment from 'moment'
-import Vue from 'vue'
+import { createApp } from 'vue'
 import * as uiv from 'uiv'
 import VueCookies from 'vue-cookies'
 import VueI18n from 'vue-i18n'
@@ -23,10 +23,11 @@ win.Messages = {
     }
 }
 
-Vue.use(uiv)
-Vue.use(VueCookies)
-Vue.use(VueI18n)
-Vue.use(VueMoment, {moment})
+const vue = createApp({})
+vue.use(uiv)
+vue.use(VueCookies)
+vue.use(VueI18n)
+vue.use(VueMoment, {moment})
 
 
 const context = getRundeckContext()

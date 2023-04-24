@@ -4,7 +4,7 @@ import Vue from 'vue'
 import { RootStore } from '../stores/RootStore'
 
 export interface RundeckContext {
-    eventBus: Vue
+    eventBus: Object
     rdBase: string
     apiVersion: string
     projectName: string

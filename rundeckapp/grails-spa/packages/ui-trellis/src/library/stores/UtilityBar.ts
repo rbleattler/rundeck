@@ -1,7 +1,6 @@
 import {RootStore} from './RootStore'
 import {RundeckClient} from '@rundeck/client'
 import { action, computed, observable } from 'mobx'
-import { VueConstructor } from 'vue'
 
 export class UtilityBar {
     @observable items: Array<UtilityItem> = []
@@ -72,5 +71,5 @@ export interface UtilityActionItem extends UtilityItem {
 
 export interface UtilityWidgetItem extends UtilityItem {
     type: 'widget'
-    widget: VueConstructor
+    widget: Object
 }

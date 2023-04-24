@@ -20,7 +20,7 @@ eventBus.$on('ko-adhoc-running', (data: any) => {
     />
     `
 
-    const vue = new Vue({
+    const vue = Vue.createApp({
         el: elm!,
         components: {LogViewer},
         template: template,

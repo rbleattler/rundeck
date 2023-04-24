@@ -1,7 +1,7 @@
-import Vue, {VNode} from 'vue'
+import {VNode} from 'vue'
 
 /* Extracts default slot for rendering in a way that avoids a wrapper div if possible */
-export function bareSlot(comp: Vue) {
+export function bareSlot(comp: Object) {
     let component: VNode
     if (! comp.$slots.default?.length)
         component = comp.$createElement('div')

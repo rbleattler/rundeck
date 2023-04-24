@@ -1,5 +1,4 @@
 import { observable} from 'mobx'
-import { VueConstructor } from 'vue'
 
 export class UIStore {
   @observable items: Array<UIItem> = []
@@ -53,7 +52,7 @@ export interface UIItem {
   section: string
   location: string
   visible: boolean
-  widget?: VueConstructor
+  widget?: Object
   html?: string
   text?: string
 }

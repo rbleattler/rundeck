@@ -106,7 +106,7 @@ function mount(e) {
   />
   `
 
-  const vue = new Vue({
+  const vue = Vue.createApp({
     el: e,
     i18n,
     components: {LogViewer},

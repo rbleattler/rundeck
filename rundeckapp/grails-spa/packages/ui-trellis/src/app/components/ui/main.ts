@@ -31,7 +31,7 @@ function initUiComponentsOnEvent(evt:Event){
 }
 
 function initUiComponents(elmElement:any) {
-    const vue = new Vue({
+    const vue = Vue.createApp({
       el: elmElement,
       components: {UiSocket},
       data() {

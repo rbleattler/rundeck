@@ -15,7 +15,7 @@ function init() {
     if (!el)
         return
 
-    const component = new Vue({
+    const component = Vue.createApp({
         el,
         components: {ProjectPicker},
         provide: {rootStore},

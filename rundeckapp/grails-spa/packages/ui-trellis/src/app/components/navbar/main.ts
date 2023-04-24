@@ -24,13 +24,13 @@ rootStore.utilityBar.addItems([
       "class": rootStore.system.appInfo.logocss+" app-logo",
       "label": rootStore.system.appInfo.title.toUpperCase(),
       "visible": true,
-      widget: Vue.extend({
+      widget: {
         components: {RundeckInfoWidget},
         template: `<RundeckInfoWidget/>`,
         provide: {
           rootStore
         }
-      })
+      }
   },
   {
       "type": "widget",
@@ -40,13 +40,13 @@ rootStore.utilityBar.addItems([
       "class": "fas fa-sun fas-xs",
       // "label": "Theme",
       "visible": true,
-      widget: Vue.extend({
+      widget: {
         components: {ThemeSelectWidget},
         template: `<ThemeSelectWidget/>`,
         provide: {
           rootStore
         }
-      })
+      }
   },
   {
       "type": "action",
@@ -63,7 +63,7 @@ rootStore.utilityBar.addItems([
 function initNav() {
     const elm = document.getElementById('navbar') as HTMLElement
 
-    const vue = new Vue({
+    const vue = Vue.createApp({
         el: elm,
         components: {NavigationBar},
         template: `<NavigationBar />`,
@@ -76,7 +76,7 @@ function initNav() {
 function initUtil() {
   const elm = document.getElementById('utilityBar') as HTMLElement
 
-  const vue = new Vue({
+  const vue = Vue.createApp({
       el: elm,
       components: {UtilityBar},
       template: `<UtilityBar />`,

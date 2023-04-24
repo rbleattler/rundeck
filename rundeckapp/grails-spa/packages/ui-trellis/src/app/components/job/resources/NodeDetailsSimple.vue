@@ -138,8 +138,9 @@
       <template v-if="useNamespace">
         <!-- node attributes with namespaces -->
 
-        <template v-for="(namespace,idx) in attributeNamespaces">
-          <tr :key="`tr-${idx}`">
+        <template v-for="(namespace,idx) in attributeNamespaces"
+                  :key="`tr-${idx}`">
+          <tr>
             <td class="key namespace">
               <a
                   href="#"

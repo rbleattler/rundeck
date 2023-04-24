@@ -36,3 +36,4 @@ const vue = createApp({
 vue.use(uiv)
 vue.use(i18n)
 vue.mount(elm)
+

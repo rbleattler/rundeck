@@ -3,9 +3,10 @@
     <div class="nodes-embed ansicolor-on matchednodes embed embed_clean">
 
       <div class="row">
-        <template v-for="(node,i) in nodes">
+        <template v-for="(node,i) in nodes"
+                  :key="`node-${i}`"
+        >
           <node-show-embed :node="node"
-                           :key="`node-${i}`"
                            :class="cssForNode(node.attributes)"
                            :show-exclude-filter-links="showExcludeFilterLinks"
                            @filter="filterClick"
