@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import Vue, {createApp} from 'vue'
 
 import NavigationBar from '../../../library/components/navbar/NavBar.vue'
 import UtilityBar from '../../../library/components/utility-bar/UtilityBar.vue'
@@ -63,7 +63,7 @@ rootStore.utilityBar.addItems([
 function initNav() {
     const elm = document.getElementById('navbar') as HTMLElement
 
-    const vue = Vue.createApp({
+    const vue = createApp({
         el: elm,
         components: {NavigationBar},
         template: `<NavigationBar />`,
@@ -76,7 +76,7 @@ function initNav() {
 function initUtil() {
   const elm = document.getElementById('utilityBar') as HTMLElement
 
-  const vue = Vue.createApp({
+  const vue = createApp({
       el: elm,
       components: {UtilityBar},
       template: `<UtilityBar />`,
