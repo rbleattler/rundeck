@@ -277,13 +277,10 @@
       </div>
 </div>
 </template>
-<script lang="ts">
+<script setup lang="ts">
 import axios from 'axios'
-import InlineValidationErrors from '../../form/InlineValidationErrors.vue'
 import UiSocket from '../../../../library/components/utils/UiSocket.vue'
-import Vue from 'vue'
-import Component from 'vue-class-component'
-import {Prop, Watch} from 'vue-property-decorator'
+import Vue, {computed, onBeforeMount, onMounted, ref, watch} from 'vue'
 
 import {
   getDays,
@@ -291,32 +288,28 @@ import {
   getSimpleDecomposition,
 } from "./services/scheduleDefinition"
 
+const props = withDefaults(defineProps<{
+    modelValue: any
+    eventBus: Vue
+    useCrontabString?: boolean
+}>(),{
+    useCrontabString: false
+})
 
-@Component({components: {InlineValidationErrors, UiSocket}})
-export default class ScheduleEditor extends Vue {
-  @Prop({required: true})
-  value: any
+  const labelColClass = 'col-sm-2 control-label'
+  const fieldColSize = 'col-sm-10'
 
-  @Prop({required: true})
-  eventBus!: Vue
+  const modelData = ref<any>({})
 
-  @Prop({required: false, default: false})
-  useCrontabString!: boolean
+  const name = ref<string>("")
+  const errors = ref<string>("")
+  const hours = ref([])
+  const minutes = ref([])
+  const days = ref([])
+  const months = ref([])
+  const crontabpos = ref<number>(-1)
 
-  labelColClass = 'col-sm-2 control-label'
-  fieldColSize = 'col-sm-10'
-
-  modelData: any = {}
-
-  name: string = ""
-  errors: string = ""
-  hours: any = []
-  minutes:any = []
-  days:any = []
-  months:any = []
-  crontabpos:number = -1
-
-  async beforeMount() {
+  onBeforeMount(async () => {
     var hours = <any>[]
     var minutes = <any>[]
     let _win = window as any
@@ -326,25 +319,25 @@ export default class ScheduleEditor extends Vue {
     _win.jQuery.each([...Array(60).keys()], function(index:any, value:any){
       minutes.push(value< 10? '0'+value.toString(): value.toString())
     });
-    this.hours = hours;
-    this.minutes = minutes;
-    this.days = getDays();
-    this.months = getMonths();
-  }
-  async mounted() {
-    this.modelData = Object.assign({
+    hours.value = hours;
+    minutes.value = minutes;
+    days.value = getDays();
+    months.value = getMonths();
+  })
+  onMounted(() => {
+    modelData.value = Object.assign({
       selectedDays: [],
       selectedMonths: [],
-      useCrontabString: this.useCrontabString
-    }, this.value)
+      useCrontabString: props.useCrontabString
+    }, props.modelValue)
     
-    if(this.modelData.useCrontabString)
-      this.showCronExpression()
+    if(modelData.value.useCrontabString)
+      showCronExpression()
     else
-      this.showSimpleCron()
-  }
+      showSimpleCron()
+  })
 
-  loadScheduleIntoSimpleTab (decomposedSchedule:any){
+  function loadScheduleIntoSimpleTab (decomposedSchedule:any){
     this.modelData.hourSelected = decomposedSchedule.hour;
     this.modelData.minuteSelected = decomposedSchedule.minute;
     this.modelData.selectedDays = decomposedSchedule.days.length <= 7 ? decomposedSchedule.days : [];
@@ -353,9 +346,9 @@ export default class ScheduleEditor extends Vue {
     this.modelData.allMonths = decomposedSchedule.months.length === 12;
   }
 
-  showSimpleCron(){
-    if(this.modelData.crontabString) {
-      let cronComponents = this.modelData.crontabString.split(" ");
+  function showSimpleCron(){
+    if(modelData.value.crontabString) {
+      let cronComponents = modelData.value.crontabString.split(" ");
 
       let decomposedSchedule = getSimpleDecomposition(
         cronComponents[2],
@@ -365,52 +358,54 @@ export default class ScheduleEditor extends Vue {
       );
       this.loadScheduleIntoSimpleTab(decomposedSchedule);
     }
-    this.modelData.useCrontabString = false;
+    modelData.value.useCrontabString = false;
   }
-  showCronExpression(){
-    this.modelData.useCrontabString = true;
+  function showCronExpression(){
+    modelData.value.useCrontabString = true;
   }
-  async validateCronExpression(){
-    this.errors = ''
+  function validateCronExpression(){
+    errors.value = ''
     axios({
       method: "post",
       headers: {
       },
       params: {
         project: window._rundeck.projectName,
-        crontabString: this.modelData.crontabString
+        crontabString: modelData.value.crontabString
       },
       url: new URL(`scheduledExecution/checkCrontab`, window._rundeck.rdBase).toString(),
       withCredentials: true
     }).then(response => {
-      this.errors = response.request.response
+      errors.value = response.request.response
     })
   }
-  @Watch('modelData', {deep: true})
-  wasChanged() {
-    this.$emit('input', this.modelData)
+  const emit = defineEmits(['update:modelValue'])
+
+  watch(modelData,() =>{
+      emit('update:modelValue', modelData.value)
+  }, {deep:true})
+
+  function crontabBlur(){
+    validateCronExpression()
+    crontabpos.value=-1
   }
-  crontabBlur(){
-    this.validateCronExpression()
-    this.crontabpos=-1
-  }
-  updateCrontabPosition(){
-    this.crontabpos = this.getCaretPos(this.$refs['crontabInput']);
+  function updateCrontabPosition(){
+    crontabpos.value = this.getCaretPos(this.$refs['crontabInput']);
   }
 
-  get crontabHint(){
-    return this.modelData.useCrontabString ?
-      this.getHintText(this.crontabpos, this.modelData.crontabString)
+  const crontabHint = computed(() =>{
+    return modelData.value.useCrontabString ?
+      getHintText(crontabpos.value, modelData.value.crontabString)
       : ''
-  }
+  })
 
   /**
    * Get crontab position hint string
    * @param pos caret position within string
    * @param text string
    */
-  getHintText(pos:number, text:string){
-    let c = this.getCrontabSection(pos,text)
+  function getHintText(pos:number, text:string){
+    let c = getCrontabSection(pos,text)
     if (c >= 0 && c <= 6) {
       return this.$t(`cron.section.${c}`)
     }
@@ -422,7 +417,7 @@ export default class ScheduleEditor extends Vue {
    * @param pos caret position within string
    * @param text string
    */
-  getCrontabSection(pos:number, text:string):number{
+  function getCrontabSection(pos:number, text:string):number{
     if (pos < 0) {
       return -1
     }
@@ -440,7 +435,7 @@ export default class ScheduleEditor extends Vue {
    * nb: there's probably a better/modern way to do this, this is old code
    * @param el input element
    */
-  getCaretPos(el:any) {
+ function getCaretPos(el:any) {
     let rng, ii = -1;
     if (typeof el.selectionStart == "number") {
       return  el.selectionStart;
@@ -454,5 +449,5 @@ export default class ScheduleEditor extends Vue {
     }
     return ii;
   }
-}
+
 </script>

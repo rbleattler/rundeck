@@ -29,70 +29,66 @@
     ></div>
 </template>
 
-<script lang="ts">
-import Vue, {PropType} from 'vue'
-import {Component, Prop} from 'vue-property-decorator'
+<script setup lang="ts">
+import Vue, {computed, onBeforeMount, ref} from 'vue'
 import UiSocket from '../utils/UiSocket.vue'
 import {IBuilderOpts} from "./logBuilder"
 
-@Component({components: {UiSocket}})
-export default class Flex extends Vue {
-    @Prop({required: false})
-    readonly eventBus!: Vue
+const props = withDefaults(defineProps<{
+    eventBus?: Vue
+    selected?: boolean
+    config: IBuilderOpts
+    prevEntry?: any
+    logEntry: any
+}>(), {
+    selected: false
+})
+
+const cfg = ref<IBuilderOpts>(props.config)
+
+    const timestamps = computed(() => {
+      return (cfg.value.time?.visible) ? cfg.value.time.visible : false
+    })
   
-    @Prop({default: false})
-    selected!: boolean
-
-    @Prop({required: true})
-    config!: IBuilderOpts
-
-    @Prop({required: false, default: undefined})
-    prevEntry!: any
-
-    @Prop({required: true})
-    logEntry!: any
-
-    get timestamps() {
-      return (this.config.time?.visible) ? this.config.time.visible : false
-    }
+    const command = computed(() => {
+      return (cfg.value.command?.visible) ? cfg.value.command.visible : false
+    })
   
-    get command() {
-      return (this.config.command?.visible) ? this.config.command.visible : false
-    }
+    const gutter= computed(() => {
+      return (cfg.value.gutter?.visible) ? cfg.value.gutter.visible : false
+    })
   
-    get gutter() {
-      return (this.config.gutter?.visible) ? this.config.gutter.visible : false
-    }
+    const nodeBadge= computed(() => {
+      return (cfg.value.nodeIcon) ? cfg.value.nodeIcon : false
+    })
   
-    get nodeBadge() {
-      return (this.config.nodeIcon) ? this.config.nodeIcon : false
-    }
+    const lineWrap= computed(() => {
+      return (cfg.value.content?.lineWrap) ? cfg.value.content.lineWrap : false
+    })
   
-    get lineWrap() {
-      return (this.config.content?.lineWrap) ? this.config.content.lineWrap : false
-    }
-  
-    get displayNodeBadge() {
-        return this.config.nodeIcon && (this.prevEntry == undefined || this.logEntry.node != this.prevEntry.node)
+    const displayNodeBadge= computed(() => {
+        return cfg.value.nodeIcon && (this.prevEntry == undefined || this.logEntry.node != this.prevEntry.node)
+    })
+
+    const displayGutter= computed(() => {
+        return cfg.value.gutter?.visible && (cfg.value.time?.visible || cfg.value.command?.visible)
+    })
+
+    const emit = defineEmits(['line-select'])
+
+    function lineSelect() {
+        emit('line-select', props.logEntry.lineNumber)
     }
 
-    get displayGutter() {
-        return this.config.gutter?.visible && (this.config.time?.visible || this.config.command?.visible)
+    onBeforeMount(() => {
+      props.eventBus.$on("execution-log-settings-changed", this.handleSettingsChanged)
+    })
+
+    function handleSettingsChanged(newSettings: any) {
+      Object.assign(cfg.value, newSettings);
     }
 
-    lineSelect() {
-        this.$emit('line-select', this.logEntry.lineNumber)
-    }
 
-    beforeMount() {
-      this.eventBus.$on("execution-log-settings-changed", this.handleSettingsChanged)
-    }
-
-    private handleSettingsChanged(newSettings: any) {
-      Object.assign(this.config, newSettings);
-    }
-
-}
 </script>
 
 <style lang="scss" scoped>
