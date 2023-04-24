@@ -4,15 +4,14 @@
 </template>
 
 <script lang="ts">
-import Vue, {PropType} from 'vue'
-import {Observer} from 'mobx-vue'
+import {defineComponent, PropType} from 'vue'
 
 import {UtilityItem} from '../../stores/UtilityBar'
 
 import UtilActionItem from './UtilityActionItem.vue'
 import UtilWidgetItem from './UtilityWidgetItem.vue'
 
-export default Observer(Vue.extend({
+export default defineComponent({
     components: {
         UtilActionItem,
         UtilWidgetItem
@@ -20,5 +19,5 @@ export default Observer(Vue.extend({
     props: {
         item: Object as PropType<UtilityItem>
     }
-}))
+})
 </script>

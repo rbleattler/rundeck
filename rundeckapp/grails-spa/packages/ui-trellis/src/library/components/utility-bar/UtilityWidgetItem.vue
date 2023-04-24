@@ -12,14 +12,13 @@
 </template>
 
 <script lang="ts">
-import Vue, {PropType} from 'vue'
-import {Observer} from 'mobx-vue'
+import Vue, {defineComponent, PropType} from 'vue'
 
 import {UtilityItem} from '../../stores/UtilityBar'
 
 import Popper from './Popper.vue'
 
-export default Observer(Vue.extend({
+export default defineComponent({
     data() { return {
         open: false
     }},
@@ -40,7 +39,7 @@ export default Observer(Vue.extend({
             return Date.now()
         }
     }
-}))
+})
 </script>
 
 <style scoped lang="scss">

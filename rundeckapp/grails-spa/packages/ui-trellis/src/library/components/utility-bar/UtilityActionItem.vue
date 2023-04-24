@@ -7,14 +7,13 @@
 </template>
 
 <script lang="ts">
-import Vue, {PropType} from 'vue'
-import {Observer} from 'mobx-vue'
+import  {defineComponent, PropType} from 'vue'
 
 import {UtilityItem} from '../../stores/UtilityBar'
 
-export default Observer(Vue.extend({
+export default defineComponent({
     props: {
         item: Object as PropType<UtilityItem>
     }
-}))
+})
 </script>
