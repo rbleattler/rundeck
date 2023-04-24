@@ -89,6 +89,7 @@ export default defineComponent({
       default: false,
     },
   },
+  emits: ['filter'],
   setup() {
     const paging = ref(true)
     const loaded = ref(false)

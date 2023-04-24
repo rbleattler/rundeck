@@ -269,6 +269,7 @@ export default defineComponent({
       }
     }
   },
+  emits: ['filters-updated', 'filter', 'update:modelValue'],
   setup() {
     const outputValue = ref('')
     const selectedFilterName = ref('')
@@ -378,7 +379,7 @@ export default defineComponent({
       if (this.selectedFilterName && this.selectedFilterName !== this.matchedFilter) {
         this.selectedFilterName = ''
       }
-      this.$emit('input', this.outputValue)
+      this.$emit('update:modelValue', this.outputValue)
     },
     handleNodefilter(val: any) {
       if (val.filterName) {

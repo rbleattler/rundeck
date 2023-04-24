@@ -254,6 +254,7 @@ export default defineComponent({
   components: {
     InlineValidationErrors,
   },
+  emits: ['update:modelValue'],
   props: {
     modelValue: {
       type: Object as PropType<any>,
@@ -294,7 +295,7 @@ export default defineComponent({
   watch: {
     modelData: {
       handler() {
-        this.$emit('input', this.modelData)
+        this.$emit('update:modelValue', this.modelData)
       },
       deep: true
     },

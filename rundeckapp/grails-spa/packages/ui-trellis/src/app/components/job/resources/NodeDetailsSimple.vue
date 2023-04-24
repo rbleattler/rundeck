@@ -139,7 +139,7 @@
         <!-- node attributes with namespaces -->
 
         <template v-for="(namespace,idx) in attributeNamespaces">
-          <tr>
+          <tr :key="`tr-${idx}`">
             <td class="key namespace">
               <a
                   href="#"
@@ -215,6 +215,7 @@ export default defineComponent({
     NodeStatus,
     NodeFilterLink,
   },
+  emits: ['filter'],
   props: {
     attributes: {
       type: Object as PropType<any>,

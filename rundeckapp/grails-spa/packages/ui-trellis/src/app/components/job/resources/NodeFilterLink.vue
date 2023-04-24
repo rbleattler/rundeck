@@ -52,6 +52,7 @@ export default defineComponent({
       default: '',
     },
   },
+  emits: ['nodefilterclick'],
   methods: {
     handleClick() {
       this.$emit('nodefilterclick', this.filterParamValues)

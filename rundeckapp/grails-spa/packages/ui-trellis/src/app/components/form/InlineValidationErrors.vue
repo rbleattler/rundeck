@@ -1,7 +1,7 @@
 <template>
   <div class="text-warning" v-if="errors  && errors.length>0">
     <ul>
-      <ol v-for="err in errors">{{ err }}</ol>
+      <li v-for="err in errors">{{ err }}</li>
     </ul>
     <i class="glyphicon glyphicon-warning-sign"></i>
   </div>
@@ -11,7 +11,6 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 
-@Component
 export default defineComponent({
   name: 'InlineValidationErrors',
   props: {
