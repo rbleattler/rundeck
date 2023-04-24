@@ -1,8 +1,8 @@
 <template>
-    <nav>
+    <nav ref="root">
         <ul class="nav-bar__list" ref="list" v-if="navBar">
             <li>
-                <ul class="nav-bar__list-group" ref="group-main">
+                <ul class="nav-bar__list-group" ref="groupMain">
                     <template v-for="item in navBar.containerGroupItems('root', 'main')">
                         <NavBarItem v-if="item.type == 'link'" :item="item" :key="item.id" itemStyle="icon" />
                         <NavBarContainer v-if="item.type == 'container'" :item="item" :key="item.id" />
@@ -22,67 +22,58 @@
     </nav>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
-import {Component, Inject} from 'vue-property-decorator'
-import {Observer} from 'mobx-vue-lite'
+<script setup lang="ts">
+import { onBeforeMount, onMounted, ref} from 'vue'
 
 import {NavBar} from '../../stores/NavBar'
-import {RootStore} from '../../stores/RootStore'
 
 import NavBarItem from './NavBarItem.vue'
 import NavBarContainer from './NavBarContainer.vue'
+import {getRundeckContext} from "../../rundeckService";
+import {RundeckContext} from "../../interfaces/rundeckWindow";
 
-@Observer
-@Component({components: {
-    NavBarItem,
-    NavBarContainer
-}})
-export default class NavigationBar extends Vue {
-    @Inject()
-    private readonly rootStore!: RootStore
+const navBar = ref<NavBar>()
+const root = ref()
+const list = ref()
+const groupMain = ref()
 
-    navBar!: NavBar
+onBeforeMount(() => {
+    navBar.value = (getRundeckContext() as RundeckContext).rootStore.navBar
+})
 
-    created() {
-        this.navBar = this.rootStore.navBar
-    }
+onMounted(() => {
+    window.addEventListener('resize', this.overflow)
+    /** After layout and before render handle overflow */
+    window.requestAnimationFrame(this.overflow)
+})
 
-    mounted() {
-        window.addEventListener('resize', this.overflow)
-        /** After layout and before render handle overflow */
-        window.requestAnimationFrame(this.overflow)
-    }
+/**
+ * Moves menu items into the "more" container until the navbar is no
+ * longer overflowing.
+ */
+function overflow() {
+    const el = root.value as HTMLElement
+    const mainGroup = groupMain.value as HTMLElement
 
     /**
-     * Moves menu items into the "more" container until the navbar is no
-     * longer overflowing.
+     * Check for overflow. At different zoom levels this could be off by one in the positive
+     * even though no overflow is occuring. Testing indicates checking for negative difference
+     * works at all zoom levels.
      */
-    overflow() {
-        const el = this.$el as HTMLElement
-        const list = this.$refs['list'] as HTMLElement
-
-        const mainGroup = this.$refs['group-main'] as HTMLElement
-
+    if (el.offsetHeight - el.scrollHeight < 0) {
+        navBar.value.overflowOne()
         /**
-         * Check for overflow. At different zoom levels this could be off by one in the positive
-         * even though no overflow is occuring. Testing indicates checking for negative difference
-         * works at all zoom levels.
-         */
-        if (el.offsetHeight - el.scrollHeight < 0) {
-            this.navBar.overflowOne()
-            /**
-             * Continue to force layout until no longer overflowing.
-             * This provides for the least amount of flicker on page load.
-             **/
-            this.$forceUpdate()
-            window.requestAnimationFrame(this.overflow)
-        } else if (mainGroup.offsetTop + mainGroup.offsetHeight + 240 < el.offsetHeight) {
-            this.navBar.showOne()
-            window.requestAnimationFrame(this.overflow)
-        }
+         * Continue to force layout until no longer overflowing.
+         * This provides for the least amount of flicker on page load.
+         **/
+        root.value.$forceUpdate()
+        window.requestAnimationFrame(overflow)
+    } else if (mainGroup.offsetTop + mainGroup.offsetHeight + 240 < el.offsetHeight) {
+        navBar.value.showOne()
+        window.requestAnimationFrame(overflow)
     }
 }
+
 </script>
 
 <style lang="scss" scoped>

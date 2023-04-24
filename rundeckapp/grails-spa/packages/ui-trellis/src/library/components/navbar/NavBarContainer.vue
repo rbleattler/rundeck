@@ -19,41 +19,31 @@
     </li>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
+<script setup lang="ts">
+import {computed, onBeforeMount, ref} from 'vue'
 
-import {NavItem, NavBar, NavContainer} from '../../stores/NavBar'
+import {NavBar, NavContainer} from '../../stores/NavBar'
 
 import NavBarItem from './NavBarItem.vue'
-import {Component, Inject, Prop} from 'vue-property-decorator'
-import { Observer } from 'mobx-vue-lite'
-import { RootStore } from '../../stores/RootStore'
 
 import NavBarDrawer from './NavBarDrawer.vue'
+import {RundeckContext} from "../../interfaces/rundeckWindow";
+import {getRundeckContext} from "../../rundeckService";
 
-@Observer
-@Component({components: {NavBarItem, NavBarDrawer}})
-export default class NavBarContainer extends Vue {
-    @Inject()
-    rootStore!: RootStore
+const props = defineProps<{
+    item: NavContainer
+}>()
 
-    navBar!: NavBar
+const navBar = ref<NavBar>()
 
-    @Prop()
-    item!: NavContainer
+onBeforeMount(() => {
+    navBar.value = (getRundeckContext() as RundeckContext).rootStore.navBar
+})
 
-    created() {
-        this.navBar = this.rootStore.navBar
-    }
+const label = computed<string>(() => {
+    return props.item.label!.toUpperCase()
+})
 
-    body() { 
-        return document.body
-    }
-
-    get label(): string {
-        return this.item!.label!.toUpperCase()
-    }
-}
 </script>
 
 <style lang="scss" scoped>

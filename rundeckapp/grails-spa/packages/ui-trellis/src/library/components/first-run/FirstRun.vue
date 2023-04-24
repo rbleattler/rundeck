@@ -40,49 +40,42 @@
   </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
-import { Observer } from 'mobx-vue-lite'
-import {Component, Prop, Inject} from 'vue-property-decorator'
+<script setup lang="ts">
+import {onBeforeMount, ref} from 'vue'
 
 import { ServerInfo, SystemStore } from '../../stores/System'
-import { getAppLinks }             from  '../../rundeckService'
+import {getAppLinks, getRundeckContext} from '../../rundeckService'
 import { AppLinks }                from  '../../interfaces/AppLinks'
-import { RootStore }               from  '../../stores/RootStore'
 
 import RundeckVersion              from  '../version/RundeckVersionDisplay.vue'
+import {RundeckContext} from "../../interfaces/rundeckWindow";
+
+const props = defineProps<{
+    server: ServerInfo
+}>()
 
 
-@Observer
-@Component({components: {
-    RundeckVersion
-}})
-export default class FirstRun extends Vue {
-    @Inject()
-    rootStore!: RootStore
 
-    @Prop()
-    server!: ServerInfo
-    
-    links!: AppLinks
-    loaded = false
+    const links = ref<AppLinks>()
+    const loaded = ref<boolean>(false)
 
-    system!: SystemStore
+    const system = ref<SystemStore>()
 
-    async created() {
-      this.system = this.rootStore.system
-      this.links = getAppLinks()
+    onBeforeMount(async () => {
+        const rootStore = (getRundeckContext() as RundeckContext).rootStore
+      system.value = rootStore.system
+      links.value = getAppLinks()
 
       try {
         await Promise.all([
-          this.rootStore.system.load(),
-          this.rootStore.releases.load()
+          system.value.load(),
+          rootStore.releases.load()
         ])
       } catch(e) {}
-      this.loaded = true
-    }
+      loaded.value = true
+    })
  
-}
+
 </script>
 
 <style lang="scss" scoped>

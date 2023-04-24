@@ -67,74 +67,91 @@
     </modal>
   </div>
 </template>
-<script lang="ts">
-import { JobReference } from '../../interfaces/JobReference'
-import { JobTree } from '../../types/JobTree'
-import { GroupedJobs, TreeItem } from '../../types/TreeItem'
-import { Job } from '@rundeck/client/dist/lib/models'
-import Vue from 'vue'
+<script setup lang="ts">
+import {onMounted, ref, watch} from 'vue'
 import ProjectPicker from './ProjectPicker.vue'
-import { Component, Prop, Watch } from 'vue-property-decorator'
+import { JobTree } from '../../types/JobTree'
+import { Job } from '@rundeck/client/dist/lib/models'
 import { client } from '../../modules/rundeckClient'
 
-Vue.component("project-picker",ProjectPicker)
-
-@Component
-export default class JobConfigPicker extends Vue {
-  @Prop({ required: false, default: '' })
-  value!: string
-  @Prop({ required: false, default: '' })
-  size!: string
-  @Prop({ required: false, default: "" })
-  btnType!: string
-  @Prop({ required: false, default: "" })
-  btnSize!: string
-  @Prop({ required: false, default: "" })
-  btnClass!: string
-  @Prop({required:false,default:true})
-  showScheduledToggle!:boolean
-  @Prop({required:false,default:false})
-  showScheduledDefault!:boolean
-
-  selectedJob: JobReference | null = null
-  modalOpen: boolean = false
-  jobs: Job[] = []
-  jobTree: JobTree = new JobTree()
-  project: string = ''
-  showProjectSelector: boolean = true
-  filterType: string = this.showScheduledDefault?'scheduled':''
-
-@Watch('project')
-@Watch('filterType')
-  loadJobs() {
-    if(this.project != '') {
-      let params:{[name: string ] : any} = {}
-
-      if(this.filterType!=''){
-        params['scheduledFilter']=(this.filterType==='scheduled')
-      }
-
-      client.jobList(this.project,params ).then(result => {
-        this.$set(this,'jobTree', new JobTree())
-        this.$set(this,'jobs', result)
-        this.jobs.forEach(job => this.jobTree.insert(job))
-      })
+const props = defineProps({
+    'modelValue': {
+        type: String,
+        required: false,
+        default: ''
+    },
+    'size': {
+        type: String,
+        required: false,
+        default: ''
+    },
+    'btnType': {
+        type: String,
+        required: false,
+        default: ''
+    },
+    'btnSize': {
+        type: String,
+        required: false,
+        default: ''
+    },
+    'btnClass': {
+        type: String,
+        required: false,
+        default: ''
+    },
+    'showScheduledToggle': {
+        type: Boolean,
+        required: false,
+        default: true
+    },
+    'showScheduledDefault': {
+        type: Boolean,
+        required: false,
+        default: false
     }
-  }
+})
 
-  @Watch('selectedJob')
-  jobChosen() {
-    this.modalOpen = false
-    this.$emit('input', this.selectedJob ? this.selectedJob.id : '')
-  }
+let selectedJob = ref<Job | null>(null)
+let modalOpen = ref<boolean>(false)
+let jobs = ref<Job[]>([])
+let jobTree = ref(new JobTree())
+let project = ref('')
+let showProjectSelector = ref(true)
+let filterType = ref<string>(props.showScheduledDefault?'scheduled':'')
 
-  mounted() {
+watch([project, filterType], () => {
+    if(project.value != '') {
+        let params:{[name: string ] : any} = {}
+
+        if(filterType.value!=''){
+            params['scheduledFilter']=(filterType.value==='scheduled')
+        }
+
+        client.jobList(project.value,params ).then(result => {
+            jobTree.value = new JobTree()
+            jobs.value =  result
+            jobs.value.forEach(job => jobTree.value.insert(job))
+        })
+    }
+})
+
+const emit = defineEmits(['update:modelValue'])
+
+watch(selectedJob, () => {
+    modalOpen.value = false
+    emit('update:modelValue', selectedJob.value ? selectedJob.value.id : '')
+})
+
+onMounted(() => {
+    //@ts-ignore
     if(window._rundeck.projectName) {
-      this.showProjectSelector = false
-      this.project = window._rundeck.projectName
+        showProjectSelector.value = false
+        //@ts-ignore
+        project.value = window._rundeck.projectName
     }
-  }
-}
+})
+
 </script>
 <style lang="scss">
 </style>
