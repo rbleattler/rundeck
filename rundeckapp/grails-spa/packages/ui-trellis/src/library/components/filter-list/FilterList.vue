@@ -3,7 +3,7 @@
         <div class="widget-section" style="flex-grow: 1; flex-shrink: 1;">
             <div>
                 <div class="form-group form-group-sm has-feedback has-search">
-                    <i class="fas fa-search form-control-feedback"/>
+                    <i class="fas fa-search form-control-feedback"></i>
                     <input
                         ref="search"
                         type="text" 
@@ -18,18 +18,19 @@
                     :items="filtered()"
                     :item-size="itemSize"
                     :key="items.length"
-                    v-slot:default="{ item }"
                     key-field="id"
                     class="scroller"
                 >
-                    <div style="height: 100%;" :ref="item[idField]" role="button" tabindex="0" class="scroller__item" :class="{'scroller__item--selected': item[idField] == selected}" @click="() => itemClicked(item)" @keypress.enter="itemClicked(item)">
-                        <slot name="item" :item="item" default-scope="item"/>
+                  <template v-slot:default="{ item }">
+                    <div style="height: 100%;" :ref="item[idField]" role="button" tabindex="0" class="scroller__item" :class="{'scroller__item--selected': item[idField] === selected}" @click="() => itemClicked(item)" @keypress.enter="itemClicked(item)">
+                      <slot name="item" :item="item" default-scope="item"></slot>
                     </div>
+                  </template>
                 </RecycleScroller>
             </Skeleton>
         </div>
         <div class="widget-section" style="height: 40px; flex-grow: 0; flex-shrink: 0; padding-left: 10px">
-            <slot name="footer"/>
+          <slot name="footer"></slot>
             <!-- <a class="text-info" :href="allProjectsLink" @click@keypress.enter="handleSelect">View All Projects</a> -->
         </div>
     </div>
@@ -49,9 +50,9 @@ RecycleScroller.updated = function() {
         ps.value.update()
 }
 
-const destroy = RecycleScroller.beforeDestroy
-RecycleScroller.beforeDestroy = function() {
-    destroy.bind(this)()
+const unmount = RecycleScroller.beforeUnmount
+RecycleScroller.beforeUnmount = function() {
+    unmount.bind(this)()
     if (ps.value) {
         try {
             ps.value.destroy()
@@ -60,9 +61,9 @@ RecycleScroller.beforeDestroy = function() {
     }
 }
     const ps = ref<PerfectScrollbar>()
-    const root = ref<>()
-    const search = ref<>()
-    const scroller = ref<>()
+    const root = ref()
+    const search = ref()
+    const scroller = ref()
     const searchTerm = ref<string>('')
 
 
@@ -70,7 +71,7 @@ const props = withDefaults(defineProps<{
     loading: boolean
     searchText: string
     items: object[]
-    itemSize: Number
+    itemSize: number
     selected: string
     idField: string
 }>(), {

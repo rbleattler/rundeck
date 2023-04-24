@@ -1,13 +1,13 @@
 <template>
     <div id="utility-bar" class="utility-bar">
         <ul>
-            <template v-for="item in utilityBar.containerGroupItems('root', 'left')">
-                <UtilItem :item="item" :key="item.id" />
+            <template v-for="item in utilityBar.containerGroupItems('root', 'left')" :key="item.id">
+                <UtilItem :item="item" />
             </template>
         </ul>
         <ul style="flex-grow: 1; flex-direction: row-reverse;">
-            <template v-for="item in utilityBar.containerGroupItems('root', 'right')">
-                <UtilItem :item="item" :key="item.id" />
+            <template v-for="item in utilityBar.containerGroupItems('root', 'right')" :key="item.id" >
+                <UtilItem :item="item"/>
             </template>
         </ul>
     </div>
