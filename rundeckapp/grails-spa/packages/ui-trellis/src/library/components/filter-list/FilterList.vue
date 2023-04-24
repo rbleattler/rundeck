@@ -23,7 +23,7 @@
                     class="scroller"
                 >
                     <div style="height: 100%;" :ref="item[idField]" role="button" tabindex="0" class="scroller__item" :class="{'scroller__item--selected': item[idField] == selected}" @click="() => itemClicked(item)" @keypress.enter="itemClicked(item)">
-                        <slot name="item" :item="item" scope="item"/>
+                        <slot name="item" :item="item" default-scope="item"/>
                     </div>
                 </RecycleScroller>
             </Skeleton>
@@ -100,7 +100,7 @@ const props = withDefaults(defineProps<{
     const emit = defineEmits(['item:selected'])
     function itemClicked(item: any) {
         (<HTMLElement>root.value.$refs[item[this.idField]]).blur()
-        this.$emit('item:selected', item)
+        emit('item:selected', item)
     }
 
 </script>

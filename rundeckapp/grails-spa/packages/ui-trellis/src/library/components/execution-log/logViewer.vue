@@ -98,12 +98,11 @@
 import {CancellationTokenSource, CancellationToken} from 'prex'
 
 import {ExecutionLog, EnrichedExecutionOutput} from '../../utilities/ExecutionLogConsumer'
-import Vue, {ComponentOptions, computed, onBeforeMount, onMounted, ref, watch} from 'vue'
+import Vue, {ComponentOptions, computed, getCurrentInstance, onBeforeMount, onMounted, ref, watch} from 'vue'
 import {LogBuilder} from './logBuilder'
 import { RootStore } from '../../stores/RootStore'
 import RdDrawer from '../containers/drawer/Drawer.vue'
 import { ExecutionOutput, ExecutionOutputEntry } from '../../stores/ExecutionOutput'
-import { Observer } from 'mobx-vue-lite'
 import UiSocket from "../utils/UiSocket.vue";
 import {getRundeckContext} from "../../rundeckService";
 import {RundeckContext} from "../../interfaces/rundeckWindow";
@@ -156,14 +155,6 @@ const props = withDefaults(defineProps<{
       {label: 'None', value: 'none'}
     ]
 
-    const scrollTolerance = 5
-
-    const batchSize = 200
-
-    const totalTime = 0
-
-    const progress = 0
-
     const settings = ref<IEventViewerSettings>({
       theme: 'rundeck',
       stats: false,
@@ -187,7 +178,7 @@ const props = withDefaults(defineProps<{
 
       for (const prop of updatableProps) {
         if (newVal[prop] != oldVal[prop]) {
-          this.$options.vues.forEach(v => v[prop] = newVal[prop])
+          options.value.vues.forEach(v => v[prop] = newVal[prop])
         }
       }
 
@@ -213,17 +204,18 @@ const props = withDefaults(defineProps<{
 
     const consumeLogs = ref<boolean>(true)
 
-    const completed = false
+    const completed = ref<boolean>(false)
 
-    const errorMessage = ''
+    const errorMessage = ref<string>('')
 
-    const execCompleted = true
+    const execCompleted = ref<boolean>(true)
 
     const settingsVisible = ref<boolean>(false)
 
-    const overSize = false
+    const overSize = ref<boolean>(false)
 
-    const jumped = false
+    const jumped = ref<boolean>(false)
+    const follow = ref<boolean>(props.follow)
 
     const viewer = ref<ExecutionOutput>()
 
@@ -231,13 +223,13 @@ const props = withDefaults(defineProps<{
 
     const logEntries = ref<Array<{log?: string, id: number}>>([])
 
-    const scrollCount = 0
+    const scrollCount = ref<number>(0)
 
-    const startTime = 0
+    const startTime = ref<number>(0)
 
     const logSize = ref(0)
 
-    const logLines = 0
+    const logLines = ref<number>(0)
 
     const resp = ref<Promise<ExecutionOutputEntry[]>>
 
@@ -245,26 +237,37 @@ const props = withDefaults(defineProps<{
 
     const cancelProgress = ref<CancellationTokenSource>()
 
-    const nextProgress = 0
+    const nextProgress = ref<number>(0)
 
-    const selected: any
+    const scrollTolerance = ref<number>(5)
 
-    const percentLoaded: number = 0
+    const batchSize = ref<number>(200)
+
+    const totalTime = ref<number>(0)
+
+    const progress = ref<number>(0)
+
+    const selected = ref<any>()
+
+    const percentLoaded = ref<number>(0)
+
+    const scroller = ref() //html element with ref="scroller"
+    const log = ref() //html element with ref="log"
 
     const options = ref<ComponentOptions<Vue> & {
         vues: any[]
-    }>()
+    }>({vues:[]})
   
     const settingsChange = computed(() => {
       return Object.assign({}, settings.value)
     })
 
     const followIcon = computed(() => {
-      return this.follow ? 'fas fa-eye' : 'fas fa-eye-slash'
+      return props.follow ? 'fas fa-eye' : 'fas fa-eye-slash'
     })
 
     const barProgress= computed(() => {
-      return this.execCompleted ? this.progress : 100
+      return execCompleted.value ? progress.value : 100
     })
 
     const progressType= computed(() => {
@@ -275,30 +278,30 @@ const props = withDefaults(defineProps<{
       const loadingText = `${barProgress}% ${consumeLogs.value ? 'Pause' : 'Resume'}`
       const runningText = `${consumeLogs.value ? 'Pause' : 'Resume'}`
 
-      return this.execCompleted ? loadingText : runningText
+      return execCompleted.value ? loadingText : runningText
     })
 
     const showProgress = computed<boolean>(() => {
-      return (!this.completed || !this.execCompleted)
+      return (!completed.value || !execCompleted.value)
     })
     
 
     watch(logSize, (val: number, oldVal: number) => {
-      if (val > this.maxLogSize) {
-        this.overSize = true
-        this.nextProgress = 100
-        this.completed = true
+      if (val > props.maxLogSize) {
+        overSize.value = true
+        nextProgress.value = 100
+        completed.value = true
       }
     },{})
 
     watch(consumeLogs, (val: boolean, oldVal: boolean) => {
       if(val)
-        this.updateProgress()
-      else if(this.cancelProgress)
-        this.cancelProgress.cancel()
+        updateProgress()
+      else if(cancelProgress.value)
+        cancelProgress.value.cancel()
 
-      if(val && !this.populateLogsProm) {
-        this.populateLogsProm = this.populateLogs()
+      if(val && !populateLogsProm.value) {
+        populateLogsProm.value = populateLogs()
       }
     },{})
 
@@ -312,12 +315,11 @@ const props = withDefaults(defineProps<{
     onMounted(async () => {
         options.value.vues = []
 
-        const scroller = this.$refs["scroller"] as HTMLElement
-        const log = this.$refs["log"] as HTMLElement
+        const _log = log.value as HTMLElement
 
-        this.viewer = rootStore.executionOutputStore.createOrGet(this.executionId.toString())
+        viewer.value = rootStore.executionOutputStore.createOrGet(this.executionId.toString())
 
-        this.logBuilder = new LogBuilder(this.viewer, log, this.eventBus,{
+        logBuilder.value = new LogBuilder(this.viewer, _log, this.eventBus,{
           node: this.node,
           stepCtx: this.stepCtx,
           nodeIcon: settings.value.nodeBadge,
@@ -336,27 +338,27 @@ const props = withDefaults(defineProps<{
           }
         })
 
-        this.logBuilder.onNewLines(this.handleNewLine)
+        logBuilder.value.onNewLines(handleNewLine)
 
-        this.startTime = Date.now()
-        this.addScrollBlocker()
+        startTime.value = Date.now()
+        addScrollBlocker()
 
-        this.updateProgress()
+        updateProgress()
 
-        const {viewer} = this
+        const {viewer} = getCurrentInstance()
         await viewer.init()
 
-        this.execCompleted = viewer.execCompleted
-        this.follow = !viewer.execCompleted
+        execCompleted.value = viewer.execCompleted
+        follow.value = !viewer.execCompleted
 
         if (viewer.execCompleted && viewer.size > this.maxLogSize) {
-          this.logSize = viewer.size
-          this.nextProgress = 0
-          this.updateProgress(100)
+          logSize.value = viewer.size
+          nextProgress.value = 0
+          updateProgress(100)
           return
         }
 
-        this.populateLogsProm = this.populateLogs()
+        populateLogsProm.value = populateLogs()
     })
 
     function loadConfig() {
@@ -384,51 +386,51 @@ const props = withDefaults(defineProps<{
      * Allows us to prevent scrolling unless a certain amount of "resistence" is produced
      */
     function addScrollBlocker() {
-        const scroller = this.$refs["scroller"] as HTMLElement
-        scroller.addEventListener('wheel', (ev: UIEvent) => {
-            this.scrollCount++
+        const _scroller = scroller.value as HTMLElement
+        _scroller.addEventListener('wheel', (ev: UIEvent) => {
+            scrollCount.value++
 
-            if (this.follow) {
+            if (follow.value) {
                 ev.preventDefault()
                 ev.returnValue = false
             }
 
-            if (this.scrollCount > this.scrollTolerance)
-                this.follow = false
+            if (scrollCount.value > scrollTolerance.value)
+                follow.value = false
         }, {passive: false})
     }
 
     function handleExecutionLogResp() {
-      if (!this.trimOutput) return
+      if (!props.trimOutput) return
 
-      if (this.viewer.offset > this.trimOutput) {
-        const removeSize = this.logBuilder.dropChunk()
+      if (viewer.value.offset > props.trimOutput) {
+        const removeSize = logBuilder.value.dropChunk()
         for (let x = 0; x < removeSize; x++) {
-          const scapeGoat = this.$options.vues.shift()
+          const scapeGoat = options.value.vues.shift()
         }
       }
     }
 
     function updateProgress(delay: number = 0) {
-      if (this.cancelProgress)
-        this.cancelProgress.cancel()
+      if (cancelProgress.value)
+        cancelProgress.value.cancel()
 
-      this.cancelProgress = new CancellationTokenSource();
+      cancelProgress.value = new CancellationTokenSource();
 
       (async (cancel: CancellationToken) => {
-        const update = () => {this.progress = this.nextProgress}
+        const update = () => {progress.value = nextProgress.value}
         setTimeout(update, delay)
         while(!cancel.cancellationRequested) {
           await new Promise((res, rej) => {setTimeout(res, 1000)})
           if (this.progress == 100)
-            this.cancelProgress?.cancel()
+            cancelProgress.value?.cancel()
           update()
         }
-      })(this.cancelProgress.token)
+      })(cancelProgress.value.token)
     }
 
     function scrollToLine(n: number | string) {
-        const scroller = this.$refs["scroller"] as HTMLElement
+        const _scroller = scroller.value as HTMLElement
 
         const target = options.value.vues[Number(n)-1].$el
         let parent = target.parentNode
@@ -436,107 +438,109 @@ const props = withDefaults(defineProps<{
         let offset = target.offsetTop
 
         // Traverse to root and accumulate offset
-        while (parent != scroller) {
+        while (parent != _scroller) {
           offset += parent.offsetTop
           parent = parent.parentNode
         }
 
-        scroller.scrollTop = offset - 24 // Insure under stick header
+        _scroller.scrollTop = offset - 24 // Insure under stick header
     }
+
+    const emit = defineEmits(['line-deselect','line-select'])
 
     /**
      * Handle line select events from the log entries and re-emit.
      * Emits a line-deselect if the event is for the currently selected line.
      */
     function handleLineSelect(e: any) {
-      if (this.overSize) {
+      if (overSize.value) {
         alert('Line-linking is not supported for over-sized logs')
         return
       }
 
       const line = options.value.vues[e-1]
 
-      if (this.selected) {
-        this.selected.selected = false
+      if (selected.value) {
+        selected.value.selected = false
       }
 
-      if (this.selected === line) {
-        this.selected = undefined
-        this.$emit('line-deselect', e)
+      if (selected.value === line) {
+        selected.value = undefined
+        emit('line-deselect', e)
         return
       }
 
       line.selected = true
       this.selected = line
 
-      this.$emit('line-select', e)
+      emit('line-select', e)
     }
 
     function handleNewLine(entries: Array<any>) {
       for (const vue of entries) {
         // @ts-ignore
-        const selected = vue.logEntry.lineNumber == this.jumpToLine
-        vue.$on('line-select', this.handleLineSelect)
-        if (selected) {
-          this.selected = vue
+        const _selected = vue.logEntry.lineNumber == props.jumpToLine
+        vue.$on('line-select', handleLineSelect)
+        if (_selected) {
+          selected.value = vue
           vue.selected = true
         }
       }
 
       options.value.vues.push(...entries)
 
-      if (this.jumpToLine && this.jumpToLine <= options.value.vues.length && !this.jumped) {
-        this.follow = false
-        this.scrollToLine(this.jumpToLine)
-        this.jumped = true
+      if (props.jumpToLine && props.jumpToLine <= options.value.vues.length && !jumped.value) {
+        follow.value = false
+        scrollToLine(props.jumpToLine)
+        jumped.value = true
       }
 
-      if (this.follow) {
-        this.scrollToLine(options.value.vues.length)
+      if (follow.value) {
+        scrollToLine(options.value.vues.length)
       }
     }
 
     function handleJump(e: string) {
-        this.scrollToLine(this.jumpToLine || 0)
+        scrollToLine(props.jumpToLine || 0)
     }
 
     function handleJumpToEnd() {
-        this.scrollToLine(options.value.vues.length)
+        scrollToLine(options.value.vues.length)
     }
 
     function handleJumpToStart() {
-        this.scrollToLine(1)
+        scrollToLine(1)
     }
 
     async function populateLogs() {
-        while(this.consumeLogs) {
-            if (!this.resp)
-              this.resp = this.viewer.getOutput(this.batchSize)
-            const res = await this.resp
+        while(consumeLogs.value) {
+            if (!resp.value)
+              resp.value = viewer.value.getOutput(batchSize.value)
+            const res = await resp.value
             this.resp = undefined
 
-            if (!this.viewer.completed) {
-              this.resp = this.viewer.getOutput(this.batchSize)
+            if (!viewer.value.completed) {
+              resp.value = viewer.value.getOutput(batchSize.value)
               await new Promise<void>((res, rej) => setTimeout(() => {res()},0))
             }
 
-            this.execCompleted = this.viewer.execCompleted
-            this.completed = this.viewer.completed
+            execCompleted.value = viewer.value.execCompleted
+            completed.value = viewer.value.completed
 
-            this.nextProgress = Math.round(this.viewer.percentLoaded)
+            nextProgress.value = Math.round(viewer.value.percentLoaded)
 
             if (this.viewer.error)
-              this.errorMessage = this.viewer.error
+              errorMessage.value = viewer.value.error
 
-            this.logSize = this.viewer.offset
-            this.logLines = this.viewer.entries.length
-            this.handleExecutionLogResp()
+            logSize.value = viewer.value.offset
+            logLines.value = viewer.value.entries.length
+            handleExecutionLogResp()
 
-            if (this.viewer.completed)
+            if (viewer.value.completed)
                 break
         }
-        this.totalTime = Date.now() - this.startTime
-        this.populateLogsProm = undefined
+        totalTime.value = Date.now() - startTime.value
+        populateLogsProm.value = undefined
     }
 
     function colorTheme() {
