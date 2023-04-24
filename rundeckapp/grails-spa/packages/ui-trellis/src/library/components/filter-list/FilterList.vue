@@ -1,5 +1,5 @@
 <template>
-    <div class="widget-wrapper">
+    <div class="widget-wrapper" ref="root">
         <div class="widget-section" style="flex-grow: 1; flex-shrink: 1;">
             <div>
                 <div class="form-group form-group-sm has-feedback has-search">
@@ -35,84 +35,74 @@
     </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
-import {Component, Inject, Prop} from 'vue-property-decorator'
+<script setup lang="ts">
+import  {nextTick, onMounted, ref} from 'vue'
 import { autorun } from 'mobx'
-import {Observer} from 'mobx-vue-lite'
 import PerfectScrollbar from 'perfect-scrollbar'
 import { RecycleScroller } from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 
-import Skeleton from '../skeleton/Skeleton.vue'
-
 RecycleScroller.updated = function() {
-    if (!this.ps)
-        this.$nextTick().then(() => {this.ps = new PerfectScrollbar(this.$el, {minScrollbarLength: 20})})
+    if (!ps.value)
+        nextTick().then(() => {ps.value = new PerfectScrollbar(scroller.value, {minScrollbarLength: 20})})
     else
-        this.ps.update()
+        ps.value.update()
 }
 
 const destroy = RecycleScroller.beforeDestroy
 RecycleScroller.beforeDestroy = function() {
     destroy.bind(this)()
-    if (this.ps) {
+    if (ps.value) {
         try {
-            this.ps.destroy()
-            this.ps = null
+            ps.value.destroy()
+            ps.value = null
         } catch {}
     }
 }
+    const ps = ref<PerfectScrollbar>()
+    const root = ref<>()
+    const search = ref<>()
+    const scroller = ref<>()
+    const searchTerm = ref<string>('')
 
-@Observer
-@Component({components: {
-    RecycleScroller,
-    Skeleton
-}})
-export default class FilterList extends Vue {
-    ps!: PerfectScrollbar
 
-    searchTerm: string = ''
+const props = withDefaults(defineProps<{
+    loading: boolean
+    searchText: string
+    items: object[]
+    itemSize: Number
+    selected: string
+    idField: string
+}>(), {
+    loading: false,
+    searchText: '',
+    itemSize: 25,
+    selected: '',
+    idField: 'id'
+})
 
-    @Prop({default: false})
-    loading!: boolean
-
-    @Prop({default: ''})
-    searchText!: String
-
-    @Prop()
-    items!: Array<any>
-
-    @Prop({default: 25})
-    itemSize!: Number 
-
-    @Prop({default: ''})
-    selected!: string
-
-    @Prop({default: 'id'})
-    idField!: string
-
-    filtered() {
-        return this.items.filter(i => i.name.includes(this.searchTerm))
+    function filtered() {
+        return this.items.filter(i => i.name.includes(searchTerm.value))
     }
 
-    mounted() {
+    onMounted(() => {
         autorun(() => {
-            if (this.items.length) {
+            if (props.items.length) {
                 /** May be necessary for virtual scroller to update */
-                this.$forceUpdate()
+                root.value.$forceUpdate()
             }
         })
-        this.$nextTick().then(() => {
-            (<HTMLElement>this.$refs['search']).focus()
+        nextTick().then(() => {
+            (<HTMLElement>search.value).focus()
         })
-    }
+    })
 
-    itemClicked(item: any) {
-        (<HTMLElement>this.$refs[item[this.idField]]).blur()
+    const emit = defineEmits(['item:selected'])
+    function itemClicked(item: any) {
+        (<HTMLElement>root.value.$refs[item[this.idField]]).blur()
         this.$emit('item:selected', item)
     }
-}
+
 </script>
 
 <style scoped lang="scss">
