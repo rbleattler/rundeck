@@ -1,8 +1,8 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue from 'vue'
+import {createApp} from 'vue'
 import * as uiv from 'uiv'
-import VueI18n from 'vue-i18n'
+import {createI18n} from 'vue-i18n'
 import VueCookies from 'vue-cookies'
 import { EventBus } from '../../../library/utilities/vueEventBus'
 import VersionDisplay from '../../../library/components/version/VersionDisplay'
@@ -20,11 +20,6 @@ let messages =
             window.Messages
         )
     }
-Vue.config.productionTip = false
-
-Vue.use(VueI18n)
-Vue.use(VueCookies)
-Vue.use(uiv)
 
 /* eslint-disable no-new */
 
@@ -34,14 +29,13 @@ for (var i = 0; i < els.length; i++) {
     const e = els[i]
 
     // Create VueI18n instance with options
-    const i18n = new VueI18n({
+    const i18n = createI18n({
         silentTranslationWarn: true,
         locale: locale, // set locale
         messages // set locale messages,
 
     })
-    new Vue({
-        el: e,
+    const app = createApp({
         components: {
             VersionDisplay
         },
@@ -49,7 +43,10 @@ for (var i = 0; i < els.length; i++) {
             return {
                 EventBus
             }
-        },
-        i18n
+        }
     })
+    app.use(i18n)
+    app.use(VueCookies)
+    app.use(uiv)
+    app.mount(e)
 }

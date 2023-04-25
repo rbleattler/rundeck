@@ -7,11 +7,11 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import {defineComponent} from 'vue'
 
 import {createPopper, Instance} from '@popperjs/core'
 
-export default Vue.extend({
+export default defineComponent({
     props: {
         open: {
             default: false

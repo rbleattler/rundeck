@@ -1,19 +1,15 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue from 'vue'
+import {createApp} from 'vue'
 import ServerDisplay from '../../../library/components/version/ServerDisplay'
 import { getRundeckContext } from '../../../library'
 import { ServerInfo }  from '../../../library/stores/System'
-
-Vue.config.productionTip = false
-
 
 /* eslint-disable no-new */
 window.addEventListener('load', function () {
   const serverCollection = Array.from(document.body.getElementsByClassName('rundeck-server-uuid'))
   serverCollection.forEach(serverElement => {
-    new Vue({
-      el: serverElement,
+    const app = createApp({
       components: {
         ServerDisplay
       },
@@ -48,5 +44,6 @@ window.addEventListener('load', function () {
                         v-if="serverInfo">
         </server-display>`
     })
+    app.mount(serverElement)
   })
 })

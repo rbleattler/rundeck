@@ -17,9 +17,9 @@ function init() {
         return
 
     const component = createApp({
-        el,
         components: { FirstRun },
         provide: { rootStore },
         template: `<FirstRun />`
     })
+    component.mount(el)
 }

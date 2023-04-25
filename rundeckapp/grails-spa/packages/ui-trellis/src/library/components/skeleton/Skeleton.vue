@@ -1,7 +1,7 @@
 <script lang="ts">
-import Vue, {CreateElement, VNode} from 'vue'
+import {CreateElement, defineComponent, VNode} from 'vue'
 
-export default Vue.extend({
+export default defineComponent({
     props: {
         loading: { default: false},
         type: {default: 'list'}

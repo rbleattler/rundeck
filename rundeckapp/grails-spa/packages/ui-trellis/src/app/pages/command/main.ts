@@ -7,7 +7,7 @@ const eventBus = window._rundeck.eventBus
 
 const rootStore = new RootStore(window._rundeck.rundeckClient)
 
-eventBus.$on('ko-adhoc-running', (data: any) => {
+eventBus.on('ko-adhoc-running', (data: any) => {
     const elm = document.querySelector('#runcontent > .executionshow')
 
     const template = `\

@@ -19,13 +19,13 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import Vue, {defineComponent} from 'vue'
 
 import Popper from '../../utility-bar/Popper.vue'
 
 import ProjectSelect from './ProjectSelect.vue'
 
-export default Vue.extend({
+export default defineComponent({
     components: {
         Popper,
         ProjectSelect

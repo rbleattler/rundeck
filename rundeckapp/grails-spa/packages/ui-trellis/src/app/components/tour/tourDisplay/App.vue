@@ -43,7 +43,7 @@
 </template>
 
 <script lang='ts'>
-  import Vue from 'vue';
+import {defineComponent} from 'vue';
   import _ from "lodash";
   import Trellis, { getRundeckContext } from "../../../../library";
   import TourServices from "../services";
@@ -51,7 +51,7 @@
 
   const context = getRundeckContext();
 
-  export default Vue.extend({
+  export default defineComponent({
     name: "TourDisplay",
     props: ["eventBus", "pad"],
     data() {

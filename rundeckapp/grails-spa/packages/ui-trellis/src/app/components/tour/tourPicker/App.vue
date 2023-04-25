@@ -35,14 +35,14 @@
 </template>
 
 <script lang='ts'>
-  import Vue from "vue";
+import {defineComponent} from "vue";
   import Trellis, { getRundeckContext } from "../../../../library";
   import TourServices from "../services";
   import { RootStore } from '../../../../library/stores/RootStore';
 
   const context = getRundeckContext();
 
-  export default Vue.extend({
+  export default defineComponent({
     inject: ['rootStore'],
     name: "TourPicker",
     props: ["eventBus"],

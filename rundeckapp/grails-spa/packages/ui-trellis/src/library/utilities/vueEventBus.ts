@@ -1,2 +1,4 @@
-import {createApp} from 'vue'
-export const EventBus = createApp({})
+import mitt from "mitt";
+
+const emitter = mitt()
+export const EventBus = emitter

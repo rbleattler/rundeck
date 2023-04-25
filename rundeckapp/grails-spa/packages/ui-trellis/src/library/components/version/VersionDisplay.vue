@@ -31,12 +31,12 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import {defineComponent} from 'vue'
 import {RundeckVersion} from '../../utilities/RundeckVersion'
 import VersionIconNameDisplay from './VersionIconNameDisplay.vue'
 import VersionDateDisplay from './VersionDateDisplay.vue'
 
-export default Vue.extend({
+export default defineComponent({
   components: {
     VersionIconNameDisplay,
     VersionDateDisplay

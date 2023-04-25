@@ -1,10 +1,4 @@
-import moment from 'moment'
-import { createApp } from 'vue'
-import * as uiv from 'uiv'
-import VueCookies from 'vue-cookies'
-import VueI18n from 'vue-i18n'
 import uivLang from '../../../library/utilities/uivi18n'
-import VueMoment from 'vue-moment'
 import {getRundeckContext, getSynchronizerToken, RundeckBrowser} from '../../../library'
 import { EventBus } from '../../../library/utilities/vueEventBus'
 
@@ -23,16 +17,10 @@ win.Messages = {
     }
 }
 
-const vue = createApp({})
-vue.use(uiv)
-vue.use(VueCookies)
-vue.use(VueI18n)
-vue.use(VueMoment, {moment})
-
-
 const context = getRundeckContext()
 const token = getSynchronizerToken()
 
 context.rundeckClient = new RundeckBrowser(token.TOKEN, token.URI, context.rdBase)
+console.log("setting event bus object")
 context.eventBus = EventBus
 context.rootStore = new RootStore(context.rundeckClient, context.appMeta)

@@ -50,12 +50,6 @@ import { AppLinks }                from  '../../interfaces/AppLinks'
 import RundeckVersion              from  '../version/RundeckVersionDisplay.vue'
 import {RundeckContext} from "../../interfaces/rundeckWindow";
 
-const props = defineProps<{
-    server: ServerInfo
-}>()
-
-
-
     const links = ref<AppLinks>()
     const loaded = ref<boolean>(false)
 
