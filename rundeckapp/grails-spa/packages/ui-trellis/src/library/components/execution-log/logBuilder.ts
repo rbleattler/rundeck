@@ -35,7 +35,7 @@ export class LogBuilder {
 
   private opts: Required<IBuilderOpts>
 
-  newLineHandlers: Array<(entries: Array<Vue>) => void> = []
+  newLineHandlers: Array<(entries: Array<typeof Vue>) => void> = []
 
   private lastEntry?: {id: number} & ExecutionOutputEntry
   private count: number = 0
@@ -43,7 +43,7 @@ export class LogBuilder {
   constructor(
       readonly executionOutput: ExecutionOutput,
       readonly rootElem: HTMLElement,
-      readonly eventBus: Vue,
+      readonly eventBus: typeof Vue,
       opts: IBuilderOpts) {
     
     this.opts = Object.assign(LogBuilder.DefaultOpts(), opts)
@@ -55,7 +55,7 @@ export class LogBuilder {
     })
   }
 
-  onNewLines(handler: (entries: Array<Vue>) => void) {
+  onNewLines(handler: (entries: Array<typeof Vue>) => void) {
     this.newLineHandlers.push(handler)
   }
 
@@ -105,7 +105,8 @@ export class LogBuilder {
 
   updateProps(opts: IBuilderOpts) {
     this.opts = Object.assign(LogBuilder.DefaultOpts(), opts)
-    this.eventBus.$emit("execution-log-settings-changed", this.opts)
+    //TODO: FIX
+    //this.eventBus.$emit("execution-log-settings-changed", this.opts)
   }
 
   addLines(entries: Array<ExecutionOutputEntry>) {
@@ -117,7 +118,7 @@ export class LogBuilder {
     }
   }
 
-  addLine(logEntry: ExecutionOutputEntry, selected: boolean): Vue {
+  addLine(logEntry: ExecutionOutputEntry, selected: boolean): typeof Vue {
     this.count++
     const {lastEntry, count} = this
 

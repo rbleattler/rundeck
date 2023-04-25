@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import {createApp} from 'vue'
 
 import { getRundeckContext, url } from '../../../library'
 
@@ -15,7 +15,7 @@ function init() {
     if (!el)
         return
 
-    const component = Vue.createApp({
+    const component = createApp({
         el,
         components: {ProjectPicker},
         provide: {rootStore},

@@ -38,12 +38,26 @@ module.exports = {
   outputDir: './lib',
   publicPath: './',
   filenameHashing: false,
-  parallel: false,
+  parallel: true,
   css: {
     extract: false
   },
   /** Don't emit index html files */
   chainWebpack: config => {
+    config.resolve.alias.set('vue', '@vue/compat')
+    config.module
+        .rule('vue')
+        .use('vue-loader')
+        .tap((options) => {
+          return {
+            ...options,
+            compilerOptions: {
+              compatConfig: {
+                MODE: 2
+              }
+            }
+          }
+        })
     config.entryPoints.store.forEach( (_, entry) => {
       config.plugins.delete(`html-${entry}`)
       config.plugins.delete(`preload-${entry}`)

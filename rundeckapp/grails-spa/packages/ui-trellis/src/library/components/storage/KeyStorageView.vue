@@ -205,14 +205,14 @@
 </template>
 
 <script lang="ts">
-import InputType from "./InputType"
-import KeyType from "./KeyType";
 import moment from 'moment'
 import {getRundeckContext} from "../../index"
-import Vue from "vue"
-import axios from "axios";
+import {defineComponent} from "vue"
 
-export default Vue.extend({
+import KeyType from "../../types/KeyType";
+import InputType from "../../types/InputType";
+
+export default defineComponent({
   name: "KeyStorageView",
   props: {
     readOnly: Boolean,

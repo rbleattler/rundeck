@@ -1,23 +1,17 @@
-import Vue from 'vue'
+<template>
+    <div>
+        <div  ref="root" :id="identifier" :style="styleCss"></div>
+    </div>
+</template>
+<script lang="ts">
+import {defineComponent} from 'vue'
 
 import * as ace from 'ace-builds'
-import { VNode } from 'vue/types/umd'
 
 /**
  * Ace Vue wrapper
  */
-export default Vue.extend({
-    render: function(h): VNode {
-        const height = this.height ? this.px(this.height) : '100%'
-        const width = this.width ? this.px(this.width) : '100%'
-
-        return h('div', {
-            attrs: {
-                style: `height: ${height}; width: ${width};`,
-                id: this.identifier,
-            }
-        })
-    },
+export default defineComponent({
     props: {
         identifier: String,
         value: String,
@@ -93,6 +87,14 @@ export default Vue.extend({
         this.editor!.destroy()
         this.editor!.container.remove()
     },
+    computed: {
+        styleCss() {
+            let style = {height:"100%",width:"100%"}
+            if(this.height) style.height = this.px(this.height)
+            if(this.width) style.width = this.px(this.width)
+            return style
+        }
+    },
     methods: {
         px(value: string): string {
             if (/^\d*$/.test(value))
@@ -108,3 +110,4 @@ export default Vue.extend({
         }
     }
 })
+</script>

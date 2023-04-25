@@ -171,8 +171,8 @@ import PluginConfig from "../../../../library/components/plugins/pluginConfig.vu
 import PluginInfo from "../../../../library/components/plugins/PluginInfo.vue"
 
 import CopyBox from '../../../../library/components/containers/copybox/CopyBox.vue'
-import Tabs from '../../../../library/components/containers/tabs/Tabs'
-import Tab from '../../../../library/components/containers/tabs/Tab'
+import Tabs from '../../../../library/components/containers/tabs/Tabs.vue'
+import Tab from '../../../../library/components/containers/tabs/Tab.vue'
 import WebhookPicker from '../../../../library/components/widgets/webhook-select/WebhookSelect.vue'
 import KeyStorageSelector from '../../../../library/components/plugins/KeyStorageSelector.vue'
 

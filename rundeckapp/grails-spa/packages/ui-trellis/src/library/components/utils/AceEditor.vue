@@ -38,7 +38,7 @@
 <script lang="ts">
 import Vue from 'vue'
 
-import Ace from './AceEditorVue'
+import Ace from './AceEditorVue.vue'
 
 import 'ace-builds/src-noconflict/ext-language_tools'
 import 'ace-builds/src-noconflict/mode-batchfile'

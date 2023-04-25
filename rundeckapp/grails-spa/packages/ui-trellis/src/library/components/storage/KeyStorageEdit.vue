@@ -134,6 +134,8 @@ import KeyType from "./KeyType"
 import InputType from "./InputType"
 import {defineComponent} from "vue"
 import type { PropType } from 'vue'
+import InputType from "../../types/InputType";
+import KeyType from "../../types/KeyType";
 
 interface UploadSetting {
   modifyMode: boolean,

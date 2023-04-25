@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import {createApp} from 'vue'
 
 import UiSocket from '../../../library/components/utils/UiSocket.vue'
 import {getRundeckContext} from '../../../library'
@@ -31,7 +31,7 @@ function initUiComponentsOnEvent(evt:Event){
 }
 
 function initUiComponents(elmElement:any) {
-    const vue = Vue.createApp({
+    const vue = createApp({
       el: elmElement,
       components: {UiSocket},
       data() {
