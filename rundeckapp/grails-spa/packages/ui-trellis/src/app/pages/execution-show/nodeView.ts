@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import Vue, {createApp} from 'vue'
 
 import {autorun} from 'mobx'
 
@@ -34,7 +34,7 @@ window._rundeck.eventBus.$on('ko-exec-show-output', (nodeStep: any) => {
     />
     `
 
-    const vue = new Vue({
+    const vue = createApp({
         el: div,
         components: {LogViewer},
         template: template,
@@ -62,7 +62,7 @@ window._rundeck.eventBus.$on('ko-exec-show-output', (nodeStep: any) => {
             if (execOutput.completed) {
                 reaction.dispose()
                 nodeStep.outputLineCount(0)
-                vue.$el.remove()
+                vue._container.remove()
                 return
             } else {
                 return
