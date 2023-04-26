@@ -20,9 +20,9 @@
 
 import Dropdown from 'uiv'
 
-import Vue from "vue";
+import Vue, {defineComponent} from "vue";
 
-export default Vue.extend({
+export default defineComponent({
   name: "TextAutocomplete",
   extends: Dropdown,
   props: {

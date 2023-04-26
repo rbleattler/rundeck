@@ -64,24 +64,24 @@ function initNav() {
     const elm = document.getElementById('navbar') as HTMLElement
 
     const vue = createApp({
-        el: elm,
         components: {NavigationBar},
         template: `<NavigationBar />`,
         provide: {
           rootStore
         }
       })
+    vue.mount(elm)
 }
 
 function initUtil() {
   const elm = document.getElementById('utilityBar') as HTMLElement
 
   const vue = createApp({
-      el: elm,
       components: {UtilityBar},
       template: `<UtilityBar />`,
       provide: {
         rootStore
       }
     })
+    vue.mount(elm)
 }

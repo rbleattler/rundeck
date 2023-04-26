@@ -43,7 +43,6 @@ const app = createApp({
 app.use(VueCookies)
 app.use(uiv)
 app.use(i18n)
-app.use(VueCookies)
 app.mount('#user-summary-vue')
 
 const rootStore = getRundeckContext().rootStore

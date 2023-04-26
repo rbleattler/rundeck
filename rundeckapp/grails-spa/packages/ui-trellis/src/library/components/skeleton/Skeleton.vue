@@ -1,5 +1,5 @@
 <script lang="ts">
-import {CreateElement, defineComponent, VNode} from 'vue'
+import {h, defineComponent, VNode} from 'vue'
 
 export default defineComponent({
     props: {
@@ -7,7 +7,7 @@ export default defineComponent({
         type: {default: 'list'}
     },
 
-    render(h): VNode {
+    render(): VNode {
         if (this.loading)
             return this.skeleton(h)
         else {
@@ -20,7 +20,7 @@ export default defineComponent({
          * Use a render function so we can avoid an unecessary wrapper element
          * if the slot is a single VNode.
          */
-        slot(h: CreateElement): VNode {
+        slot(h): VNode {
             const slot = this.$slots.default
 
             if (!slot)
@@ -33,7 +33,7 @@ export default defineComponent({
             else
                 return slot
         },
-        skeleton(h: CreateElement): VNode {
+        skeleton(h): VNode {
             return h('div', {
                 attrs: {
                     'role': 'alert',

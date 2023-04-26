@@ -30,6 +30,7 @@ export default defineComponent({
         Popper,
         ProjectSelect
     },
+    emits: ['project:select-all'],
     props: {
         projectLabel: {type: String}
     },

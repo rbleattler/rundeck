@@ -12,11 +12,11 @@
 </template>
 
 <script lang="ts">
-import Vue, { VNode } from 'vue'
+import Vue, {defineComponent, VNode} from 'vue'
 
 import {CopyToClipboard} from '../../../utilities/Clipboard'
 
-export default Vue.extend({
+export default defineComponent({
     name: 'rd-copybox',
     props: {
         content: String

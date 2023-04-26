@@ -199,13 +199,13 @@
                 <td class="right date " v-tooltip.bottom="runningStatusTooltip(exec)">
                     <span v-if="exec.dateStarted.date" >
                         <i class=" ">
-                            {{exec.dateStarted.date | moment(momentJobFormat)}}
+                            {{momentJobFormatDate(exec.dateStarted.date)}}
                         </i>
                         <i class="timerel text-muted" v-if="isRecentCalendarDate(exec.dateStarted.date)">
-                            {{exec.dateStarted.date | moment('calendar',null)}}
+                            {{momentCalendarFormat(exec.dateStarted.date)}}
                         </i>
                         <i class="timerel text-muted" v-else>
-                            {{exec.dateStarted.date | moment('from','now')}}
+                            {{momentFromNow(exec.dateStarted.date)}}
                         </i>
                     </span>
                 </td>
@@ -277,13 +277,13 @@
             }">
                 <span v-if="rpt.dateCompleted">
                     <span class="timeabs ">
-                        {{rpt.dateCompleted | moment(momentJobFormat)}}
+                        {{momentJobFormatDate(rpt.dateCompleted)}}
                     </span>
                     <span class="timerel text-muted" v-if="isRecentCalendarDate(rpt.dateCompleted)">
-                        {{rpt.dateCompleted | moment('calendar',null)}}
+                        {{momentCalendarFormat(rpt.dateCompleted)}}
                     </span>
                     <span class="timerel text-muted" v-else>
-                        {{rpt.dateCompleted | moment('from','now')}}
+                        {{momentFromNow(rpt.dateCompleted)}}
                     </span>
                 </span>
             </td>
@@ -373,7 +373,7 @@
 
 <script lang="ts">
 import axios from 'axios'
-import Vue from 'vue'
+import {defineComponent} from 'vue'
 import moment from 'moment'
 import OffsetPagination from '../../../library/components/utils/OffsetPagination.vue'
 import ActivityFilter from './activityFilter.vue'
@@ -421,7 +421,7 @@ function nodeStats(node: string) {
     return info
 }
 
-export default Vue.extend({
+export default defineComponent({
   name: 'ActivityList',
   components:{
     OffsetPagination,
@@ -491,6 +491,15 @@ export default Vue.extend({
     }
   },
   methods: {
+    momentFromNow(val: string) {
+        return moment(val, 'from','now')
+    },
+    momentCalendarFormat(val:string) {
+        return moment(val, 'calendar')
+    },
+    momentJobFormatDate(val: string) {
+      return moment(val, this.momentJobFormat)
+    },
     purify(text:string) {
       return DOMPurify.sanitize(text);
     },

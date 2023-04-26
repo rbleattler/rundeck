@@ -1,7 +1,6 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue from 'vue'
-import Vue2Filters from 'vue2-filters'
+import Vue, {createApp} from 'vue'
 import VueCookies from 'vue-cookies'
 import ProjectPluginConfig from './ProjectPluginConfig'
 import ProjectNodeSourcesConfig from './ProjectNodeSourcesConfig'
@@ -9,17 +8,10 @@ import ProjectNodeSourcesHelp from './ProjectNodeSourcesHelp'
 import WriteableProjectNodeSources from './WriteableProjectNodeSources'
 import PageConfirm from '../../../library/components/utils/PageConfirm.vue'
 import * as uiv from 'uiv'
-import VueI18n from 'vue-i18n'
+import VueI18n, {createI18n} from 'vue-i18n'
 import international from './i18n'
 import uivLang from '../../../library/utilities/uivi18n'
 import {getRundeckContext} from '../../../library'
-
-Vue.config.productionTip = false
-
-Vue.use(Vue2Filters)
-Vue.use(VueCookies)
-Vue.use(uiv)
-Vue.use(VueI18n)
 
 let messages = international.messages
 let locale = window._rundeck.locale || 'en_US'
@@ -41,14 +33,13 @@ const els = document.body.getElementsByClassName('project-plugin-config-vue')
 for (var i = 0; i < els.length; i++) {
   const e = els[i]
 
-  const i18n = new VueI18n({
+  const i18n = createI18n({
     silentTranslationWarn: false,
     locale: locale, // set locale
     messages // set locale messages,
 
   })
-  new Vue({
-    el: e,
+  const app = createApp({
     data() {
       return {
         EventBus: context.eventBus
@@ -60,7 +51,11 @@ for (var i = 0; i < els.length; i++) {
       WriteableProjectNodeSources,
       ProjectNodeSourcesHelp,
       PageConfirm
-    },
-    i18n
+    }
   })
+  app.use(VueCookies)
+  app.use(uiv)
+  app.use(i18n)
+  app.mount(e)
+
 }

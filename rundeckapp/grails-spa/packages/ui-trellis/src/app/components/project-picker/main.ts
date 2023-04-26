@@ -16,10 +16,10 @@ function init() {
         return
 
     const component = createApp({
-        el,
         components: {ProjectPicker},
         provide: {rootStore},
         template: `<ProjectPicker projectLabel="${el.dataset.projectLabel}"/>`
 
     })
+    component.mount(el)
 }

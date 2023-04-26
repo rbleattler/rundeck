@@ -18,7 +18,7 @@
 
 </template>
 <script lang="ts">
-import Vue from "vue";
+import Vue, {defineComponent} from "vue";
 import {getRundeckContext} from "../../../library";
 import {RundeckBrowser} from "../../../library";
 import PluginValidation from "../../../library/interfaces/PluginValidation";
@@ -39,7 +39,7 @@ interface ProjectPluginConfigEntry {
   origIndex?: number;
   modified: boolean;
 }
-export default Vue.extend({
+export default defineComponent({
   name: "App",
   components: {
     ProjectPluginGroups,

@@ -23,8 +23,8 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue"
-export default Vue.extend({
+import Vue, {defineComponent} from "vue"
+export default defineComponent({
   props: {
     'prop': {
       type: Object,

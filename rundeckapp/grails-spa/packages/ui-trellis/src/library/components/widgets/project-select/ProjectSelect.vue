@@ -12,7 +12,7 @@
                         placeholder="Search all projects"/>
                 </div>
             </div>
-            <Skeleton :loading="!projects.loaded">
+<!--            <Skeleton :loading="!projects.loaded">-->
                 <RecycleScroller
                     ref="scroller"
                     :items="projects.search(searchTerm)"
@@ -27,7 +27,7 @@
                         <span class="text-ellipsis">{{item.label || item.name}}<span v-if="searchTerm && item.label && item.label!==item.name" class="text-muted"> {{item.name}}</span></span>
                     </a>
                 </RecycleScroller>
-            </Skeleton>
+<!--            </Skeleton>-->
         </div>
              <div class="btn-group btn-group-justified" style="height: 40px; flex-grow: 0; flex-shrink: 0; border-top: solid 1px grey;">
                 <a :href="allProjectsLink" role="button" tabindex="0" class="btn btn-default scroller__subbutton" style="border-radius: 0px; border: 0px; border-right: solid 1px grey;">
@@ -57,14 +57,14 @@ const scroller = ref(null)
 
 RecycleScroller.updated = function() {
     if (!ps.value)
-        nextTick().then(() => {ps.value = new PerfectScrollbar(scroller.value, {minScrollbarLength: 20})})
+        nextTick().then(() => {ps.value = new PerfectScrollbar(scroller.value.$el, {minScrollbarLength: 20})})
     else
         ps.value.update()
 }
 
-const destroy = RecycleScroller.beforeDestroy
-RecycleScroller.beforeDestroy = function() {
-    destroy.bind(this)()
+const unmount = RecycleScroller.beforeUnmount
+RecycleScroller.beforeUnmount = function() {
+    unmount.bind(this)()
     if (ps.value) {
         try {
             ps.value.destroy()

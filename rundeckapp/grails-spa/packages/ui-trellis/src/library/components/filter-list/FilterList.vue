@@ -44,9 +44,12 @@ import { RecycleScroller } from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 
 RecycleScroller.updated = function() {
-    if (!ps.value)
-        nextTick().then(() => {ps.value = new PerfectScrollbar(scroller.value, {minScrollbarLength: 20})})
-    else
+    if (!ps.value) {
+        nextTick().then(() => {
+            const scrollerEl = scroller.value
+            ps.value = new PerfectScrollbar(scrollerEl.$el, {minScrollbarLength: 20})
+        })
+    } else
         ps.value.update()
 }
 
@@ -63,7 +66,7 @@ RecycleScroller.beforeUnmount = function() {
     const ps = ref<PerfectScrollbar>()
     const root = ref()
     const search = ref()
-    const scroller = ref()
+    const scroller = ref(null)
     const searchTerm = ref<string>('')
 
 
@@ -83,7 +86,7 @@ const props = withDefaults(defineProps<{
 })
 
     function filtered() {
-        return this.items.filter(i => i.name.includes(searchTerm.value))
+        return props.items.filter(i => i.name.includes(searchTerm.value))
     }
 
     onMounted(() => {

@@ -36,7 +36,7 @@
   </div>
 </template>
 <script lang="ts">
-import Vue from 'vue'
+import Vue, {defineComponent} from 'vue'
 
 import Ace from './AceEditorVue.vue'
 
@@ -63,7 +63,7 @@ import 'ace-builds/src-noconflict/mode-xml'
 import 'ace-builds/src-noconflict/mode-yaml'
 import 'ace-builds/src-noconflict/theme-chrome'
 
-export default Vue.extend({
+export default defineComponent({
   name: 'ace-editor',
   components: {Ace},
   props: {

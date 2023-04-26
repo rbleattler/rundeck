@@ -1,13 +1,12 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue, {createApp} from 'vue'
-import Vue2Filters from 'vue2-filters'
+import {createApp} from 'vue'
 import VueCookies from 'vue-cookies'
 import ActivityList from '../../components/activity/activityList.vue'
 import ActivityRunningIndicator from '../../components/activity/activityRunningIndicator.vue'
 import * as uiv from 'uiv'
 import international from './i18n'
-import VueI18n, {createI18n} from 'vue-i18n'
+import {createI18n} from 'vue-i18n'
 import moment from 'moment'
 import {
   EventBus
@@ -55,7 +54,6 @@ for (var i = 0; i < els.length; i++) {
   })
   app.use(uiv)
   app.use(i18n)
-  app.use(Vue2Filters)
   app.use(VueCookies)
   app.mount(e)
 }

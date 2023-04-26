@@ -147,7 +147,7 @@
 
 <script lang="ts">
 import axios from "axios";
-import Vue from "vue";
+import Vue, {defineComponent} from "vue";
 import { Notification } from "uiv";
 import { getRundeckContext, RundeckContext } from "../../../library";
 import Expandable from "../../../library/components/utils/Expandable.vue";
@@ -182,7 +182,7 @@ interface ProjectPluginConfigEntry {
 }
 
 const array_clone = (arr: any[]): any[] => arr.map(val => Object.assign({}, val))
-export default Vue.extend({
+export default defineComponent({
   name: "App",
   components: {
     PluginInfo,

@@ -76,11 +76,11 @@
     </span>
 </template>
 <script lang="ts">
-import Vue from 'vue'
+import Vue, {defineComponent} from 'vue'
 import Expandable from '../utils/Expandable.vue'
 import AceEditor from '../utils/AceEditor.vue'
 import PluginPropVal from './pluginPropVal.vue'
-export default Vue.extend({
+export default defineComponent({
   components:{
     Expandable,
     AceEditor,

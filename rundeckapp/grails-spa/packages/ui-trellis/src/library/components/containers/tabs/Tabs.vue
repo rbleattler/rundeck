@@ -2,11 +2,13 @@
     <div class="patabs" :class="[type]">
         <div class="patabs-list">
             <div v-for="(tab, index) in tabs" :key="tab.title" @click="selectTab(index)" class="patab-item"
-                 :class="[index == selectedIndex ? 'patab-item--active' : '']">
+                 :class="[index === selectedIndex ? 'patab-item--active' : '']">
                 {{ tab.title }}
             </div>
         </div>
+        <div ref="tabs">
         <slot></slot>
+        </div>
     </div>
 </template>
 
@@ -37,7 +39,7 @@ export default {
         this.selectTab(0)
     },
     created (){
-        this.tabs = this.$children
+        this.tabs = this.$slots.default()
     }
 }
 </script>

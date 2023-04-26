@@ -17,7 +17,7 @@ export default defineComponent({
             default: false
         }
     },
-
+    emits: ['close'],
     data(){
         return {
             parent: null as HTMLElement | null,
@@ -34,7 +34,7 @@ export default defineComponent({
         this.pop()
     },
 
-    beforeDestroy() {
+    beforeUnmount() {
         document.removeEventListener('click', this.closeListener)
         const popper = this.$refs['popper'] as HTMLElement
         document.body.removeChild(popper)

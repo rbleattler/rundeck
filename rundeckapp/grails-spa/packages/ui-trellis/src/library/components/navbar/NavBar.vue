@@ -3,7 +3,7 @@
         <ul class="nav-bar__list" ref="list" v-if="navBar">
             <li>
                 <ul class="nav-bar__list-group" ref="groupMain">
-                    <template v-for="item in navBar.containerGroupItems('root', 'main')">
+                    <template v-for="item in getItems('root', 'main')">
                         <NavBarItem v-if="item.type == 'link'" :item="item" :key="item.id" itemStyle="icon" />
                         <NavBarContainer v-if="item.type == 'container'" :item="item" :key="item.id" />
                     </template>
@@ -11,8 +11,8 @@
             </li>
             <li style="margin-top: auto;width: 100%">
                 <ul class="nav-bar__list-group nav-bar__list-group--bottom" ref="group-bottom">
-                    <NavBarContainer v-if="navBar.isOverflowing" :item="navBar.overflowItem" />
-                    <template v-for="item in navBar.containerGroupItems('root', 'bottom')">
+                    <NavBarContainer v-if="navIsOverflowing" :item="overflowItem()" />
+                    <template v-for="item in getItems('root', 'bottom')">
                         <NavBarItem v-if="item.type == 'link'" :item="item" :key="item.id" itemStyle="icon" />
                         <NavBarContainer v-if="item.type == 'container'" :item="item" :key="item.id" />
                     </template>
@@ -25,26 +25,40 @@
 <script setup lang="ts">
 import { onBeforeMount, onMounted, ref} from 'vue'
 
-import {NavBar} from '../../stores/NavBar'
+import {NavBar, NavContainer, NavItem} from '../../stores/NavBar'
 
 import NavBarItem from './NavBarItem.vue'
 import NavBarContainer from './NavBarContainer.vue'
 import {getRundeckContext} from "../../rundeckService";
 import {RundeckContext} from "../../interfaces/rundeckWindow";
+import {computed} from "mobx";
 
 const navBar = ref<NavBar>()
-const root = ref()
+const root = ref(null)
 const list = ref()
 const groupMain = ref()
+
+const navIsOverflowing = computed(() => {
+    return navBar.value.isOverflowing
+})
+
+function overflowItem(): NavContainer{
+    return navBar.value.overflowItem
+}
+
+function getItems(ctr: string, grp: string): NavItem[] {
+    const items = navBar.value.containerGroupItems(ctr, grp)
+    return items
+}
 
 onBeforeMount(() => {
     navBar.value = (getRundeckContext() as RundeckContext).rootStore.navBar
 })
 
 onMounted(() => {
-    window.addEventListener('resize', this.overflow)
+    window.addEventListener('resize', overflow)
     /** After layout and before render handle overflow */
-    window.requestAnimationFrame(this.overflow)
+    window.requestAnimationFrame(overflow)
 })
 
 /**

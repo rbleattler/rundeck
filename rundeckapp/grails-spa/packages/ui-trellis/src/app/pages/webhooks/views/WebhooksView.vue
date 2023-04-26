@@ -159,8 +159,8 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import VueI18n from 'vue-i18n'
+import Vue, {defineComponent} from 'vue'
+import {createI18n} from 'vue-i18n'
 import i18n from '../i18n'
 import axios from 'axios'
 
@@ -193,7 +193,7 @@ var projectName = window._rundeck ? window._rundeck.projectName : undefined
 
 var _i18n = i18n
 var lang = window._rundeck.language
-var i18nInstance = new VueI18n({
+var i18nInstance = createI18n({
   messages: {
     [lang]: {
       ...(_i18n[lang] || i18n.en),
@@ -202,7 +202,7 @@ var i18nInstance = new VueI18n({
   }
 })
 
-export default observer(Vue.extend({
+export default defineComponent({
   name: "WebhooksView",
   components: {
     CopyBox,
@@ -465,7 +465,7 @@ export default observer(Vue.extend({
     await this.rootStore.plugins.load('WebhookEvent')
     this.webhookPlugins = this.rootStore.plugins.getServicePlugins('WebhookEvent')
   }
-}))
+})
 </script>
 
 

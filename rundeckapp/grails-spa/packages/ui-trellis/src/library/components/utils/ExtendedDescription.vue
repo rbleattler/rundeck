@@ -15,10 +15,10 @@
 </template>
 <script lang="ts">
 
-import MarkdownItVue from 'markdown-it-vue'
-import Vue from 'vue'
+import MarkdownItVue from 'vue3-markdown-it'
+import {defineComponent} from 'vue'
 
-export default Vue.extend({
+export default defineComponent({
   name: 'ExtendedDescription',
   components: {MarkdownItVue},
   computed:{

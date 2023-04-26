@@ -21,6 +21,5 @@ const context = getRundeckContext()
 const token = getSynchronizerToken()
 
 context.rundeckClient = new RundeckBrowser(token.TOKEN, token.URI, context.rdBase)
-console.log("setting event bus object")
 context.eventBus = EventBus
 context.rootStore = new RootStore(context.rundeckClient, context.appMeta)

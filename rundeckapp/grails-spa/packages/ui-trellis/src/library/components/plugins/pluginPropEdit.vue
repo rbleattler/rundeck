@@ -340,7 +340,7 @@
               <span class="less-indicator-verbiage btn-link btn-xs">Less </span>
           </summary>
 
-          <markdown-it-vue class="markdown-body" :content="extraDescription" />
+          <markdown class="markdown-body" :source="extraDescription" />
 
       </details>
       <div class="help-block" v-else>{{prop.desc}}</div>
@@ -352,9 +352,8 @@
   </div>
 </template>
 <script lang="ts">
-import Vue from "vue"
-import MarkdownItVue from 'markdown-it-vue'
-// import 'markdown-it-vue/dist/markdown-it-vue.css'
+import {defineComponent} from "vue"
+//import Markdown  from 'vue3-markdown-it'
 import { Typeahead } from 'uiv';
 
 import JobConfigPicker from './JobConfigPicker.vue'
@@ -366,12 +365,12 @@ import { client } from '../../modules/rundeckClient'
 import DynamicFormPluginProp from "./DynamicFormPluginProp.vue";
 import TextAutocomplete from '../utils/TextAutocomplete.vue'
 
-export default Vue.extend({
+export default defineComponent({
   components:{
     DynamicFormPluginProp,
     AceEditor,
     JobConfigPicker,
-    MarkdownItVue,
+//    Markdown,
     PluginPropVal,
     KeyStorageSelector,
     TextAutocomplete
