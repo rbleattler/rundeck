@@ -168,7 +168,7 @@ export default {
     'showTitle',
     'showIcon',
     'showDescription',
-    'value',
+    'modelValue',
     'savedProps',
     'pluginConfig',
     'validation',
@@ -179,6 +179,7 @@ export default {
     'contextAutocomplete',
     'autocompleteCallback'
   ],
+  emits: ['update:modelValue','change'],
   data () {
     return {
       props: [] as any[],
@@ -200,10 +201,14 @@ export default {
   },
   methods: {
     setVal(target: any, prop: any, val: any) {
-      Vue.set(target, prop, val)
+      target[prop] = val
     },
     prepareInputs () {
       if (!this.isShowConfigForm) {
+          console.log("not showing config form")
+          console.log("mode: " + this.mode)
+          console.log("isEdit: " + this.isEditMode)
+          console.log("isCreate: " + this.isCreateMode)
         return
       }
       this.inputLoaded=false
@@ -223,23 +228,23 @@ export default {
       // set up defaults and convert Options to array
       this.props.forEach((prop: any) => {
         if (config[prop.name]) {
-          Vue.set(this.inputValues, prop.name, config[prop.name])
+          this.inputValues[prop.name] = config[prop.name]
         }
         if (modeCreate && !this.inputValues[prop.name] && prop.defaultValue) {
-          Vue.set(this.inputValues, prop.name, prop.defaultValue)
+          this.inputValues[prop.name] = prop.defaultValue
         }
         if (prop.type === 'Options' && typeof this.inputValues[prop.name] === 'string') {
           // convert to array
-          Vue.set(this.inputValues, prop.name, this.inputValues[prop.name].split(/, */))
+          this.inputValues[prop.name] = this.inputValues[prop.name].split(/, */)
         } else if (prop.type === 'Options' && typeof this.inputValues[prop.name] === 'undefined') {
           // convert to array
-          Vue.set(this.inputValues, prop.name, [])
+          this.inputValues[prop.name] = []
         } else if (prop.type === 'Select' && typeof this.inputValues[prop.name] === 'undefined') {
           // select box should use blank string to preselect disabled option
-          Vue.set(this.inputValues, prop.name, '')
+          this.inputValues[prop.name] = ''
         } else if (prop.type === 'Boolean' && typeof this.inputValues[prop.name] === 'string') {
           // boolean should convert to boolean
-          Vue.set(this.inputValues, prop.name, this.inputValues[prop.name]==='true')
+          this.inputValues[prop.name] = this.inputValues[prop.name]==='true'
         }
         if(prop.options &&( prop.options['groupName']||prop.options['grouping'])){
           const gname=prop.options['groupName']||'-'
@@ -270,9 +275,9 @@ export default {
       if (prop.options && prop.options['selectionAccessor'] === 'PLUGIN_TYPE') {
         const serviceName = prop.options['selectionAdditional']
         getPluginProvidersForService(serviceName).then((data: any) => {
-          Vue.set(this.propsComputedSelectorData, prop.name, data.descriptions.map((provider: any) => {
+          this.propsComputedSelectorData[prop.name] = data.descriptions.map((provider: any) => {
             return {key: provider.title, value: provider.name, description: provider.description}
-          }))
+          })
         })
       }
     },
@@ -383,7 +388,7 @@ export default {
     inputValues: {
       handler (newValue, oldValue) {
         if (this.isShowConfigForm) {
-          this.$emit('input', Object.assign({}, this.inputSaved, {config: this.exportedValues}))
+          this.$emit('update:modelValue', Object.assign({}, this.inputSaved, {config: this.exportedValues}))
         }
       },
       deep: true
@@ -422,7 +427,7 @@ export default {
       this.props.forEach((prop: any) => {
         visibility[prop.name] = this.isPropVisible(prop) && this.isPropInScope(prop)
         if (!visibility[prop.name]) {
-          Vue.delete(visibility, prop.name)
+          delete visibility[prop.name]
         }
       })
       return visibility
@@ -474,9 +479,13 @@ export default {
         }else{
             return null
         }
+    },
+    value(): any {
+        return this.modelValue
     }
   },
   beforeMount () {
+      console.log("running before mount")
     this.loadForMode()
   }
 }

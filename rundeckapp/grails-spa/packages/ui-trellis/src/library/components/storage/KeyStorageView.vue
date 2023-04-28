@@ -208,7 +208,6 @@
 import moment from 'moment'
 import {getRundeckContext} from "../../index"
 import {defineComponent} from "vue"
-
 import KeyType from "../../types/KeyType";
 import InputType from "../../types/InputType";
 

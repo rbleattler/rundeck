@@ -123,25 +123,26 @@
               <page-confirm :event-bus="EventBus" class="project-plugin-config-vue pull-right"
                 message="${enc(attr:message(code:'page.unsaved.changes'))}" :display="true"
                 style="display: inline-block">
-                <template v-slot:default="{confirm}">
-                  <div class="well well-sm">
-                    <span class="text-warning">
-                      <g:message code="page.unsaved.changes" />:
-                    </span>
-                    <span v-if="confirm.indexOf('Node Sources')>=0">
-                      <a href="#node_sources" onclick="jQuery('#tab_link_sources').tab('show')">
-                        <i class="fas fa-hdd fa-edit"></i>
-                        <g:message code="project.node.sources.title.short" />
-                      </a>
-                    </span>
-                    <span v-if="confirm.indexOf('Node Enhancers')>=0">
-                      <a href="#plugins" >
-                        <i class="fas fa-puzzle-piece"></i>
-                        <g:message code="framework.service.NodeEnhancer.label.short.plural" />
-                      </a>
-                    </span>
-                  </div>
-                </template>
+              %{--//TODO: VUE3-MIGRATION FIX THIS --}%
+%{--                <template v-slot="{ confirm }">--}%
+%{--                  <div class="well well-sm">--}%
+%{--                    <span class="text-warning">--}%
+%{--                      <g:message code="page.unsaved.changes" />:--}%
+%{--                    </span>--}%
+%{--                    <span v-if="confirm.indexOf('Node Sources')>=0">--}%
+%{--                      <a href="#node_sources" onclick="jQuery('#tab_link_sources').tab('show')">--}%
+%{--                        <i class="fas fa-hdd fa-edit"></i>--}%
+%{--                        <g:message code="project.node.sources.title.short" />--}%
+%{--                      </a>--}%
+%{--                    </span>--}%
+%{--                    <span v-if="confirm.indexOf('Node Enhancers')>=0">--}%
+%{--                      <a href="#plugins" >--}%
+%{--                        <i class="fas fa-puzzle-piece"></i>--}%
+%{--                        <g:message code="framework.service.NodeEnhancer.label.short.plural" />--}%
+%{--                      </a>--}%
+%{--                    </span>--}%
+%{--                  </div>--}%
+%{--                </template>--}%
               </page-confirm>
               <div class="tab-content">
                       <div class="tab-pane" id="node_settings">
@@ -200,36 +201,36 @@
                         </div>
 
 
-                        <div class="tab-pane ${writeableSources ? '' : 'active'}" id="node_sources">
+                        <div class="tab-pane ${writeableSources ? '' : 'active'} project-plugin-config-vue" id="node_sources">
 
 
-                              <project-node-sources-config class="project-plugin-config-vue"
+                              <project-node-sources-config
                                                           help="${enc(attr: g.message(code: "domain.Project.edit.ResourceModelSource.explanation"))}"
                                                           :edit-mode="true"
                                                           :mode-toggle="false"
-                                                          @saved="EventBus.$emit('project-node-sources-saved')"
-                                                          @modified="EventBus.$emit('page-modified','Node Sources')"
-                                                          @reset="EventBus.$emit('page-reset','Node Sources')"
+                                                          @saved="EventBus.emit('project-node-sources-saved')"
+                                                          @modified="EventBus.emit('page-modified','Node Sources')"
+                                                          @reset="EventBus.emit('page-reset','Node Sources')"
                                                           :event-bus="EventBus">
                               </project-node-sources-config>
 
-                              <project-node-sources-help class="project-plugin-config-vue" :event-bus="EventBus">
+                              <project-node-sources-help :event-bus="EventBus">
 
                               </project-node-sources-help>
                         </div>
 
 
                       <feature:enabled name="enhancedNodes">
-                        <div class="tab-pane" id="node_plugins">
+                        <div class="tab-pane project-plugin-config-vue" id="node_plugins">
 
-                              <project-plugin-config class="project-plugin-config-vue"
+                              <project-plugin-config
                                                     config-prefix="nodes.plugin"
                                                     service-name="NodeEnhancer"
                                                     help="${enc(attr: g.message(code: 'framework.service.NodeEnhancer.explanation'))}"
                                                     edit-button-text="${enc(attr: g.message(code: 'edit.node.enhancers'))}"
                                                     :mode-toggle="false"
-                                                    @modified="EventBus.$emit('page-modified','Node Enhancers')"
-                                                    @reset="EventBus.$emit('page-reset','Node Enhancers')"
+                                                    @modified="EventBus.emit('page-modified','Node Enhancers')"
+                                                    @reset="EventBus.emit('page-reset','Node Enhancers')"
                                                     :event-bus="EventBus"
                                                     :edit-mode="true">
 

@@ -1,5 +1,5 @@
 <template>
-    <FilterList v-on="$listeners" :items="webhooks.webhooksForProject(project)" id-field="uuid" :selected="selected" searchText="Filter Webhooks" :itemSize="40">
+    <FilterList v-bind="$attrs" :items="webhooks.webhooksForProject(project)" id-field="uuid" :selected="selected" searchText="Filter Webhooks" :itemSize="40">
         <template v-slot:item="{item}"  >
             <WebhookItem :webhook="item"/>
         </template>
@@ -18,7 +18,7 @@ import FilterList from '../../filter-list/FilterList.vue'
 import WebhookItem from './WebhookSelectItem.vue'
 import {RundeckContext} from "../../../interfaces/rundeckWindow";
 import {getRundeckContext} from "../../../rundeckService";
-
+    const inheritAttrs = false
     const props = withDefaults(defineProps<{
         project: string,
         selected: string

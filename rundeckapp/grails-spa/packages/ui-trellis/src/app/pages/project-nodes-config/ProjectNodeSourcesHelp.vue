@@ -44,13 +44,13 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import Vue, {defineComponent} from "vue";
 import { getRundeckContext, RundeckContext } from "../../../library";
 
-export default Vue.extend({
+export default defineComponent({
   name: "ProjectNodeSourcesHelp",
   props:{
-    eventBus:{type:Vue,required:false}
+    eventBus:{type:Object,required:false}
   },
   data(){
     return {
@@ -101,7 +101,7 @@ export default Vue.extend({
       "      allow: [read] \n" +
       "description: Allow access to key storage"
 
-    this.eventBus.$on('nodes-unauthorized',(count: number)=>{
+      this.eventBus&&this.eventBus.on('nodes-unauthorized',(count: number)=>{
       if(count>0){
         this.unauthorized=true;
       }else{

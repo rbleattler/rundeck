@@ -41,11 +41,11 @@ export default defineComponent({
       this.count = count
     },
     clickAction() {
-      this.eventBus.$emit('activity-nowrunning-click-action')
+      this.eventBus.emit('activity-nowrunning-click-action')
     }
   },
   mounted(): void {
-    this.eventBus.$on('activity-nowrunning-count', this.updateNowrunning)
+    this.eventBus.on('activity-nowrunning-count', this.updateNowrunning)
   }
 })
 </script>

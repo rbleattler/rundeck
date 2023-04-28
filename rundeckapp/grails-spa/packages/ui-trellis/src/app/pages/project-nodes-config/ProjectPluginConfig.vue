@@ -177,7 +177,7 @@
 
 <script lang="ts">
 import axios from "axios";
-import Vue from "vue";
+import Vue, {defineComponent} from "vue";
 import { Notification } from "uiv";
 import { getRundeckContext, RundeckContext } from "../../../library";
 import Expandable from "../../../library/components/utils/Expandable.vue";
@@ -185,6 +185,7 @@ import PluginInfo from "../../../library/components/plugins/PluginInfo.vue";
 import PluginConfig from "../../../library/components/plugins/pluginConfig.vue";
 import pluginService from "../../../library/modules/pluginService";
 import PluginValidation from "../../../library/interfaces/PluginValidation";
+import {useI18n} from "vue-i18n";
 
 interface PluginConf {
   readonly type: string;
@@ -198,13 +199,14 @@ interface ProjectPluginConfigEntry {
   origIndex?: number;
   modified: boolean;
 }
-export default Vue.extend({
-  name: "App",
+export default defineComponent({
+  name: "ProjectPluginConfig",
   components: {
     PluginInfo,
     PluginConfig,
     Expandable
   },
+  emits: ['saved','reset','modified','plugin-configs-data','plugin-storage-access'],
   data() {
     return {
       loaded: false,
@@ -303,10 +305,10 @@ export default Vue.extend({
         plugin.entry.config
       );
       if (!validation.valid) {
-        Vue.set(plugin, "validation", validation);
+        plugin.validation = validation
         return;
       }
-      Vue.delete(plugin, "validation");
+      delete plugin.validation
       plugin.create = false;
       plugin.modified = true;
       this.setPluginConfigsModified();
@@ -484,7 +486,6 @@ export default Vue.extend({
   },
   mounted() {
     this.rundeckContext = getRundeckContext();
-    const self = this;
     this.notifyPluginConfigs();
     if (
       window._rundeck &&

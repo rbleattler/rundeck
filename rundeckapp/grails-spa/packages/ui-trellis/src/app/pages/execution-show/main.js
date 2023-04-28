@@ -1,13 +1,15 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue from 'vue'
-import VueI18n from 'vue-i18n'
+import {createApp} from 'vue'
+import {createI18n} from 'vue-i18n'
+import * as uiv from 'uiv'
 
 import { getRundeckContext } from '../../../library'
 import LogViewer from '../../../library/components/execution-log/logViewer.vue'
 import uivLang from '../../../library/utilities/uivi18n'
 
 import './nodeView'
+import VueCookies from "vue-cookies";
 
 const VIEWER_CLASS = 'execution-log-viewer'
 
@@ -27,11 +29,6 @@ let messages =
         window.Messages
       )
     }
-Vue.config.productionTip = false
-
-// Vue.use(VueI18n)
-// Vue.use(VueCookies)
-// Vue.use(uiv)
 
 const els = document.body.getElementsByClassName(VIEWER_CLASS)
 
@@ -78,7 +75,7 @@ window.onhashchange = () => {
 
 function mount(e) {
   // Create VueI18n instance with options
-  const i18n = new VueI18n({
+  const i18n = createI18n({
     silentTranslationWarn: true,
     locale: locale, // set locale
     messages // set locale messages,
@@ -96,9 +93,9 @@ function mount(e) {
    * Since the viewer is a class component that would make its
    * constructor the root constructor and chaos ensues...
    * */
+  /* removed temporarily  v-if="parentNode.display != 'none'" */
   const template = `\
   <LogViewer
-    v-if="this.$el.parentNode.display != 'none'"
     executionId="${e.dataset.executionId}"
     jumpToLine="${jumpToLine || null}"
     ref="viewer"
@@ -106,9 +103,7 @@ function mount(e) {
   />
   `
 
-  const vue = Vue.createApp({
-    el: e,
-    i18n,
+  const vue = createApp({
     components: {LogViewer},
     template: template,
     mounted() {
@@ -119,15 +114,19 @@ function mount(e) {
       rootStore
     }
   })
+  vue.use(VueCookies)
+  vue.use(uiv)
+  vue.use(i18n)
+  vue.mount(e)
 
   /** Puts line number in url HASH */
-  vue.$on('line-select', (e) => {
+  window._rundeck.eventBus.on('line-select', (e) => {
     const hash = window.location.hash
     window.location.hash = `${hash.split('L')[0]}L${e}`
   })
 
   /** Removes line number from url hash */
-  vue.$on('line-deselect', (e) => {
+  window._rundeck.eventBus.on('line-deselect', (e) => {
     const newHash = `${window.location.hash.split('L')[0]}`
 
     const panel = document.getElementById('section-main')

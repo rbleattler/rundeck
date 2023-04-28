@@ -10,7 +10,6 @@ import uivLang from '../../../library/utilities/uivi18n'
 import {getRundeckContext} from '../../../library'
 import PluginSetConfig from './PluginSetConfig'
 import ProjectPluginGroups from "./ProjectPluginGroups";
-import Markdown from 'vue3-markdown-it'
 
 let messages = international.messages
 let locale = window._rundeck.locale || 'en_US'
@@ -50,7 +49,6 @@ for (var i = 0; i < els.length; i++) {
             ProjectPluginGroups
         }
     })
-    app.use(Markdown)
     app.use(VueCookies)
     app.use(uiv)
     app.use(i18n)

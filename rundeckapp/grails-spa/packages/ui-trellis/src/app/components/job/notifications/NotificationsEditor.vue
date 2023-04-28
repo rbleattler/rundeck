@@ -46,7 +46,7 @@
 
                   <popover :title="$t('scheduledExecution.property.notifyAvgDurationThreshold.label')" target="#jobAvgInfoBtn">
                     <template v-slot:popover>
-                      <markdown-it-vue class="markdown-body" :content="$t('scheduledExecution.property.notifyAvgDurationThreshold.description')"/>
+                      <VMarkdownView class="markdown-body" :content="$t('scheduledExecution.property.notifyAvgDurationThreshold.description')"/>
                     </template>
                   </popover>
 
@@ -244,12 +244,12 @@ import PluginConfig from "../../../../library/components/plugins/pluginConfig.vu
 import pluginService from "../../../../library/modules/pluginService";
 import ExtendedDescription from "../../../../library/components/utils/ExtendedDescription.vue";
 import UndoRedo from "../../util/UndoRedo.vue"
-import Vue from 'vue'
+import {VMarkdownView} from "vue3-markdown";
 
 export default {
   name: 'NotificationsEditor',
-  props: ['eventBus', 'notificationData'],
-  components: {PluginInfo,PluginConfig,ExtendedDescription,UndoRedo},
+  props: ['notificationData'],
+  components: {PluginInfo,PluginConfig,ExtendedDescription,UndoRedo, VMarkdownView},
   data () {
     return {
       notifyAvgDurationThreshold:null,
@@ -278,7 +278,8 @@ export default {
       editModal:false,
       autocompleteCallback: {
         type: Function
-      }
+      },
+      eventBus:null
     }
   },
   computed:{
@@ -333,7 +334,7 @@ export default {
     async doDelete(index){
       let oldval = this.doClone(this.notifications[index])
       await this.operationDelete(index)
-      this.$emit(
+      this.eventBus.emit(
           "change",
           {
             index: index,
@@ -471,16 +472,17 @@ export default {
   },
   watch:{
     notifications(){
-      this.$emit('changed',this.notifications)
+      this.eventBus.emit('changed',this.notifications)
     }
   },
   async mounted () {
+      this.eventBus = window.context.eventBus
     this.autocompleteCallback = window.notificationAutocomplete
 
     this.notifications = [].concat(this.notificationData.notifications || [])
     this.notifyAvgDurationThreshold = this.notificationData.notifyAvgDurationThreshold
-    this.$on("undo",this.doUndo)
-    this.$on("redo",this.doRedo)
+    this.eventBus.on("undo",this.doUndo)
+    this.eventBus.on("redo",this.doRedo)
     pluginService
         .getPluginProvidersForService('Notification')
         .then(data => {

@@ -158,6 +158,7 @@ import PluginValidation from "../../../library/interfaces/PluginValidation";
 import {RundeckBrowser} from "@rundeck/client";
 import {cloneDeep} from "lodash"
 import _ from 'lodash';
+import {useI18n} from "vue-i18n";
 
 const client: RundeckBrowser = getRundeckContext().rundeckClient
 const rdBase = getRundeckContext().rdBase

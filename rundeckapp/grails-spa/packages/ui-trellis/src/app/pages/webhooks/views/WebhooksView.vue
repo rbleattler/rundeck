@@ -165,13 +165,12 @@ import i18n from '../i18n'
 import axios from 'axios'
 
 import {observable, autorun, reaction} from 'mobx'
-import {observer} from 'mobx-vue-lite'
 
 import PluginConfig from "../../../../library/components/plugins/pluginConfig.vue"
 import PluginInfo from "../../../../library/components/plugins/PluginInfo.vue"
 
 import CopyBox from '../../../../library/components/containers/copybox/CopyBox.vue'
-import Tabs from '../../../../library/components/containers/tabs/Tabs.vue'
+import Tabs from '../../../../library/components/containers/tabs/Tabs'
 import Tab from '../../../../library/components/containers/tabs/Tab.vue'
 import WebhookPicker from '../../../../library/components/widgets/webhook-select/WebhookSelect.vue'
 import KeyStorageSelector from '../../../../library/components/plugins/KeyStorageSelector.vue'

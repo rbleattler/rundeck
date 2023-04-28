@@ -1,4 +1,4 @@
-import Vue, {createApp} from 'vue'
+import  {createApp} from 'vue'
 
 import {autorun} from 'mobx'
 
@@ -7,7 +7,7 @@ import { getRundeckContext } from '../../../library'
 
 const rootStore = getRundeckContext().rootStore
 
-window._rundeck.eventBus.$on('ko-exec-show-output', (nodeStep: any) => {
+window._rundeck.eventBus.on('ko-exec-show-output', (nodeStep: any) => {
     const execId = nodeStep.flow.executionId()
     const stepCtx = nodeStep.stepctx
     const node = nodeStep.node.name
@@ -35,7 +35,6 @@ window._rundeck.eventBus.$on('ko-exec-show-output', (nodeStep: any) => {
     `
 
     const vue = createApp({
-        el: div,
         components: {LogViewer},
         template: template,
         provide: {
@@ -51,6 +50,7 @@ window._rundeck.eventBus.$on('ko-exec-show-output', (nodeStep: any) => {
             })}
         },
     })
+    vue.mount(elm)
 
     /** Update the KO code when this views output starts showing up */
     const execOutput = rootStore.executionOutputStore.createOrGet(execId)

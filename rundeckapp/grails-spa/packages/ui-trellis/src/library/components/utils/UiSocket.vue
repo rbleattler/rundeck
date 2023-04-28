@@ -61,6 +61,6 @@ const rootStore = (getRundeckContext() as RundeckContext).rootStore
                 items=items
             }
         } as UIWatcher
-        rootStore.ui.addWatcher(this.uiwatcher)
+        rootStore.ui.addWatcher(uiwatcher.value)
     })
 </script>

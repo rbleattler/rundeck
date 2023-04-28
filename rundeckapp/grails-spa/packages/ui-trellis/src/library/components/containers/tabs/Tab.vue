@@ -1,21 +1,23 @@
 <template>
-    <div v-show="isActive" class="tab-pane">
-        <slot></slot>
-    </div>
+  <div>
+      <slot></slot>
+  </div>
 </template>
 
 <script lang="ts">
-export default {
-    props:{
-        title: {
-            type: String,
-            default: 'patabs--standard'
-        },
-    },
-    data() {
-        return {
-            isActive: true
-        }
+import {defineComponent} from "vue";
+
+export default defineComponent({
+    name: "rd-tab",
+    props: {
+        title: String,
+        index: Number,
+        active: {type: Boolean, default: false},
+        keep: {type: Boolean, default: true}
     }
-}
+})
 </script>
+
+<style scoped>
+
+</style>

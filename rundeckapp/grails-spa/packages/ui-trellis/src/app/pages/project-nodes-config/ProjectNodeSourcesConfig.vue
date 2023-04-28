@@ -33,13 +33,13 @@
   </project-plugin-config>
 </template>
 <script lang="ts">
-import Vue from "vue";
+import Vue, {defineComponent} from "vue";
 import { getRundeckContext, RundeckContext } from "../../../library";
 
 import ProjectPluginConfig from "./ProjectPluginConfig.vue";
 import { getProjectNodeSources, NodeSource } from "./nodeSourcesUtil";
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     help: {
       type: String,
@@ -57,8 +57,9 @@ export default Vue.extend({
       type: String,
       default: "show"
     },
-    eventBus: { type: Vue, required: false }
+    eventBus: { type: Object, required: false }
   },
+  emits: ['saved','reset','modified'],
   components: {
     ProjectPluginConfig
   },
@@ -112,10 +113,10 @@ export default Vue.extend({
       this.sourcesData.forEach( (source:NodeSource)=>{
         if(source.errors!==undefined &&  (source.errors.indexOf("Unauthorized access") > 0 ||source.errors.indexOf("storage") > 0) ){
           globalErrors.push(source.errors)
-          this.eventBus.$emit('nodes-unauthorized',this.sourcesData.length)
+          this.eventBus.emit('nodes-unauthorized',this.sourcesData.length)
         }else{
           if(globalErrors.length==0){
-            this.eventBus.$emit('nodes-unauthorized',0)
+            this.eventBus.emit('nodes-unauthorized',0)
           }
         }
       })
@@ -127,8 +128,8 @@ export default Vue.extend({
     }
   },
   mounted() {
+      console.log("load project node sources config")
     this.rundeckContext = getRundeckContext();
-    const self = this;
     if (
       window._rundeck &&
       window._rundeck.rdBase &&

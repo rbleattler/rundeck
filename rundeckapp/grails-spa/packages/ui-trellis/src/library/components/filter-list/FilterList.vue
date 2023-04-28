@@ -42,6 +42,7 @@ import { autorun } from 'mobx'
 import PerfectScrollbar from 'perfect-scrollbar'
 import { RecycleScroller } from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
+import Skeleton from "../skeleton/Skeleton.vue";
 
 RecycleScroller.updated = function() {
     if (!ps.value) {
@@ -71,12 +72,12 @@ RecycleScroller.beforeUnmount = function() {
 
 
 const props = withDefaults(defineProps<{
-    loading: boolean
-    searchText: string
+    loading?: boolean
+    searchText?: string
     items: object[]
-    itemSize: number
-    selected: string
-    idField: string
+    itemSize?: number
+    selected?: string
+    idField?: string
 }>(), {
     loading: false,
     searchText: '',

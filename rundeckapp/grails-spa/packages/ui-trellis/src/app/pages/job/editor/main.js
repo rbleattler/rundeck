@@ -43,7 +43,6 @@ for (var i = 0; i < els.length; i++) {
     const e = els[i]
     /* eslint-disable no-new */
     const app = createApp({
-        el: e,
         data(){return{EventBus,}},
         components: { NotificationsEditorSection }
     })
@@ -57,24 +56,26 @@ const resels = document.body.getElementsByClassName('job-editor-resources-vue')
 for (var i = 0; i < resels.length; i++) {
     const e = resels[i]
     /* eslint-disable no-new */
-    const app = createApp({
+    const rapp = createApp({
         data(){return{EventBus,}},
         components: { ResourcesEditorSection }
     })
-    app.use(i18n)
-    app.mount(e)
+    rapp.use(uiv)
+    rapp.use(i18n)
+    rapp.mount(e)
 }
 const scsels = document.body.getElementsByClassName('job-editor-schedules-vue')
 
 for (var i = 0; i < scsels.length; i++) {
   const e = scsels[i]
   /* eslint-disable no-new */
-  const app = createApp({
+  const sapp = createApp({
     data(){return{EventBus,}},
     components: { SchedulesEditorSection }
   })
-  app.use(i18n)
-  app.mount(e)
+  sapp.use(uiv)
+  sapp.use(i18n)
+  sapp.mount(e)
 
   const othels = document.body.getElementsByClassName('job-editor-other-vue')
 
@@ -87,6 +88,7 @@ for (var i = 0; i < scsels.length; i++) {
       },
       components: {OtherEditorSection}
     })
+    oapp.use(uiv)
     oapp.use(i18n)
     oapp.mount(e)
   }

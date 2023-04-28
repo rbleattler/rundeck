@@ -29,66 +29,79 @@
     ></div>
 </template>
 
-<script setup lang="ts">
-import Vue, {computed, onBeforeMount, ref} from 'vue'
+<script lang="ts">
+import { defineComponent} from 'vue'
 import UiSocket from '../utils/UiSocket.vue'
 import {IBuilderOpts} from "./logBuilder"
+import {EventBus} from "../../utilities/vueEventBus";
+import {PropType} from "Vue";
 
-const props = withDefaults(defineProps<{
-    eventBus?: Vue
-    selected?: boolean
-    config: IBuilderOpts
-    prevEntry?: any
-    logEntry: any
-}>(), {
-    selected: false
+export default defineComponent({
+    components: {
+        UiSocket
+    },
+    props: {
+        eventBus: {
+            type: Object as PropType<typeof EventBus>,
+            required: false
+        },
+        selected: {
+            type: Boolean,
+            default: false
+        },
+        config: {
+          type: Object as PropType<IBuilderOpts>,
+          required: true
+        },
+        prevEntry: {
+            required: false
+        },
+        logEntry: {
+            required: true
+        }
+    },
+    data: function() {
+        return {
+            cfg : this.config
+        }
+    },
+    computed: {
+        timestamps() {
+            return (this.cfg.time?.visible) ? this.cfg.time.visible : false
+        },
+        command() {
+            return (this.cfg.command?.visible) ? this.cfg.command.visible : false
+        },
+        gutter() {
+            return (this.cfg.gutter?.visible) ? this.cfg.gutter.visible : false
+        },
+        nodeBadge() {
+            return (this.cfg.nodeIcon) ? this.cfg.nodeIcon : false
+        },
+        lineWrap() {
+            return (this.cfg.content?.lineWrap) ? this.cfg.content.lineWrap : false
+        },
+        displayNodeBadge() {
+            return this.cfg.nodeIcon && (this.prevEntry == undefined || this.logEntry.node != this.prevEntry.node)
+        },
+        displayGutter() {
+            return this.cfg.gutter?.visible && (this.cfg.time?.visible || this.cfg.command?.visible)
+        }
+    },
+    emits : ['line-select'],
+    methods: {
+        lineSelect() {
+            this.$emit('line-select', this.logEntry.lineNumber)
+        },
+        handleSettingsChanged(newSettings: any) {
+            Object.assign(this.cfg, newSettings);
+        }
+    },
+    beforeMount() {
+        this.eventBus.on("execution-log-settings-changed", this.handleSettingsChanged)
+    }
+
 })
-
-const cfg = ref<IBuilderOpts>(props.config)
-
-    const timestamps = computed(() => {
-      return (cfg.value.time?.visible) ? cfg.value.time.visible : false
-    })
-  
-    const command = computed(() => {
-      return (cfg.value.command?.visible) ? cfg.value.command.visible : false
-    })
-  
-    const gutter= computed(() => {
-      return (cfg.value.gutter?.visible) ? cfg.value.gutter.visible : false
-    })
-  
-    const nodeBadge= computed(() => {
-      return (cfg.value.nodeIcon) ? cfg.value.nodeIcon : false
-    })
-  
-    const lineWrap= computed(() => {
-      return (cfg.value.content?.lineWrap) ? cfg.value.content.lineWrap : false
-    })
-  
-    const displayNodeBadge= computed(() => {
-        return cfg.value.nodeIcon && (this.prevEntry == undefined || this.logEntry.node != this.prevEntry.node)
-    })
-
-    const displayGutter= computed(() => {
-        return cfg.value.gutter?.visible && (cfg.value.time?.visible || cfg.value.command?.visible)
-    })
-
-    const emit = defineEmits(['line-select'])
-
-    function lineSelect() {
-        emit('line-select', props.logEntry.lineNumber)
-    }
-
-    onBeforeMount(() => {
-      props.eventBus.$on("execution-log-settings-changed", this.handleSettingsChanged)
-    })
-
-    function handleSettingsChanged(newSettings: any) {
-      Object.assign(cfg.value, newSettings);
-    }
-
-
 </script>
 
 <style lang="scss" scoped>

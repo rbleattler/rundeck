@@ -1,5 +1,5 @@
 <template>
-  <div class="execution-log"
+  <div class="execution-log" ref="root"
     :class="[`execution-log--${colorTheme()}`]"
   >
     <rd-drawer
@@ -106,6 +106,7 @@ import { ExecutionOutput, ExecutionOutputEntry } from '../../stores/ExecutionOut
 import UiSocket from "../utils/UiSocket.vue";
 import {getRundeckContext} from "../../rundeckService";
 import {RundeckContext} from "../../interfaces/rundeckWindow";
+import { EventBus } from '../../utilities/vueEventBus'
 
 const CONFIG_STORAGE_KEY='execution-viewer'
 
@@ -124,15 +125,15 @@ const props = withDefaults(defineProps<{
     executionId: number
     node?: string
     stepCtx?: string
-    showStats: boolean
-    showSettings: boolean
-    follow: boolean
+    showStats?: boolean
+    showSettings?: boolean
+    follow?: boolean
     jumpToLine?: number
     theme?:string
     maxLogSize?: number
     trimOutput: number
     config?: IEventViewerSettings
-    useUserSettings: boolean
+    useUserSettings?: boolean
 }>(), {
     showStats: true,
     showSettings: true,
@@ -165,8 +166,12 @@ const props = withDefaults(defineProps<{
       nodeBadge: true,
       lineWrap: true
     })
+
+    const settingsChange = computed(() => {
+        return Object.assign({}, settings.value)
+    })
     
-    let eventBus: Vue
+    let eventBus = window._rundeck.eventBus as typeof EventBus
 
     watch(settings, (newVal: any, oldVal: any) => {
       if (props.useUserSettings && settingsVisible.value)
@@ -181,6 +186,8 @@ const props = withDefaults(defineProps<{
           options.value.vues.forEach(v => v[prop] = newVal[prop])
         }
       }
+
+      if(!logBuilder.value) return
 
       logBuilder.value.updateProps({
         node: this.node,
@@ -251,16 +258,17 @@ const props = withDefaults(defineProps<{
 
     const percentLoaded = ref<number>(0)
 
-    const scroller = ref() //html element with ref="scroller"
-    const log = ref() //html element with ref="log"
+    const scroller = ref(null) //html element with ref="scroller"
+    const log = ref(null) //html element with ref="log"
+    const root = ref(null) //html element with ref="log"
+
+    const parentNode = computed(() => {
+        return root.value._container
+    })
 
     const options = ref<ComponentOptions<Vue> & {
         vues: any[]
     }>({vues:[]})
-  
-    const settingsChange = computed(() => {
-      return Object.assign({}, settings.value)
-    })
 
     const followIcon = computed(() => {
       return props.follow ? 'fas fa-eye' : 'fas fa-eye-slash'
@@ -306,22 +314,26 @@ const props = withDefaults(defineProps<{
     },{})
 
     onBeforeMount(() => {
-      /* Get event bus*/
-      eventBus = rootContext.eventBus
       /** Load here so theme does not change afer visible */
       loadConfig()
     })
 
     onMounted(async () => {
+        const rt = root.value
+        console.log("parent node of log viewer")
+        console.log(rt._container.parentNode)
+        // console.log(root.value.$el?.parentNode)
+        // console.log(root.value._container)
+        // console.log(root.value._container?.parentNode)
         options.value.vues = []
 
         const _log = log.value as HTMLElement
 
-        viewer.value = rootStore.executionOutputStore.createOrGet(this.executionId.toString())
+        viewer.value = rootStore.executionOutputStore.createOrGet(props.executionId.toString())
 
-        logBuilder.value = new LogBuilder(this.viewer, _log, this.eventBus,{
-          node: this.node,
-          stepCtx: this.stepCtx,
+        logBuilder.value = new LogBuilder(viewer.value, _log, eventBus,{
+          node: props.node,
+          stepCtx: props.stepCtx,
           nodeIcon: settings.value.nodeBadge,
           maxLines: 20000,
           command: {
@@ -345,14 +357,13 @@ const props = withDefaults(defineProps<{
 
         updateProgress()
 
-        const {viewer} = getCurrentInstance()
-        await viewer.init()
+        await viewer.value.init()
 
-        execCompleted.value = viewer.execCompleted
-        follow.value = !viewer.execCompleted
+        execCompleted.value = viewer.value.execCompleted
+        follow.value = !viewer.value.execCompleted
 
-        if (viewer.execCompleted && viewer.size > this.maxLogSize) {
-          logSize.value = viewer.size
+        if (viewer.value.execCompleted && viewer.value.size > props.maxLogSize) {
+          logSize.value = viewer.value.size
           nextProgress.value = 0
           updateProgress(100)
           return
@@ -422,7 +433,7 @@ const props = withDefaults(defineProps<{
         setTimeout(update, delay)
         while(!cancel.cancellationRequested) {
           await new Promise((res, rej) => {setTimeout(res, 1000)})
-          if (this.progress == 100)
+          if (progress.value == 100)
             cancelProgress.value?.cancel()
           update()
         }
@@ -478,9 +489,11 @@ const props = withDefaults(defineProps<{
 
     function handleNewLine(entries: Array<any>) {
       for (const vue of entries) {
+          console.log("name: " + vue._props.logEntry)
         // @ts-ignore
-        const _selected = vue.logEntry.lineNumber == props.jumpToLine
-        vue.$on('line-select', handleLineSelect)
+        const _selected = vue._props.logEntry.lineNumber == props.jumpToLine
+        //TODO: VUE3-MIGRATION do this differently, this doesn't work
+          //vue.$on('line-select', handleLineSelect)
         if (_selected) {
           selected.value = vue
           vue.selected = true
@@ -517,7 +530,7 @@ const props = withDefaults(defineProps<{
             if (!resp.value)
               resp.value = viewer.value.getOutput(batchSize.value)
             const res = await resp.value
-            this.resp = undefined
+            resp.value = undefined
 
             if (!viewer.value.completed) {
               resp.value = viewer.value.getOutput(batchSize.value)

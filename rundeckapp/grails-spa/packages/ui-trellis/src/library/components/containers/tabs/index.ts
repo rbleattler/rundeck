@@ -1,4 +1,4 @@
-import Tabs from './Tabs.vue'
+import Tabs from './Tabs'
 import Tab from './Tab.vue'
 
 export {Tabs, Tab}

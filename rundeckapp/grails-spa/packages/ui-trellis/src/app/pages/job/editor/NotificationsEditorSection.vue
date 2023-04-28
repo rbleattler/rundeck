@@ -1,6 +1,6 @@
 <template>
   <div >
-    <notifications-editor :notification-data="notificationData" :event-bus="eventBus" v-if="notificationData" @changed="changed"/>
+    <notifications-editor :notification-data="notificationData" v-if="notificationData" @changed="changed"/>
     <json-embed :output-data="updatedData.notifications" field-name="jobNotificationsJson"/>
   </div>
 </template>

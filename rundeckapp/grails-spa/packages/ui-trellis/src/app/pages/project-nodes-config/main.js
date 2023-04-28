@@ -8,7 +8,7 @@ import ProjectNodeSourcesHelp from './ProjectNodeSourcesHelp'
 import WriteableProjectNodeSources from './WriteableProjectNodeSources'
 import PageConfirm from '../../../library/components/utils/PageConfirm.vue'
 import * as uiv from 'uiv'
-import VueI18n, {createI18n} from 'vue-i18n'
+import {createI18n} from 'vue-i18n'
 import international from './i18n'
 import uivLang from '../../../library/utilities/uivi18n'
 import {getRundeckContext} from '../../../library'
@@ -32,7 +32,7 @@ const els = document.body.getElementsByClassName('project-plugin-config-vue')
 
 for (var i = 0; i < els.length; i++) {
   const e = els[i]
-
+console.log("found project-plugin-config-vue")
   const i18n = createI18n({
     silentTranslationWarn: false,
     locale: locale, // set locale
@@ -40,6 +40,7 @@ for (var i = 0; i < els.length; i++) {
 
   })
   const app = createApp({
+    name: "ProjectNodeApp",
     data() {
       return {
         EventBus: context.eventBus

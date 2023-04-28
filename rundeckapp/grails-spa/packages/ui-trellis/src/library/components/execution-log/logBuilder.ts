@@ -1,8 +1,10 @@
-import Vue from 'vue'
+import Vue, {createApp} from 'vue'
 
 import EntryFlex from './logEntryFlex.vue'
 import { ExecutionOutput, ExecutionOutputEntry } from '../../stores/ExecutionOutput'
 import { IObservableArray, autorun } from 'mobx'
+import { EventBus } from '../../utilities/vueEventBus'
+import {CompatVue} from "@vue/runtime-dom";
 
 export interface IBuilderOpts {
   node?: string,
@@ -43,7 +45,7 @@ export class LogBuilder {
   constructor(
       readonly executionOutput: ExecutionOutput,
       readonly rootElem: HTMLElement,
-      readonly eventBus: typeof Vue,
+      readonly eventBus: typeof EventBus,
       opts: IBuilderOpts) {
     
     this.opts = Object.assign(LogBuilder.DefaultOpts(), opts)
@@ -105,8 +107,7 @@ export class LogBuilder {
 
   updateProps(opts: IBuilderOpts) {
     this.opts = Object.assign(LogBuilder.DefaultOpts(), opts)
-    //TODO: FIX
-    //this.eventBus.$emit("execution-log-settings-changed", this.opts)
+    this.eventBus.emit("execution-log-settings-changed", this.opts)
   }
 
   addLines(entries: Array<ExecutionOutputEntry>) {
@@ -144,8 +145,12 @@ export class LogBuilder {
     const stepType = this.entryStepType(newEntry)
     const path = this.entryPath(newEntry)
 
-    const vue = new EntryFlex({
-      propsData: {
+    const vue = createApp({
+      name: "EntryFlex",
+      components: {
+        EntryFlex
+      }
+    },{
         eventBus: this.eventBus,
         selected: selected,
         config: this.opts,
@@ -163,17 +168,16 @@ export class LogBuilder {
           node: newEntry.node,
           selected,
         }
-      }
     });
 
-    vue.$mount(span)
+    vue.mount(span)
 
-    const elem = vue.$el as HTMLElement
+    const elem = vue._container as HTMLElement
     elem.title = this.entryTitle(newEntry)
 
     this.lastEntry = newEntry
 
-    return vue
+    return vue as unknown as CompatVue
   }
 
   private entryStepType(newEntry: ExecutionOutputEntry) {

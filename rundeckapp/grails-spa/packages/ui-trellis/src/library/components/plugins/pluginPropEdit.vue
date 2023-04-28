@@ -385,7 +385,7 @@ export default defineComponent({
       default:false,
       required:false
     },
-    'value':{
+    'modelValue':{
       required:false,
       default:''
      },
@@ -427,6 +427,7 @@ export default defineComponent({
       required:false
     }
   },
+  emits: ['update:modelValue','pluginPropsMounted'],
   methods:{
     inputColSize(prop: any) {
       if (prop.options && prop.options['selectionAccessor']) {
@@ -458,20 +459,10 @@ export default defineComponent({
   },
   data(){
     return{
-      currentValue: this.value,
       jobName: '',
       keyPath:'',
       jobContext: [] as any,
       aceEditorEnabled: false
-    }
-  },
-  watch:{
-    currentValue:function(newval){
-      this.$emit('input',newval)
-      this.setJobName(newval)
-    },
-    value:function(newval){
-      this.currentValue = newval
     }
   },
   computed:{
@@ -488,6 +479,15 @@ export default defineComponent({
             return desc.substring(desc.indexOf("\n") + 1);
         }
         return null;
+    },
+    currentValue: {
+        get() {
+            return this.modelValue
+        },
+        set(val) {
+            this.$emit('update:modelValue',val)
+            this.setJobName(val)
+        }
     }
   },
   mounted(){

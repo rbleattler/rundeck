@@ -32,14 +32,13 @@ import Vue, {computed, onMounted, ref} from 'vue'
   })
 
   onMounted(() => {
-      this.eventBus.$on('page-modified', this.setConfirm)
-      this.eventBus.$on('page-reset', this.resetConfirm)
+      props.eventBus.on('page-modified', setConfirm)
+      props.eventBus.on('page-reset', resetConfirm)
 
       const orighandler = window.onbeforeunload
-      const self = this
       window.onbeforeunload = (ev: BeforeUnloadEvent) => {
-          if (this.needsConfirm) {
-              return self.message || 'confirm'
+          if (needsConfirm) {
+              return props.message || 'confirm'
           }
           if (typeof (orighandler) === 'function') {
               //@ts-ignore

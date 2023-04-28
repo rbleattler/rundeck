@@ -42,14 +42,14 @@
   </div>
 </template>
 <script lang="ts">
-import Vue from "vue"
+import Vue, {defineComponent} from "vue"
 import PluginConfig from "../../../library/components/plugins/pluginConfig.vue"
 import {
   getProjectNodeSources,
   NodeSource
 } from "./nodeSourcesUtil"
 
-export default Vue.extend({
+export default defineComponent({
   components: {
     PluginConfig
   },
@@ -81,12 +81,12 @@ export default Vue.extend({
       type: String,
       default: ""
     },
-    eventBus:{type:Vue,required:false}
+    eventBus:{type:Object,required:false}
   },
 
   mounted() {
 
-    this.eventBus&&this.eventBus.$on('project-node-sources-saved', () => {
+    this.eventBus&&this.eventBus.on('project-node-sources-saved', () => {
       this.loadNodeSourcesData()
     })
     if (
