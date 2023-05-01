@@ -1,5 +1,5 @@
 <template>
-  <a :href="href()" class="xnodefilterlink" @click.prevent="handleClick">
+  <a :href="href" class="xnodefilterlink" @click.prevent="handleClick">
     <slot name="prefix"></slot>
     <slot>{{ getText() }}</slot>
     <slot name="suffix"></slot>
@@ -92,7 +92,7 @@ export default defineComponent({
     filterParamValues() {
       let params = {[this.filterParam]: this.getFilter()}
       if (this.nodeFilterName) {
-        params.filterName = this.nodeFilterName
+        params['filterName'] = this.nodeFilterName
       }
       return params
     },

@@ -5,7 +5,7 @@
       Notifications can be triggered by different events during the Job Execution.
     </div>
     <div >
-      <undo-redo :event-bus="this"/>
+      <undo-redo :event-bus="eventBus"/>
 
       <div v-if="notifications.length < 1" >
         <p class="text-muted">No Notifications are defined. Click an event below to add a Notification for that Trigger.</p>
@@ -53,7 +53,8 @@
                 </div>
               </div>
             </div>
-            <div v-for="(notif,i) in getNotificationsForTrigger(trigger)" v-if="getNotificationsForTrigger(trigger)" class="list-group-item flex-container flex-justify-start">
+            <template v-if="getNotificationsForTrigger(trigger)">
+            <div v-for="(notif,i) in getNotificationsForTrigger(trigger)" class="list-group-item flex-container flex-justify-start">
               <div style="margin-right:10px;">
                 <dropdown ref="dropdown" append-to-body>
                   <btn type="simple" class=" btn-hover  btn-secondary dropdown-toggle">
@@ -92,8 +93,9 @@
               <btn type="default" size="sm" @click="doEditNotification(notif)">Edit</btn>
 
             </div>
-          </div>
+            </template>
 
+          </div>
         </div>
       </div>
     </div>
@@ -279,7 +281,7 @@ export default {
       autocompleteCallback: {
         type: Function
       },
-      eventBus:null
+      eventBus:window._rundeck.eventBus
     }
   },
   computed:{
@@ -476,7 +478,6 @@ export default {
     }
   },
   async mounted () {
-      this.eventBus = window.context.eventBus
     this.autocompleteCallback = window.notificationAutocomplete
 
     this.notifications = [].concat(this.notificationData.notifications || [])

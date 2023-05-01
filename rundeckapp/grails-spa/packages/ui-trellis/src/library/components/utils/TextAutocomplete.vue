@@ -25,6 +25,7 @@ import Vue, {defineComponent} from "vue";
 export default defineComponent({
   name: "TextAutocomplete",
   extends: Dropdown,
+  emits:['input'],
   props: {
     value: {
       required: true

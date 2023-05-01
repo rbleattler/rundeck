@@ -68,7 +68,7 @@
                                 class="form-control"
                                 style="width:auto;"
                               >
-                                <option v-for="hour in this.hours" :key="hour" v-bind:value="hour">{{hour}}</option>
+                                <option v-for="hour in hours" :key="hour" v-bind:value="hour">{{hour}}</option>
                               </select>
                               :
                               <label for="minuteNumber" aria-hidden="false" style="display: none;">Minute</label>
@@ -79,7 +79,7 @@
                                 class="form-control"
                                 style="width:auto;"
                               >
-                                <option v-for="minute in this.minutes" :key="minute" v-bind:value="minute">{{minute}}</option>
+                                <option v-for="minute in minutes" :key="minute" v-bind:value="minute">{{minute}}</option>
                               </select>
                             </div>
                             <div class="col-sm-4">
@@ -92,7 +92,8 @@
                                   v-model="modelData.everyDayOfWeek"
                                 >
                                 <label for="everyDay">Every Day</label>
-                                <div v-if="!modelData.everyDayOfWeek" class="_defaultInput checkbox" v-for="(day,n) in days">
+                                  <template v-if="!modelData.everyDayOfWeek">
+                                <div class="_defaultInput checkbox" v-for="(day,n) in days">
                                   <input
                                     :id="'dayCheckbox_'+n"
                                     type="checkbox"
@@ -101,6 +102,7 @@
                                   >
                                   <label :for="'dayCheckbox_'+n">{{day.name}}</label>
                                 </div>
+                                  </template>
                                 <input type="hidden" name="selectedDaysOfWeek" :value="modelData.selectedDays.join(',')" >
                               </div>
                             </div>
@@ -114,7 +116,8 @@
                                   v-model="modelData.allMonths"
                                 >
                                 <label for="everyMonth">Every Month</label>
-                                <div v-if="!modelData.allMonths" class="_defaultInput checkbox" v-for="(month,n) in months">
+                                <template v-if="!modelData.allMonths">
+                                <div class="_defaultInput checkbox" v-for="(month,n) in months">
                                   <input
                                     :id="'monthCheckbox_'+n"
                                     type="checkbox"
@@ -123,6 +126,7 @@
                                   >
                                   <label :for="'monthCheckbox_'+n">{{month.name}}</label>
                                 </div>
+                                </template>
                               </div>
                               <input type="hidden" name="selectedMonths" :value="modelData.selectedMonths.join(',')" >
                             </div>
@@ -155,10 +159,8 @@
                                   <span class="text-muted" style="font-style: italic" v-if="crontabHint">{{crontabHint}}</span>
                                 </div>
                                 <div class="col-sm-6">
-                                  <template>
                                     <div v-html="errors">
                                     </div>
-                                  </template>
                                 </div>
                               </div>
                               <div class="row">
@@ -287,10 +289,11 @@ import {
   getMonths,
   getSimpleDecomposition,
 } from "./services/scheduleDefinition"
+import {EventBus} from "../../../../library/utilities/vueEventBus";
 
 const props = withDefaults(defineProps<{
     modelValue: any
-    eventBus: Vue
+    eventBus: typeof EventBus
     useCrontabString?: boolean
 }>(),{
     useCrontabString: false
@@ -303,24 +306,24 @@ const props = withDefaults(defineProps<{
 
   const name = ref<string>("")
   const errors = ref<string>("")
-  const hours = ref([])
-  const minutes = ref([])
+  const hours = ref<string[]>([])
+  const minutes = ref<string[]>([])
   const days = ref([])
   const months = ref([])
   const crontabpos = ref<number>(-1)
+  const crontabInput = ref(null)
 
   onBeforeMount(async () => {
-    var hours = <any>[]
-    var minutes = <any>[]
-    let _win = window as any
-    _win.jQuery.each([...Array(24).keys()], function(index:any, value:any){
-      hours.push(value< 10? '0'+value.toString(): value.toString())
-    });
-    _win.jQuery.each([...Array(60).keys()], function(index:any, value:any){
-      minutes.push(value< 10? '0'+value.toString(): value.toString())
-    });
-    hours.value = hours;
-    minutes.value = minutes;
+    var _hours: string[] = []
+    var _minutes: string[] = []
+    for(let x = 0; x < 24; x++) {
+        _hours.push(x< 10? '0'+x.toString(): x.toString())
+    }
+    for(let x = 0; x < 60; x++) {
+        _minutes.push(x< 10? '0'+x.toString(): x.toString())
+    }
+    hours.value = _hours;
+    minutes.value = _minutes;
     days.value = getDays();
     months.value = getMonths();
   })
@@ -338,12 +341,12 @@ const props = withDefaults(defineProps<{
   })
 
   function loadScheduleIntoSimpleTab (decomposedSchedule:any){
-    this.modelData.hourSelected = decomposedSchedule.hour;
-    this.modelData.minuteSelected = decomposedSchedule.minute;
-    this.modelData.selectedDays = decomposedSchedule.days.length <= 7 ? decomposedSchedule.days : [];
-    this.modelData.selectedMonths = decomposedSchedule.months.length <= 12 ? decomposedSchedule.months : [];
-    this.modelData.everyDayOfWeek = decomposedSchedule.days.length === 7;
-    this.modelData.allMonths = decomposedSchedule.months.length === 12;
+    modelData.value.hourSelected = decomposedSchedule.hour;
+    modelData.value.minuteSelected = decomposedSchedule.minute;
+    modelData.value.selectedDays = decomposedSchedule.days.length <= 7 ? decomposedSchedule.days : [];
+    modelData.value.selectedMonths = decomposedSchedule.months.length <= 12 ? decomposedSchedule.months : [];
+    modelData.value.everyDayOfWeek = decomposedSchedule.days.length === 7;
+    modelData.value.allMonths = decomposedSchedule.months.length === 12;
   }
 
   function showSimpleCron(){
@@ -356,7 +359,7 @@ const props = withDefaults(defineProps<{
         cronComponents[5],
         cronComponents[4],
       );
-      this.loadScheduleIntoSimpleTab(decomposedSchedule);
+      loadScheduleIntoSimpleTab(decomposedSchedule);
     }
     modelData.value.useCrontabString = false;
   }
@@ -390,7 +393,7 @@ const props = withDefaults(defineProps<{
     crontabpos.value=-1
   }
   function updateCrontabPosition(){
-    crontabpos.value = this.getCaretPos(this.$refs['crontabInput']);
+    crontabpos.value = getCaretPos(crontabInput.value);
   }
 
   const crontabHint = computed(() =>{
@@ -407,7 +410,7 @@ const props = withDefaults(defineProps<{
   function getHintText(pos:number, text:string){
     let c = getCrontabSection(pos,text)
     if (c >= 0 && c <= 6) {
-      return this.$t(`cron.section.${c}`)
+      return $t(`cron.section.${c}`)
     }
     return ''
   }

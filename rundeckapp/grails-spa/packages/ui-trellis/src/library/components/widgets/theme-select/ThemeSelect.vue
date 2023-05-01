@@ -26,7 +26,7 @@ import {RundeckContext} from "../../../interfaces/rundeckWindow";
 
     onBeforeMount(() => {
         themeStore.value = (getRundeckContext() as RundeckContext).rootStore.theme
-        this.theme = themeStore.value.userPreferences.theme!
+        theme.value = themeStore.value.userPreferences.theme!
     })
 
    watch(theme, (newVal: any) => {

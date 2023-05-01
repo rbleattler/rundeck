@@ -342,7 +342,6 @@
 </template>
 <script lang="ts">
 import OrchestratorEditor from '../../../components/job/resources/OrchestratorEditor.vue'
-import UiSocket from '../../../../library/components/utils/UiSocket.vue'
 import {_genUrl} from '../../../utilities/genUrl'
 import axios from 'axios'
 import InlineValidationErrors from '../../form/InlineValidationErrors.vue'
@@ -355,6 +354,7 @@ import {
   getRundeckContext,
   getAppLinks
 } from '../../../../library'
+import UiSocket from "../../../../library/components/utils/UiSocket.vue";
 
 export default defineComponent({
   name: 'ResourcesEditor',

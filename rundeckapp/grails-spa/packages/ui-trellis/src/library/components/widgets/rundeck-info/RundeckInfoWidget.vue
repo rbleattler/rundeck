@@ -38,7 +38,7 @@ import {RundeckContext} from "../../../interfaces/rundeckWindow";
                 system.value.load(),
             ])
         } catch(e) {}
-        this.loaded = true
+        loaded.value = true
     })
 
 </script>

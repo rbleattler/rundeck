@@ -221,6 +221,7 @@ export default defineComponent({
     rootPath: String,
     createdKey: {}
   } ,
+  emits: ['input','openEditor'],
   data() {
     return {
       errorMsg: '',

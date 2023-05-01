@@ -1,8 +1,8 @@
 import {createApp} from 'vue'
 
-import UiSocket from '../../../library/components/utils/UiSocket.vue'
 import {getRundeckContext} from '../../../library'
 import { UiMessage } from '../../../library/stores/UIStore'
+import UiSocket from "../../../library/components/utils/UiSocket.vue";
 
 const rootStore = getRundeckContext().rootStore
 const EventBus = getRundeckContext().eventBus
@@ -32,7 +32,6 @@ function initUiComponentsOnEvent(evt:Event){
 
 function initUiComponents(elmElement:any) {
     const vue = createApp({
-      el: elmElement,
       components: {UiSocket},
       data() {
         return {
@@ -43,6 +42,7 @@ function initUiComponents(elmElement:any) {
         rootStore
       }
     })
+  vue.mount(elmElement)
 }
 
 function applyUiMessages(){
