@@ -340,7 +340,7 @@
               <span class="less-indicator-verbiage btn-link btn-xs">Less </span>
           </summary>
 
-          <markdown class="markdown-body" :source="extraDescription" />
+          <VMarkdownView class="markdown-body" :content="extraDescription" />
 
       </details>
       <div class="help-block" v-else>{{prop.desc}}</div>
@@ -353,7 +353,8 @@
 </template>
 <script lang="ts">
 import {defineComponent} from "vue"
-//import Markdown  from 'vue3-markdown-it'
+import {VMarkdownView} from "vue3-markdown"
+import 'vue3-markdown/dist/style.css'
 import { Typeahead } from 'uiv';
 
 import JobConfigPicker from './JobConfigPicker.vue'
@@ -370,7 +371,7 @@ export default defineComponent({
     DynamicFormPluginProp,
     AceEditor,
     JobConfigPicker,
-//    Markdown,
+    VMarkdownView,
     PluginPropVal,
     KeyStorageSelector,
     TextAutocomplete

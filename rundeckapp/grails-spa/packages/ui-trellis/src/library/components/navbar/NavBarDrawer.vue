@@ -36,7 +36,7 @@ export default defineComponent({
 
         document.body.addEventListener('click', this.handleBodyClick)
     },
-    beforeDestroy() {
+    beforeUnmount() {
         const drawer = this.$refs['drawer'] as HTMLElement
         document.body.removeEventListener('click', this.handleBodyClick)
         drawer.remove()
@@ -59,7 +59,7 @@ export default defineComponent({
         },
         setDrawerVisibility() {
             (<HTMLElement>this.$el).parentElement!.className = this.display ? 'navbar__item-container active' : 'navbar__item-container';
-            (<HTMLElement>this.$refs['drawer']).style.display = this.display ? 'inherit' : 'none'
+            this.$refs['drawer'].style.display = this.display ? 'inherit' : 'none'
         }
     }
 })

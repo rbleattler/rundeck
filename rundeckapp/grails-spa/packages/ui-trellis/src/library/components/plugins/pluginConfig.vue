@@ -179,7 +179,7 @@ export default {
     'contextAutocomplete',
     'autocompleteCallback'
   ],
-  emits: ['update:modelValue','change'],
+  emits: ['update:modelValue','change','handleAutocomplete','hasKeyStorageAccess'],
   data () {
     return {
       props: [] as any[],
@@ -205,10 +205,6 @@ export default {
     },
     prepareInputs () {
       if (!this.isShowConfigForm) {
-          console.log("not showing config form")
-          console.log("mode: " + this.mode)
-          console.log("isEdit: " + this.isEditMode)
-          console.log("isCreate: " + this.isCreateMode)
         return
       }
       this.inputLoaded=false
@@ -485,7 +481,6 @@ export default {
     }
   },
   beforeMount () {
-      console.log("running before mount")
     this.loadForMode()
   }
 }

@@ -496,7 +496,7 @@ export default defineComponent({
         return MomentFormatters.formatFromNow(val)
     },
     momentCalendarFormat(val:MomentInput) {
-        return moment(val).format('calendar')
+        return moment(val).calendar(null)
     },
     momentJobFormatDate(val: MomentInput) {
       return moment(val).format(this.momentJobFormat)

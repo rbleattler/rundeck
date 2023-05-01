@@ -43,6 +43,7 @@ for (var i = 0; i < els.length; i++) {
     const e = els[i]
     /* eslint-disable no-new */
     const app = createApp({
+        name:"JobEditNotificationsApp",
         data(){return{EventBus,}},
         components: { NotificationsEditorSection }
     })
@@ -57,6 +58,7 @@ for (var i = 0; i < resels.length; i++) {
     const e = resels[i]
     /* eslint-disable no-new */
     const rapp = createApp({
+        name:"JobEditResourcesApp",
         data(){return{EventBus,}},
         components: { ResourcesEditorSection }
     })
@@ -70,6 +72,7 @@ for (var i = 0; i < scsels.length; i++) {
   const e = scsels[i]
   /* eslint-disable no-new */
   const sapp = createApp({
+      name:"JobEditSchedulesApp",
     data(){return{EventBus,}},
     components: { SchedulesEditorSection }
   })
@@ -83,6 +86,7 @@ for (var i = 0; i < scsels.length; i++) {
     const e = othels[i]
     /* eslint-disable no-new */
     const oapp = createApp({
+      name:"JobEditOtherApp",
       data() {
         return {EventBus,}
       },
