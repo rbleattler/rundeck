@@ -1,9 +1,9 @@
 <template>
-    <nav ref="root">
+    <nav>
         <ul class="nav-bar__list" ref="list" v-if="navBar">
             <li>
-                <ul class="nav-bar__list-group" ref="groupMain">
-                    <template v-for="item in getItems('root', 'main')">
+                <ul class="nav-bar__list-group" ref="group-main">
+                    <template v-for="item in navBar.containerGroupItems('root', 'main')">
                         <NavBarItem v-if="item.type == 'link'" :item="item" :key="item.id" itemStyle="icon" />
                         <NavBarContainer v-if="item.type == 'container'" :item="item" :key="item.id" />
                     </template>
@@ -11,8 +11,8 @@
             </li>
             <li style="margin-top: auto;width: 100%">
                 <ul class="nav-bar__list-group nav-bar__list-group--bottom" ref="group-bottom">
-                    <NavBarContainer v-if="navIsOverflowing" :item="overflowItem()" />
-                    <template v-for="item in getItems('root', 'bottom')">
+                    <NavBarContainer v-if="navBar.isOverflowing" :item="navBar.overflowItem" />
+                    <template v-for="item in navBar.containerGroupItems('root', 'bottom')">
                         <NavBarItem v-if="item.type == 'link'" :item="item" :key="item.id" itemStyle="icon" />
                         <NavBarContainer v-if="item.type == 'container'" :item="item" :key="item.id" />
                     </template>
@@ -22,8 +22,8 @@
     </nav>
 </template>
 
-<script setup lang="ts">
-import { onBeforeMount, onMounted, ref} from 'vue'
+<script lang="ts">
+import {defineComponent, onBeforeMount, onMounted, ref} from 'vue'
 
 import {NavBar, NavContainer, NavItem} from '../../stores/NavBar'
 
@@ -33,61 +33,51 @@ import {getRundeckContext} from "../../rundeckService";
 import {RundeckContext} from "../../interfaces/rundeckWindow";
 import {computed} from "mobx";
 
-const navBar = ref<NavBar>()
-const root = ref(null)
-const list = ref()
-const groupMain = ref()
-
-const navIsOverflowing = computed(() => {
-    return navBar.value.isOverflowing
-})
-
-function overflowItem(): NavContainer{
-    return navBar.value.overflowItem
-}
-
-function getItems(ctr: string, grp: string): NavItem[] {
-    const items = navBar.value.containerGroupItems(ctr, grp)
-    return items
-}
-
-onBeforeMount(() => {
-    navBar.value = (getRundeckContext() as RundeckContext).rootStore.navBar
-})
-
-onMounted(() => {
-    window.addEventListener('resize', overflow)
+export default defineComponent({
+    components: {
+        NavBarItem,
+        NavBarContainer
+    },
+mounted() {
+    window.addEventListener('resize', this.overflow)
     /** After layout and before render handle overflow */
-    window.requestAnimationFrame(overflow)
-})
+    window.requestAnimationFrame(this.overflow)
+},
+data() {
+    return {
+        navBar : window._rundeck.rootStore.navBar
 
-/**
- * Moves menu items into the "more" container until the navbar is no
- * longer overflowing.
- */
-function overflow() {
-    const el = root.value as HTMLElement
-    const mainGroup = groupMain.value as HTMLElement
-
+    }
+},
+methods: {
     /**
-     * Check for overflow. At different zoom levels this could be off by one in the positive
-     * even though no overflow is occuring. Testing indicates checking for negative difference
-     * works at all zoom levels.
+     * Moves menu items into the "more" container until the navbar is no
+     * longer overflowing.
      */
-    if (el.offsetHeight - el.scrollHeight < 0) {
-        navBar.value.overflowOne()
+    overflow() {
+        const el = this.$el as HTMLElement
+        const mainGroup = this.$refs['group-main'] as HTMLElement
+
         /**
-         * Continue to force layout until no longer overflowing.
-         * This provides for the least amount of flicker on page load.
-         **/
-        root.value.$forceUpdate()
-        window.requestAnimationFrame(overflow)
-    } else if (mainGroup.offsetTop + mainGroup.offsetHeight + 240 < el.offsetHeight) {
-        navBar.value.showOne()
-        window.requestAnimationFrame(overflow)
+         * Check for overflow. At different zoom levels this could be off by one in the positive
+         * even though no overflow is occuring. Testing indicates checking for negative difference
+         * works at all zoom levels.
+         */
+        if (el.offsetHeight - el.scrollHeight < 0) {
+            this.navBar.overflowOne()
+            /**
+             * Continue to force layout until no longer overflowing.
+             * This provides for the least amount of flicker on page load.
+             **/
+            this.$forceUpdate()
+            window.requestAnimationFrame(this.overflow)
+        } else if (mainGroup.offsetTop + mainGroup.offsetHeight + 240 < el.offsetHeight) {
+            this.navBar.showOne()
+            window.requestAnimationFrame(this.overflow)
+        }
     }
 }
-
+})
 </script>
 
 <style lang="scss" scoped>

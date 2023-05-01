@@ -1,11 +1,10 @@
 import {RootStore} from './RootStore'
 import {RundeckClient} from '@rundeck/client'
-import { action, computed, observable } from 'mobx'
 
 export class NavBar {
-    @observable items: Array<NavItem> = []
+    items: Array<NavItem> = []
 
-    @observable overflow: Array<NavItem> = []
+    overflow: Array<NavItem> = []
 
     overflowItem: NavContainer = {
         id: 'overflow',
@@ -31,7 +30,6 @@ export class NavBar {
         return this.items.slice().sort((a, b) => a.priority - b.priority)
     }
 
-    @action
     addItems(items: Array<NavItem>) {
         items.forEach(i => this.items.push(i))
         this.items.sort((a, b) => a.priority - b.priority)
@@ -53,17 +51,14 @@ export class NavBar {
         return items
     }
 
-    @computed
     get isOverflowing() {
         return this.items.some(i => i.container == 'overflow')
     }
 
-    @computed
     get visibleItems(): Array<NavItem> {
         return this.items
     }
 
-    @action
     overflowOne() {
         const candidate = this.containerGroupItems('root', 'main').slice().reverse().shift()
 
@@ -71,7 +66,6 @@ export class NavBar {
             candidate.container = 'overflow'
     }
 
-    @action
     showOne() {
         const candidate = this.containerGroupItems('overflow', 'main').slice().shift()
 

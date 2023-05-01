@@ -30,6 +30,7 @@ rootStore.utilityBar.addItems([
     group: 'left',
     label: 'News',
     widget: defineComponent({
+      app:"NewsApp",
       components: {News},
       provide: {rootStore},
       template: `<News @news:select-all="moreNews"/>`,

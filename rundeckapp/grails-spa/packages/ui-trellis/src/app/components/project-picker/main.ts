@@ -16,6 +16,7 @@ function init() {
         return
 
     const component = createApp({
+        name:"ProjectPickerApp",
         components: {ProjectPicker},
         provide: {rootStore},
         template: `<ProjectPicker projectLabel="${el.dataset.projectLabel}"/>`

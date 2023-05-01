@@ -1,11 +1,13 @@
 <template>
-    <li :id="item.id" class="navbar__item-container" :class="{'navbar__item--active': item.active}" sytle="display: flex;">
+    <li :id="item.id" class="navbar__item-container" :class="{'navbar__item--active': item.active}">
         <div class="navbar__item-spacer"></div>
         <NavBarDrawer>
+            <template v-slot:default>
             <a :href="item.link">
                 <i style="" :class="item.class"/>
                 <div>{{label}}</div>
             </a>
+            </template>
             <template v-slot:content>
                 <ul 
                     :class="{
@@ -19,31 +21,36 @@
     </li>
 </template>
 
-<script setup lang="ts">
-import {computed, onBeforeMount, ref} from 'vue'
+<script lang="ts">
+import {computed, defineComponent, onBeforeMount, ref} from 'vue'
 
-import {NavBar, NavContainer} from '../../stores/NavBar'
+import {NavBar, NavContainer, NavItem} from '../../stores/NavBar'
 
 import NavBarItem from './NavBarItem.vue'
 
 import NavBarDrawer from './NavBarDrawer.vue'
 import {RundeckContext} from "../../interfaces/rundeckWindow";
 import {getRundeckContext} from "../../rundeckService";
-
-const props = defineProps<{
-    item: NavContainer
-}>()
-
-const navBar = ref<NavBar>()
-
-onBeforeMount(() => {
-    navBar.value = (getRundeckContext() as RundeckContext).rootStore.navBar
+import {PropType} from "Vue";
+export default defineComponent({
+    name:"NavBarContainer",
+    components: {
+        NavBarItem, NavBarDrawer
+    },
+    props: {
+        item: Object as PropType<NavContainer>
+    },
+    data() {
+        return {
+            navBar: window._rundeck.rootStore.navBar
+        }
+    },
+    computed: {
+        label() {
+            return this.item.label!.toUpperCase()
+        }
+    }
 })
-
-const label = computed<string>(() => {
-    return props.item.label!.toUpperCase()
-})
-
 </script>
 
 <style lang="scss" scoped>

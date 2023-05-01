@@ -61,9 +61,10 @@ rootStore.utilityBar.addItems([
 ] as Array<UtilityActionItem>)
 
 function initNav() {
-    const elm = document.getElementById('navbar') as HTMLElement
+    const elm = document.getElementById('section-navbar') as HTMLElement
 
     const vue = createApp({
+        name:"NavigationBarApp",
         components: {NavigationBar},
         template: `<NavigationBar />`,
         provide: {
@@ -77,6 +78,7 @@ function initUtil() {
   const elm = document.getElementById('utilityBar') as HTMLElement
 
   const vue = createApp({
+      name:"UtilityBarApp",
       components: {UtilityBar},
       template: `<UtilityBar />`,
       provide: {

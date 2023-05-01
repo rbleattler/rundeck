@@ -17,6 +17,7 @@ function init() {
         return
 
     const component = createApp({
+        name:"FirstRunApp",
         components: { FirstRun },
         provide: { rootStore },
         template: `<FirstRun />`

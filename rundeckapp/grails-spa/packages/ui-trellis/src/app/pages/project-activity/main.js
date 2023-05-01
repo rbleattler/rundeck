@@ -45,6 +45,7 @@ for (var i = 0; i < els.length; i++) {
   })
   /* eslint-disable no-new */
   let app = createApp({
+    name:"ProjectActivityApp",
     data(){
       return{
         EventBus: EventBus

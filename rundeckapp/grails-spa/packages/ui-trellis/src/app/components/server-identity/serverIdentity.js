@@ -10,6 +10,7 @@ window.addEventListener('load', function () {
   const serverCollection = Array.from(document.body.getElementsByClassName('rundeck-server-uuid'))
   serverCollection.forEach(serverElement => {
     const app = createApp({
+      name:"ServerIdentityApp",
       components: {
         ServerDisplay
       },
