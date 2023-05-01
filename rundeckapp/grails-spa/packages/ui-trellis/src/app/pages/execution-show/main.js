@@ -93,7 +93,6 @@ function mount(e) {
    * Since the viewer is a class component that would make its
    * constructor the root constructor and chaos ensues...
    * */
-  /* removed temporarily  v-if="parentNode.display != 'none'" */
   const template = `\
   <LogViewer
     executionId="${e.dataset.executionId}"
@@ -104,11 +103,12 @@ function mount(e) {
   `
 
   const vue = createApp({
+    name:"LogViewerApp",
     components: {LogViewer},
     template: template,
     mounted() {
-      this.$refs.viewer.$on('line-select', (e) => this.$emit('line-select', e))
-      this.$refs.viewer.$on('line-deselect', e => this.$emit('line-deselect', e))
+      // this.$refs.viewer.$on('line-select', (e) => this.$emit('line-select', e))
+      // this.$refs.viewer.$on('line-deselect', e => this.$emit('line-deselect', e))
     },
     provide: {
       rootStore

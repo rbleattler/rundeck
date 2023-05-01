@@ -107,6 +107,7 @@ import UiSocket from "../utils/UiSocket.vue";
 import {getRundeckContext} from "../../rundeckService";
 import {RundeckContext} from "../../interfaces/rundeckWindow";
 import { EventBus } from '../../utilities/vueEventBus'
+import { Btn, BtnGroup, ProgressBar } from 'uiv'
 
 const CONFIG_STORAGE_KEY='execution-viewer'
 
@@ -122,7 +123,7 @@ interface IEventViewerSettings {
 }
 
 const props = withDefaults(defineProps<{
-    executionId: number
+    executionId: string
     node?: string
     stepCtx?: string
     showStats?: boolean
@@ -131,7 +132,7 @@ const props = withDefaults(defineProps<{
     jumpToLine?: number
     theme?:string
     maxLogSize?: number
-    trimOutput: number
+    trimOutput?: number
     config?: IEventViewerSettings
     useUserSettings?: boolean
 }>(), {
@@ -262,10 +263,6 @@ const props = withDefaults(defineProps<{
     const log = ref(null) //html element with ref="log"
     const root = ref(null) //html element with ref="log"
 
-    const parentNode = computed(() => {
-        return root.value._container
-    })
-
     const options = ref<ComponentOptions<Vue> & {
         vues: any[]
     }>({vues:[]})
@@ -319,12 +316,6 @@ const props = withDefaults(defineProps<{
     })
 
     onMounted(async () => {
-        const rt = root.value
-        console.log("parent node of log viewer")
-        console.log(rt)
-        //console.log(root.value.$el?.parentNode)
-        // console.log(root.value._container)
-        // console.log(root.value._container?.parentNode)
         options.value.vues = []
 
         const _log = log.value as HTMLElement
@@ -489,7 +480,6 @@ const props = withDefaults(defineProps<{
 
     function handleNewLine(entries: Array<any>) {
       for (const vue of entries) {
-          console.log("name: " + vue._props.logEntry)
         // @ts-ignore
         const _selected = vue._props.logEntry.lineNumber == props.jumpToLine
         //TODO: VUE3-MIGRATION do this differently, this doesn't work
