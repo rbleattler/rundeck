@@ -180,7 +180,7 @@
                             class="text-muted small text-uppercase"
                           >{{ $t("message.pageUserNotSet")}}</span>
                         </td>
-                        <td v-if="user.created">{{user.created | moment("MM/DD/YYYY hh:mm a")}}</td>
+                        <td v-if="user.created">{{MomentFormatters.fmtDate_full(user.created)}}</td>
                         <td v-else>
                           <span
                             class="text-muted small text-uppercase"
@@ -189,7 +189,7 @@
                         <td
                           v-if="user.updated"
                           :class="user.updated===user.created?'text-muted ':''"
-                        >{{user.updated | moment("MM/DD/YYYY hh:mm a")}}</td>
+                        >{{MomentFormatters.fmtDate_full(user.updated)}}</td>
                         <td v-else>
                           <span
                             class="text-muted small text-uppercase"
@@ -197,7 +197,7 @@
                         </td>
                         <td
                           v-if="includeExec && user.lastJob"
-                        >{{user.lastJob | moment("MM/DD/YYYY hh:mm a")}}</td>
+                        >{{MomentFormatters.fmtDate_full(user.lastJob)}}</td>
                         <td v-else-if="includeExec">
                           <span
                             class="text-muted small text-uppercase"
@@ -222,8 +222,8 @@
                           >{{ $t("message.pageUserNotSet")}}</span>
                         </td>
                         <td v-if="user.loggedInTime">
-                          {{user.loggedInTime | moment("MM/DD/YYYY hh:mm a")}}
-                          {{user.loggedInTime | moment('from','now')}}
+                          {{MomentFormatters.fmtDate_full(user.loggedInTime)}}
+                          {{MomentFormatters.formatFromNow(user.loggedInTime)}}
                         </td>
                         <td v-else>
                           <span
@@ -257,9 +257,15 @@
 import axios from "axios";
 import OffsetPagination from "../../../../library/components/utils/OffsetPagination";
 import LoginStatus from "./LoginStatus";
+import * as MomentFormatters from "../../../utilities/MomentFormatters";
 
 export default {
   name: "UserSummary",
+    computed: {
+        MomentFormatters() {
+            return MomentFormatters
+        }
+    },
   components: {
     OffsetPagination,
     LoginStatus
@@ -356,13 +362,13 @@ export default {
     if (window._rundeck && window._rundeck.rdBase) {
       this.rdBase = window._rundeck.rdBase;
       this.setSummaryPageConfig();
-      window._rundeck.eventBus.$on('refresh-user-summary',() => {
+      window._rundeck.eventBus.on('refresh-user-summary',() => {
         this.loadUsersList(0)
       })
     }
   },
-  beforeDestroy() {
-    window._rundeck.eventBus.$off('refresh-user-summary')
+  beforeUnmount() {
+    window._rundeck.eventBus.off('refresh-user-summary')
   }
 };
 </script>

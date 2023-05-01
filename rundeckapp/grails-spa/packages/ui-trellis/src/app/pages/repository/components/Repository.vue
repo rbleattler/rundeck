@@ -13,8 +13,8 @@
       <div class="repo-meta">
         <span
           v-if="type === 'search'"
-        >{{repo.results.length}} {{ repo.results.length | pluralize('plugin')}} found in this repo that match the search term</span>
-        <span v-else>{{repo.results.length}} {{ repo.results.length | pluralize('plugin')}} in repo</span>
+        >{{repo.results.length}} {{ plural('plugin', repo.results.length)}} found in this repo that match the search term</span>
+        <span v-else>{{repo.results.length}} {{ plural('plugin', repo.results.length)}} in repo</span>
       </div>
       <div class="artifact-grid row row-flex row-flex-wrap " :class="repo.repositoryName">
         <PluginCard
@@ -48,6 +48,10 @@ export default {
   methods: {
     toggleVisiblity() {
       this.visible = !this.visible;
+    },
+    plural(val, num) {
+        if(num === 1) return val
+        return `${val}s`
     }
   }
 };

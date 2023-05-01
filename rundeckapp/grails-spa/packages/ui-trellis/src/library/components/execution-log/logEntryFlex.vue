@@ -37,6 +37,7 @@ import {EventBus} from "../../utilities/vueEventBus";
 import {PropType} from "Vue";
 
 export default defineComponent({
+    name:"EntryFlex",
     components: {
         UiSocket
     },

@@ -56,7 +56,7 @@
     <div 
       ref="scroller"
       class="execution-log__scroller" v-bind:class="{
-      'execution-log--no-transition': this.logLines > 1000,
+      'execution-log--no-transition': logLines > 1000,
       'ansicolor-on': settings.ansiColor
     }">
       <div ref="log">
@@ -65,13 +65,13 @@
             <btn size="xs" @click="(e) => {settingsVisible = !settingsVisible; e.target.blur();}">
               <i class="fas fa-cog"/>Settings
             </btn>
-            <btn size="xs" @click="(e) => {this.follow = !this.follow; e.target.blur();}">
+            <btn size="xs" @click="(e) => {mfollow = !mfollow; e.target.blur();}">
               <i :class="[followIcon]"/>Follow
             </btn>
           </btn-group>
           <transition name="fade">
             <div class="execution-log__progress-bar" v-if="showProgress">
-              <progress-bar v-model="barProgress" :type="progressType" :label-text="progressText" label min-width striped active @click="() => {this.consumeLogs = !this.consumeLogs}"/>
+              <progress-bar v-model="barProgress" :type="progressType" :label-text="progressText" label min-width striped active @click="() => {consumeLogs = !consumeLogs}"/>
             </div>
           </transition>
         </div>
@@ -89,7 +89,7 @@
       </div>
     </div>
     <div class="stats" v-if="settings.stats">
-      <span>Following:{{follow}} Lines:{{logLines.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} Size:{{logSize}}b TotalTime:{{totalTime/1000}}s</span>
+      <span>Following:{{mfollow}} Lines:{{logLines.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}} Size:{{logSize}}b TotalTime:{{totalTime/1000}}s</span>
     </div>
   </div>
 </template>
@@ -190,8 +190,8 @@ const props = withDefaults(defineProps<{
       if(!logBuilder.value) return
 
       logBuilder.value.updateProps({
-        node: this.node,
-        stepCtx: this.stepCtx,
+        node: props.node,
+        stepCtx: props.stepCtx,
         nodeIcon: settings.value.nodeBadge,
         maxLines: 20000,
         command: {
@@ -222,7 +222,7 @@ const props = withDefaults(defineProps<{
     const overSize = ref<boolean>(false)
 
     const jumped = ref<boolean>(false)
-    const follow = ref<boolean>(props.follow)
+    const mfollow = ref<boolean>(props.follow)
 
     const viewer = ref<ExecutionOutput>()
 
@@ -271,7 +271,7 @@ const props = withDefaults(defineProps<{
     }>({vues:[]})
 
     const followIcon = computed(() => {
-      return props.follow ? 'fas fa-eye' : 'fas fa-eye-slash'
+      return mfollow ? 'fas fa-eye' : 'fas fa-eye-slash'
     })
 
     const barProgress= computed(() => {
@@ -321,8 +321,8 @@ const props = withDefaults(defineProps<{
     onMounted(async () => {
         const rt = root.value
         console.log("parent node of log viewer")
-        console.log(rt._container.parentNode)
-        // console.log(root.value.$el?.parentNode)
+        console.log(rt)
+        //console.log(root.value.$el?.parentNode)
         // console.log(root.value._container)
         // console.log(root.value._container?.parentNode)
         options.value.vues = []
@@ -360,7 +360,7 @@ const props = withDefaults(defineProps<{
         await viewer.value.init()
 
         execCompleted.value = viewer.value.execCompleted
-        follow.value = !viewer.value.execCompleted
+        mfollow.value = !viewer.value.execCompleted
 
         if (viewer.value.execCompleted && viewer.value.size > props.maxLogSize) {
           logSize.value = viewer.value.size
@@ -401,13 +401,13 @@ const props = withDefaults(defineProps<{
         _scroller.addEventListener('wheel', (ev: UIEvent) => {
             scrollCount.value++
 
-            if (follow.value) {
+            if (mfollow.value) {
                 ev.preventDefault()
                 ev.returnValue = false
             }
 
             if (scrollCount.value > scrollTolerance.value)
-                follow.value = false
+                mfollow.value = false
         }, {passive: false})
     }
 
@@ -482,7 +482,7 @@ const props = withDefaults(defineProps<{
       }
 
       line.selected = true
-      this.selected = line
+      selected.value = line
 
       emit('line-select', e)
     }
@@ -503,12 +503,12 @@ const props = withDefaults(defineProps<{
       options.value.vues.push(...entries)
 
       if (props.jumpToLine && props.jumpToLine <= options.value.vues.length && !jumped.value) {
-        follow.value = false
+        mfollow.value = false
         scrollToLine(props.jumpToLine)
         jumped.value = true
       }
 
-      if (follow.value) {
+      if (mfollow.value) {
         scrollToLine(options.value.vues.length)
       }
     }
@@ -542,7 +542,7 @@ const props = withDefaults(defineProps<{
 
             nextProgress.value = Math.round(viewer.value.percentLoaded)
 
-            if (this.viewer.error)
+            if (viewer.value.error)
               errorMessage.value = viewer.value.error
 
             logSize.value = viewer.value.offset

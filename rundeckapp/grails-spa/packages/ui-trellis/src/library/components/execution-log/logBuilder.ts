@@ -146,10 +146,7 @@ export class LogBuilder {
     const path = this.entryPath(newEntry)
 
     const vue = createApp({
-      name: "EntryFlex",
-      components: {
-        EntryFlex
-      }
+      name: "EntryFlexLine"
     },{
         eventBus: this.eventBus,
         selected: selected,
@@ -169,6 +166,7 @@ export class LogBuilder {
           selected,
         }
     });
+    vue.component("EntryFlex",EntryFlex)
 
     vue.mount(span)
 

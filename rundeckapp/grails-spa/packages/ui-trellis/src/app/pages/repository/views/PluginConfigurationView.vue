@@ -155,7 +155,7 @@
               <div class="card-content">
                 <div v-for="(service, index) in pluginsByService" :key="index">
                   <div v-if="service.providers.length">
-                    <h5 class="checkbox-group-title">{{service.service | splitAtCapitalLetter }}</h5>
+                    <h5 class="checkbox-group-title">{{StringFormatters.splitAtCapitalLetter(service.service) }}</h5>
                     <ul>
                       <li v-for="(plugin, index) in service.providers" :key="index">
                         <label>
@@ -189,7 +189,7 @@
                 <div class="card">
                   <div class="card-header">
                     <h3 style="margin:0;" class="card-title">{{details.response.title}}</h3>
-                    <h5 style="margin:0;">{{details.provider.serviceName | splitAtCapitalLetter }}</h5>
+                    <h5 style="margin:0;">{{StringFormatters.splitAtCapitalLetter(details.provider.serviceName) }}</h5>
                   </div>
                   <hr>
                   <div class="card-content">
@@ -312,6 +312,8 @@
 </template>
 
 <script>
+import * as StringFormatters from "../../../utilities/StringFormatters";
+
 const FuseSearchOptions = {
   shouldSort: true,
   threshold: 0.2,
@@ -375,6 +377,9 @@ export default {
     }
   },
   computed: {
+      StringFormatters() {
+          return StringFormatters
+      },
     ...mapState("modal", ["modalOpen"]),
     ...mapState("plugins", [
       "plugins",

@@ -19,9 +19,9 @@
           >Uninstall</button>
 
           <div v-if="provider.author" style="margin-bottom:1em;">Author: {{provider.author}}</div>
-          <div class="plugin-description">{{provider.description | shorten}}</div>
+          <div class="plugin-description">{{StringFormatters.limitString200ClickForMore(provider.description)}}</div>
           <ul class="provides">
-            <li>{{provider.service | splitAtCapitalLetter}}</li>
+            <li>{{StringFormatters.splitAtCapitalLetter(provider.service)}}</li>
           </ul>
           <!-- <button class="btn btn-sm btn-block square-button" @click="openInfo">More Info</button> -->
         </div>
@@ -43,6 +43,7 @@
 <script>
 import axios from "axios";
 import { mapActions, mapState } from "vuex";
+import * as StringFormatters from "../../../utilities/StringFormatters";
 
 export default {
   name: "ProviderCard",
@@ -60,6 +61,9 @@ export default {
     }
   },
   computed: {
+      StringFormatters() {
+          return StringFormatters
+      },
     ...mapState("plugins", ["selectedServiceFacet"]),
     displayCard() {
       if (
@@ -69,21 +73,6 @@ export default {
         return true;
       } else {
         return this.selectedServiceFacet === this.provider.service;
-      }
-    }
-  },
-  filters: {
-    splitAtCapitalLetter: function(value) {
-      if (!value) return "";
-      value = value.toString();
-      if (value.match(/^[A-Z]+$/g)) return value;
-      return value.match(/[A-Z][a-z]+|[0-9]+/g).join(" ");
-    },
-    shorten: function(value) {
-      if (value.length > 200) {
-        return value.substr(0, 140) + "... click to read more";
-      } else {
-        return value;
       }
     }
   }

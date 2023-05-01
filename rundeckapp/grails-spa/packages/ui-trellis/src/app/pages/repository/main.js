@@ -23,8 +23,6 @@ let messages = {
   )
 }
 
-console.log(messages)
-
 const i18n = createI18n({
   silentTranslationWarn: true,
   locale, // set locale
@@ -33,13 +31,13 @@ const i18n = createI18n({
 
 /* eslint-disable no-new */
 const app = createApp({
-  store,
-  router,
   components: {
     App
   },
   template: '<App/>'
 })
+app.use(store)
+app.use(router)
 app.use(VueCookies)
 app.use(VueScrollTo)
 app.use(VueFuse)

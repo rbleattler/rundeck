@@ -2,19 +2,14 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 
 // Dependencies
-import Vue from 'vue'
+import Vue, {createApp} from 'vue'
 import * as uiv from 'uiv'
 import international from './i18n'
 import uivLang from '../../../library/utilities/uivi18n'
 import moment from 'moment'
 // Component Files
-import VueI18n from 'vue-i18n'
+import VueI18n, {createI18n} from 'vue-i18n'
 import App from './App'
-
-Vue.config.productionTip = false
-
-Vue.use(uiv)
-Vue.use(VueI18n)
 
 let messages = international.messages
 let locale = window._rundeck.locale || 'en_US'
@@ -32,7 +27,7 @@ messages =
       )
     }
 // Create VueI18n instance with options
-const i18n = new VueI18n({
+const i18n = createI18n({
   silentTranslationWarn: true,
   locale: locale, // set locale
   messages // set locale messages,
@@ -40,11 +35,13 @@ const i18n = new VueI18n({
 })
 
 /* eslint-disable no-new */
-new Vue({
-  el: '#version-notification-vue',
+const app = createApp({
   components: {
     App
   },
   template: '<App/>',
   i18n
 })
+app.use(uiv)
+app.use(i18n)
+app.mount('#version-notification-vue')

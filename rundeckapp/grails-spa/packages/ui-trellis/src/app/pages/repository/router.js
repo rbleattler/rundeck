@@ -1,17 +1,15 @@
 import Vue from 'vue';
-import Router from 'vue-router';
+import Router, {createRouter, createWebHistory} from 'vue-router';
 
 import PluginRepositoryView from "./views/PluginRepositoryView"
 import PluginConfigurationView from './views/PluginConfigurationView'
 import UploadPluginView from './views/UploadPluginView'
 
-Vue.use(Router)
-
 var ctx = window._rundeck.context;
 if(ctx !== "/") ctx += "/";
 
-export default new Router({
-  mode: 'history',
+const router = createRouter({
+  history: createWebHistory(),
   linkExactActiveClass: 'is-active',
   routes: [{
       path: ctx+'artifact/index/repositories',
@@ -29,8 +27,9 @@ export default new Router({
       component: UploadPluginView
     },
     {
-      path: '*',
+      path: '/:pathMatch(.*)*',
       redirect: ctx+'artifact/index/configurations'
     }
   ]
 });
+export default router

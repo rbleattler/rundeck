@@ -52,6 +52,7 @@ export default {
       filters: []
     };
   },
+  emits: ['select_filter'],
   methods: {
     async loadFilters() {
       const client = getRundeckContext().rundeckClient;
@@ -158,7 +159,10 @@ export default {
       this.filterDeleteUrl = window._rundeck.data["filterDeleteUrl"];
       this.loadFilters();
     }
-    this.eventBus && this.eventBus.$on('invoke-save-filter',this.saveFilterPrompt)
+    this.eventBus && this.eventBus.on('invoke-save-filter',this.saveFilterPrompt)
+  },
+  beforeUnmount() {
+    this.eventBus && this.eventBus.off('invoke-save-filter')
   }
 };
 </script>

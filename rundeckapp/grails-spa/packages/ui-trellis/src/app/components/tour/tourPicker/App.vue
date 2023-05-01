@@ -101,13 +101,13 @@ import {defineComponent} from "vue";
     },
     beforeMount() {
       if (window._rundeck) {
-        window._rundeck.eventBus.$on('refresh-tours',() => {
+        window._rundeck.eventBus.on('refresh-tours',() => {
           this.loadTours();
         });
       }
     },
     beforeDestroy() {
-      window._rundeck.eventBus.$off('refresh-tours');
+      window._rundeck.eventBus.off('refresh-tours');
     }
   });
 </script>

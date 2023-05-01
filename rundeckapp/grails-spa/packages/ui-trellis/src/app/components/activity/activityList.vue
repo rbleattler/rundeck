@@ -374,7 +374,7 @@
 <script lang="ts">
 import axios from 'axios'
 import {defineComponent} from 'vue'
-import moment from 'moment'
+import moment, {MomentInput} from 'moment'
 import OffsetPagination from '../../../library/components/utils/OffsetPagination.vue'
 import ActivityFilter from './activityFilter.vue'
 
@@ -382,6 +382,7 @@ import {getRundeckContext} from "../../../library"
 import {Execution, ExecutionBulkDeleteResponse} from '@rundeck/client/dist/lib/models';
 import {clearTimeout, setTimeout} from 'timers';
 import * as DOMPurify from 'dompurify';
+import * as MomentFormatters from "../../utilities/MomentFormatters";
 
 /**
  * Generate a URL
@@ -491,14 +492,14 @@ export default defineComponent({
     }
   },
   methods: {
-    momentFromNow(val: string) {
-        return moment(val, 'from','now')
+    momentFromNow(val: MomentInput) {
+        return MomentFormatters.formatFromNow(val)
     },
-    momentCalendarFormat(val:string) {
-        return moment(val, 'calendar')
+    momentCalendarFormat(val:MomentInput) {
+        return moment(val).format('calendar')
     },
-    momentJobFormatDate(val: string) {
-      return moment(val, this.momentJobFormat)
+    momentJobFormatDate(val: MomentInput) {
+      return moment(val).format(this.momentJobFormat)
     },
     purify(text:string) {
       return DOMPurify.sanitize(text);
@@ -744,7 +745,7 @@ export default defineComponent({
           })
           this.running = { executions, paging: response.data.paging }
           this.loadingRunning = false
-          this.eventBus.$emit('activity-nowrunning-count', executions.length)
+          this.eventBus.emit('activity-nowrunning-count', executions.length)
 
       }catch(error){
         this.disableRefresh = !this.disableRefresh;
@@ -780,7 +781,7 @@ export default defineComponent({
             rpt.node = nodeStats(rpt.node)
             return rpt
           })
-          this.eventBus&&this.eventBus.$emit('activity-query-result',response.data)
+          this.eventBus&&this.eventBus.emit('activity-query-result',response.data)
         }
       }catch(error){
         this.loading=false
