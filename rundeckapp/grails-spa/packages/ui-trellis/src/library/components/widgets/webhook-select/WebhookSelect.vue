@@ -7,8 +7,8 @@
 </template>
 
 
-<script setup lang="ts">
-import {onBeforeMount, ref} from 'vue'
+<script lang="ts">
+import {defineComponent, onBeforeMount, ref} from 'vue'
 
 import { PluginStore } from '../../../stores/Plugins'
 import { WebhookStore } from '../../../stores/Webhooks'
@@ -18,29 +18,35 @@ import FilterList from '../../filter-list/FilterList.vue'
 import WebhookItem from './WebhookSelectItem.vue'
 import {RundeckContext} from "../../../interfaces/rundeckWindow";
 import {getRundeckContext} from "../../../rundeckService";
-    const inheritAttrs = false
-    const props = withDefaults(defineProps<{
-        project: string,
-        selected: string
-    }>(), { selected: ''})
 
-
-    const plugins = ref<PluginStore>()
-
-    const webhooks = ref<WebhookStore>()
-
-    onBeforeMount(() => {
+export default defineComponent({
+    name: "WebhookSelect",
+    components: {
+        FilterList,
+        WebhookItem
+    },
+    props: {
+        project: {
+            type: String,
+            required: true
+        },
+        selected: {
+            type: String,
+            default: ''
+        }
+    },
+    data() {
+        return {
+            webhooks: null
+        }
+    },
+    beforeMount() {
         const rootStore = (getRundeckContext() as RundeckContext).rootStore
-        plugins.value = rootStore.plugins
-        webhooks.value = rootStore.webhooks
+        this.webhooks = rootStore.webhooks
 
-        webhooks.value.load(props.project)
-    })
-
-    function itemUpdated() {
-        console.log('Updated webhook select')
+        this.webhooks.load(this.project)
     }
-
+})
 </script>
 
 <style scoped lang="scss">

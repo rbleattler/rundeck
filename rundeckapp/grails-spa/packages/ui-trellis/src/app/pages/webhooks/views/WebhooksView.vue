@@ -170,7 +170,7 @@ import PluginConfig from "../../../../library/components/plugins/pluginConfig.vu
 import PluginInfo from "../../../../library/components/plugins/PluginInfo.vue"
 
 import CopyBox from '../../../../library/components/containers/copybox/CopyBox.vue'
-import Tabs from '../../../../library/components/containers/tabs/Tabs'
+import Tabs from '../../../../library/components/containers/tabs/Tabs.vue'
 import Tab from '../../../../library/components/containers/tabs/Tab.vue'
 import WebhookPicker from '../../../../library/components/widgets/webhook-select/WebhookSelect.vue'
 import KeyStorageSelector from '../../../../library/components/plugins/KeyStorageSelector.vue'
@@ -455,7 +455,7 @@ export default defineComponent({
         return
 
       for (let [k, comp] of Object.entries(window.ProWebhookComponents)) {
-        Vue.component(k, comp)
+        this.component(k, comp)
       }
     }
   },

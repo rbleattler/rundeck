@@ -22,18 +22,26 @@ export default defineComponent({
          */
         slot(h): VNode {
             const slot = this.$slots.default
-
-            if (!slot)
-                return h('div')
-            else if (Array.isArray(slot))
-                if (slot.length == 1)
+            console.log("render slot")
+            if (!slot) {
+                console.log("no slot")
+                return h('div') }
+            else if (Array.isArray(slot)) {
+                if (slot.length == 1) {
+                    console.log("first slot")
                     return slot[0]
-                else
+                }
+                else {
+                    console.log("div slot")
                     return h('div', slot)
-            else
-                return slot
+                }
+            } else {
+                console.log("regular ole slot")
+                return h('div',slot())
+            }
         },
         skeleton(h): VNode {
+            console.log("render skeleton")
             return h('div', {
                 attrs: {
                     'role': 'alert',

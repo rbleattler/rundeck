@@ -36,9 +36,8 @@
     </div>
 </template>
 
-<script setup lang="ts">
-import  {nextTick, onMounted, ref} from 'vue'
-import { autorun } from 'mobx'
+<script lang="ts">
+import {defineComponent, nextTick, ref} from 'vue'
 import PerfectScrollbar from 'perfect-scrollbar'
 import { RecycleScroller } from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
@@ -70,43 +69,63 @@ RecycleScroller.beforeUnmount = function() {
     const scroller = ref(null)
     const searchTerm = ref<string>('')
 
-
-const props = withDefaults(defineProps<{
-    loading?: boolean
-    searchText?: string
-    items: object[]
-    itemSize?: number
-    selected?: string
-    idField?: string
-}>(), {
-    loading: false,
-    searchText: '',
-    itemSize: 25,
-    selected: '',
-    idField: 'id'
-})
-
-    function filtered() {
-        return props.items.filter(i => i.name.includes(searchTerm.value))
-    }
-
-    onMounted(() => {
-        autorun(() => {
-            if (props.items.length) {
-                /** May be necessary for virtual scroller to update */
-                root.value.$forceUpdate()
-            }
-        })
+export default defineComponent({
+    name:"FilterList",
+    components: {
+        RecycleScroller,
+        Skeleton
+    },
+    emits: ['item:selected'],
+    data() {
+        return {
+            searchTerm: ''
+        }
+    },
+    props: {
+        loading: {
+            type:Boolean,
+            required: false,
+        },
+        searchText: {
+            type: String,
+            default: ''
+        },
+        items: {
+            type: Array,
+            required: true
+        },
+        itemSize: {
+            type: Number,
+            default: 25
+        },
+        selected: {
+          type: String,
+          default: ''
+        },
+        idField: {
+            type: String,
+            default: 'id'
+        }
+    },
+    methods: {
+        filtered() {
+            return this.items.filter(i => i.name.includes(searchTerm.value))
+        },
+        itemClicked(item: any) {
+            (<HTMLElement>this.$refs[item[this.idField]]).blur()
+            this.$emit('item:selected', item)
+        }
+    },
+    mounted() {
+        if (this.items.length) {
+            /** May be necessary for virtual scroller to update */
+            this.$forceUpdate()
+        }
         nextTick().then(() => {
             (<HTMLElement>search.value).focus()
         })
-    })
-
-    const emit = defineEmits(['item:selected'])
-    function itemClicked(item: any) {
-        (<HTMLElement>root.value.$refs[item[this.idField]]).blur()
-        emit('item:selected', item)
     }
+})
 
 </script>
 

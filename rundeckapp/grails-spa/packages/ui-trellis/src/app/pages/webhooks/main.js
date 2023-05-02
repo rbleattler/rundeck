@@ -6,7 +6,7 @@ import * as uiv from 'uiv'
 import App from './App.vue'
 import VueI18n, {createI18n} from 'vue-i18n'
 
-import {getRundeckContext} from '../../../library'
+import {getRundeckContext} from '@/library'
 import uivLang from '../../../library/utilities/uivi18n'
 
 import AceEditor from '../../../library/components/utils/AceEditor.vue'
@@ -38,6 +38,7 @@ const i18n = createI18n({
 
 // eslint-disable-next-line no-new
 const app = createApp({
+  name:"WebhookApp",
   components: { App },
   provide: {rootStore},
   template: "<App/>"
