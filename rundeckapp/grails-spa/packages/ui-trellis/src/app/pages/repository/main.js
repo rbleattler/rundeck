@@ -1,14 +1,14 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue, {createApp} from 'vue'
+import {createApp} from 'vue'
 import VueCookies from 'vue-cookies'
 import VueScrollTo from 'vue-scrollto'
 import VueFuse from 'vue-fuse'
-import VueI18n, {createI18n} from 'vue-i18n'
+import {createI18n} from 'vue-i18n'
 import uivLang from '../../../library/utilities/uivi18n'
 import * as uiv from 'uiv'
 
-import store from './stores'
+import { store } from './stores'
 import router from './router'
 import App from './App'
 
@@ -29,7 +29,6 @@ const i18n = createI18n({
   messages // set locale messages,
 })
 
-/* eslint-disable no-new */
 const app = createApp({
   name: "RepositoryApp",
   components: {

@@ -1,7 +1,7 @@
 <template>
   <div class="repository">
     <div class="repo-header">
-      <a style="display:block;" @click="toggleVisiblity">
+      <a style="display:block;" @click="toggleVisibility">
         <h3 class="repo-title">{{repo.repositoryName}} Repository</h3>
         <div class="visibility-toggle pull-right">
           <i v-show="visible" class="fas fa-sort-up fa-2x" title="Hide"></i>
@@ -30,10 +30,10 @@
 </template>
 
 <script>
+import { defineComponent } from 'vue'
 import PluginCard from "./PluginCard";
-import { mapState } from "vuex";
 
-export default {
+export default defineComponent({
   name: "RepositoryRow",
   props: ["repo", "type"],
   components: {
@@ -46,7 +46,7 @@ export default {
   },
   watch: {},
   methods: {
-    toggleVisiblity() {
+    toggleVisibility() {
       this.visible = !this.visible;
     },
     plural(val, num) {
@@ -54,7 +54,7 @@ export default {
         return `${val}s`
     }
   }
-};
+})
 </script>
 
 <style lang="scss" scoped>

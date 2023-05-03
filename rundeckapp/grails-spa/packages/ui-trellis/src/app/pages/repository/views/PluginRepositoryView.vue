@@ -71,6 +71,7 @@
 </template>
 
 <script>
+import { defineComponent } from 'vue'
 import _ from "lodash";
 import axios from "axios";
 import fuse from "fuse.js";
@@ -87,7 +88,7 @@ const FuseSearchOptions = {
   keys: ["display", "name", "title"]
 };
 
-export default {
+export default defineComponent({
   name: "PluginRepositoryView",
   components: {
     RepositoryRow
@@ -106,14 +107,15 @@ export default {
   },
   watch: {
     showWhichPlugins: function(newVal, oldVal) {
-      this.setInstallStatusOfPluginsVisbility(newVal);
+      this.setInstallStatusOfPluginsVisibility(newVal);
     }
   },
   methods: {
     ...mapActions("repositories", [
       "initData",
-      "setInstallStatusOfPluginsVisbility"
+      "setInstallStatusOfPluginsVisibility"
     ]),
+    ...mapActions('overlay', ['openOverlay']),
     clearSearch() {
       this.searchResults = [];
     },
@@ -177,11 +179,11 @@ export default {
           content:
             "Plugins may not be an active feature in your Rundeck install."
         });
-        this.$store.dispatch("overlay/openOverlay", false);
+        this.openOverlay(false);
       }
     );
   }
-};
+})
 </script>
 <style lang="scss" scoped>
 // Search Input
