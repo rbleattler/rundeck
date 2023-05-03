@@ -20,7 +20,7 @@ export class RootStore {
     utilityBar: UtilityBar
     releases: Releases
     system: SystemStore
-    projects: ProjectStore
+    projects: UnwrapNestedRefs<ProjectStore>
     news: NewsStore
     plugins: UnwrapNestedRefs<PluginStore>
     webhooks: UnwrapNestedRefs<WebhookStore>
@@ -35,7 +35,7 @@ export class RootStore {
         this.system = new SystemStore(this, client)
         this.system.loadMeta(appMeta)
         this.releases = new Releases(this, client)
-        this.projects = new ProjectStore(this, client)
+        this.projects = reactive(new ProjectStore(this, client))
         this.news = new NewsStore(this, client)
         this.plugins = reactive(new PluginStore(this, client))
         this.webhooks = reactive(new WebhookStore(this, client))

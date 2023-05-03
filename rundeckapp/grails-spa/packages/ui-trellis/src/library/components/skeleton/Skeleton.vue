@@ -32,7 +32,7 @@ export default defineComponent({
                     return h('div', slot)
                 }
             } else {
-                return h('div',slot())
+                return slot()
             }
         },
         skeleton(h): VNode {

@@ -12,12 +12,12 @@
                         placeholder="Search all projects"/>
                 </div>
             </div>
-            <Skeleton :loading="!projects.loaded">
+            <Skeleton :loading="!projectStore.loaded">
                 <RecycleScroller
                     ref="scroller"
-                    :items="projects.search(searchTerm)"
+                    :items="projectStore.search(searchTerm)"
                     :item-size="25"
-                    :key="projects.search(searchTerm).length"
+                    :key="projectStore.search(searchTerm).length"
                     v-slot:default="{ item }"
                     key-field="name"
                     class="scroller"
@@ -40,24 +40,20 @@
     </div>
 </template>
 
-<script setup lang="ts">
-import {computed, onBeforeMount, onMounted, ref, nextTick, getCurrentInstance } from 'vue'
-import { autorun } from 'mobx'
+<script lang="ts">
+import { ref, nextTick, defineComponent} from 'vue'
 import PerfectScrollbar from 'perfect-scrollbar'
 import { RecycleScroller } from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 
-import {getAppLinks, getRundeckContext} from '../../../rundeckService'
-import { ProjectStore } from '../../../stores/Projects'
+import {getAppLinks} from '../../../rundeckService'
 import Skeleton from '../../skeleton/Skeleton.vue'
 import {url} from '../../../rundeckService'
-import {RundeckContext} from "../../../interfaces/rundeckWindow";
 
-const scroller = ref(null)
-
+const ps = ref<PerfectScrollbar>()
 RecycleScroller.updated = function() {
     if (!ps.value)
-        nextTick().then(() => {ps.value = new PerfectScrollbar(scroller.value.$el, {minScrollbarLength: 20})})
+        nextTick().then(() => {ps.value = new PerfectScrollbar(this.$el, {minScrollbarLength: 20})})
     else
         ps.value.update()
 }
@@ -73,42 +69,43 @@ RecycleScroller.beforeUnmount = function() {
     }
 }
 
-    const instance = getCurrentInstance()
-
-    const projects = ref<ProjectStore>()
-
-    const ps = ref<PerfectScrollbar>()
-
-    const searchTerm = ref<string>('')
-
-    const allProjectsLink = computed<string>(() => {
-        return getAppLinks().menuHome
-    })
-    const createProjectLink = computed(() => {
-        return url('resources/createProject')
-    })
-    function itemHref(project:any){
-        return url(`?project=${project.name}`).href
-    }
-
-    onBeforeMount(() => {
-        projects.value = (getRundeckContext() as RundeckContext).rootStore.projects
-        projects.value.load()
-    })
-
-    const search = ref(null);
-    onMounted(() => {
-        autorun(() => {
-            if (projects.value.projects.length) {
-                /** May be necessary for virtual scroller to update */
-                instance?.proxy?.$forceUpdate()
-            }
-        })
-        nextTick().then(() => {
-            (<HTMLElement>search.value).focus()
-        })
-    })
-
+export default defineComponent({
+  name:"ProjectSelect",
+  components: {
+    Skeleton, RecycleScroller
+  },
+  data() {
+      return {
+          projectStore : window._rundeck.rootStore.projects,
+          searchTerm : ''
+      }
+  },
+  computed: {
+      allProjectsLink() {
+          return getAppLinks().menuHome
+      },
+      createProjectLink() {
+          return url('resources/createProject')
+      }
+  },
+  methods: {
+      itemHref(project:any){
+          return url(`?project=${project.name}`).href
+      }
+  },
+  beforeMount() {
+      this.projectStore.load()
+  },
+  mounted() {
+      if (this.projectStore.projects.length) {
+          /** May be necessary for virtual scroller to update */
+          this.proxy?.$forceUpdate()
+      }
+      nextTick().then(() => {
+          (<HTMLElement>this.$refs['search']).focus()
+      })
+  }
+})
 </script>
 
 <style scoped lang="scss">
