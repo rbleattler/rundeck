@@ -12,25 +12,32 @@
 
     </details>
 </template>
-<script setup lang="ts">
-import {computed, ref} from 'vue'
-
- const props = defineProps({
-    options: {
-        type: Object as () => { open: boolean, iconOpen: string, iconClosed: string, linkCss: string, css: string },
-        default: () => {
-            return {open: false}
+<script lang="ts">
+import { defineComponent} from 'vue'
+export default defineComponent({
+    name:"Expandable",
+    props: {
+        options: {
+            type: Object as () => { open: boolean, iconOpen: string, iconClosed: string, linkCss: string, css: string },
+            default: {
+                open: false,
+                linkCss: '',
+                css: ''
+            }
+        }
+    },
+    data() {
+        return {
+            open: this.options.open,
+            linkCss: this.options.linkCss,
+            css: this.options.css
+        }
+    },
+    computed: {
+        detailsCss() {
+            return ['more-info','details-reset',this.css]
         }
     }
- })
-
-  const open = ref<boolean>(!!props.options.open)
-  const linkCss = ref<string>(props.options.linkCss || '')
-
-  const css = ref<string>(props.options.css || '')
-
-  const detailsCss = computed(() => {
-      return ['more-info','details-reset',this.css]
-  })
+})
 
 </script>

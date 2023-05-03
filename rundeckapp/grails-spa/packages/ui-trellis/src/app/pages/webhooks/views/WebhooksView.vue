@@ -13,7 +13,7 @@
         <button
           type="button"
           class="btn btn-primary btn-full"
-          :class="{'btn-primary': this.rootStore.webhooks.loaded.get(projectName) && this.rootStore.webhooks.webhooksForProject(projectName).length == 0 && !this.curHook}"
+          :class="{'btn-primary': isProjectLoaded && noWebhooksForProject && !this.curHook}"
           @click="handleAddNew">
             <i class="fas fa-plus-circle"/> {{ $t('message.webhookCreateBtn') }}
         </button>
@@ -227,12 +227,19 @@ export default defineComponent({
       customConfigComponent: null,
       showPluginConfig: false,
       projectName: projectName,
-      dirty: false
+      dirty: false,
+      webhookStore: window._rundeck.rootStore.webhooks
     }
   },
   computed: {
     showRegenButton() {
       return !this.hkSecret && this.curHook.useAuth && !this.curHook.new && this.origUseAuthVal
+    },
+    isProjectLoaded() {
+        return this.webhookStore.loaded[this.projectName]
+    },
+    noWebhooksForProject() {
+        return this.webhookStore.webhooksForProject(projectName).length === 0
     }
   },
   methods: {
@@ -308,10 +315,10 @@ export default defineComponent({
       if (!this.curHook || this.curHook.uuid !== selected.uuid) {
           this.hkSecret = null
       }
-      this.curHook = this.rootStore.webhooks.clone(selected)
+      this.curHook = this.webhookStore.clone(selected)
       this.origUseAuthVal = this.curHook.useAuth
 
-      this.dirty = true
+      this.dirty = false
       this.setValidation(true)
       this.setSelectedPlugin(true)
     },
@@ -347,9 +354,9 @@ export default defineComponent({
       webhook.config = this.selectedPlugin.config
       let resp
       if (webhook.new)
-        resp = await this.rootStore.webhooks.create(webhook)
+        resp = await this.webhookStore.create(webhook)
       else
-        resp = await this.rootStore.webhooks.save(webhook)
+        resp = await this.webhookStore.save(webhook)
 
       const data = resp.parsedBody
 
@@ -363,13 +370,8 @@ export default defineComponent({
         }
         this.setValidation(true)
         this.dirty = false
-        await this.rootStore.webhooks.refresh(this.projectName)
- 
-        const currentHooks = this.rootStore.webhooks.webhooksByUuid._data
-        const curHooksArrMap = Array.from(currentHooks.values());
-        const curHookByUUID = curHooksArrMap[curHooksArrMap.length - 1].value.uuid;
-  
-        this.select(this.rootStore.webhooks.webhooksByUuid.get(curHookByUUID))
+        await this.webhookStore.refresh(this.projectName)
+        this.select(this.webhookStore.webhooksByUuid.get(data.uuid))
       }
     },
     handleCancel() {
@@ -388,7 +390,7 @@ export default defineComponent({
         okType:"danger"
       }).then(() => {
 
-        this.rootStore.webhooks.delete(this.curHook).then(response => {
+        this.webhookStore.delete(this.curHook).then(response => {
         const data = response.parsedBody
         if (data.err) {
           this.setError("Failed to delete! " + data.err)
@@ -437,7 +439,7 @@ export default defineComponent({
       this.hkSecret = null
       this.showPluginConfig = false
       this.origUseAuthVal = false
-      this.curHook = this.rootStore.webhooks.newFromApi({name: "New Hook", user: curUser, roles: curUserRoles, useAuth: false, enabled: true, project: projectName, new: true, config: {}})
+      this.curHook = this.webhookStore.newFromApi({name: "New Hook", user: curUser, roles: curUserRoles, useAuth: false, enabled: true, project: projectName, new: true, config: {}})
       this.config = this.curHook.config
       this.dirty = true
     },

@@ -11,6 +11,7 @@ import { PluginStore } from './Plugins'
 import { WebhookStore } from './Webhooks'
 import { ThemeStore } from "./Theme"
 import { UIStore } from './UIStore'
+import {reactive, UnwrapNestedRefs} from "vue";
 
 export class RootStore {
     executionOutputStore: ExecutionOutputStore
@@ -21,8 +22,8 @@ export class RootStore {
     system: SystemStore
     projects: ProjectStore
     news: NewsStore
-    plugins: PluginStore
-    webhooks: WebhookStore
+    plugins: UnwrapNestedRefs<PluginStore>
+    webhooks: UnwrapNestedRefs<WebhookStore>
     theme: ThemeStore
     ui: UIStore
 
@@ -36,8 +37,8 @@ export class RootStore {
         this.releases = new Releases(this, client)
         this.projects = new ProjectStore(this, client)
         this.news = new NewsStore(this, client)
-        this.plugins = new PluginStore(this, client)
-        this.webhooks = new WebhookStore(this, client)
+        this.plugins = reactive(new PluginStore(this, client))
+        this.webhooks = reactive(new WebhookStore(this, client))
         this.theme = new ThemeStore()
         this.ui = new UIStore()
     }

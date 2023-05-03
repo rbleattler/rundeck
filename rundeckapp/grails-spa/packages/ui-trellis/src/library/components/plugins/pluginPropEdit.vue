@@ -493,7 +493,7 @@ export default defineComponent({
   },
   mounted(){
     this.$emit("pluginPropsMounted")
-    this.setJobName(this.value)
+    this.setJobName(this.modelValue)
     if (window._rundeck && window._rundeck.projectName) {
       this.keyPath = 'keys/project/' + window._rundeck.projectName +'/'
     }

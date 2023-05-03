@@ -1,7 +1,7 @@
 <template>
-    <FilterList v-bind="$attrs" :items="webhooks.webhooksForProject(project)" id-field="uuid" :selected="selected" searchText="Filter Webhooks" :itemSize="40">
+    <FilterList v-bind="$attrs" :items="webhooksForProject" id-field="uuid" :selected="selected" searchText="Filter Webhooks" :itemSize="40">
         <template v-slot:item="{item}"  >
-            <WebhookItem :webhook="item"/>
+            <WebhookSelectItem :webhook="item"/>
         </template>
     </FilterList>
 </template>
@@ -15,15 +15,16 @@ import { WebhookStore } from '../../../stores/Webhooks'
 
 import FilterList from '../../filter-list/FilterList.vue'
 
-import WebhookItem from './WebhookSelectItem.vue'
+import WebhookSelectItem from './WebhookSelectItem.vue'
 import {RundeckContext} from "../../../interfaces/rundeckWindow";
 import {getRundeckContext} from "../../../rundeckService";
 
 export default defineComponent({
     name: "WebhookSelect",
+    inject: ['rootStore'],
     components: {
         FilterList,
-        WebhookItem
+        WebhookSelectItem
     },
     props: {
         project: {
@@ -35,16 +36,18 @@ export default defineComponent({
             default: ''
         }
     },
+    computed: {
+      webhooksForProject() {
+          return this.webhookStore.webhooks.filter( wh => wh.project == this.project) || []
+      }
+    },
     data() {
         return {
-            webhooks: null
+            webhookStore: window._rundeck.rootStore.webhooks
         }
     },
     beforeMount() {
-        const rootStore = (getRundeckContext() as RundeckContext).rootStore
-        this.webhooks = rootStore.webhooks
-
-        this.webhooks.load(this.project)
+        this.webhookStore.load(this.project)
     }
 })
 </script>

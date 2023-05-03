@@ -32,7 +32,6 @@ const els = document.body.getElementsByClassName('project-plugin-config-vue')
 
 for (var i = 0; i < els.length; i++) {
   const e = els[i]
-console.log("found project-plugin-config-vue")
   const i18n = createI18n({
     silentTranslationWarn: false,
     locale: locale, // set locale

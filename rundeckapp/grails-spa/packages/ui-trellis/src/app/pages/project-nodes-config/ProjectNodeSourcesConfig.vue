@@ -128,7 +128,6 @@ export default defineComponent({
     }
   },
   mounted() {
-      console.log("load project node sources config")
     this.rundeckContext = getRundeckContext();
     if (
       window._rundeck &&

@@ -5,13 +5,24 @@
     </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
 import { Webhook } from '../../../stores/Webhooks'
 import PluginInfo from '../../plugins/PluginInfo.vue'
+import {defineComponent} from "vue";
+import {PropType} from "Vue";
 
-const props = defineProps<{
-    webhook: Webhook
-}>()
+export default defineComponent({
+    name:"WebhookSelectItem",
+    components: {
+        PluginInfo
+    },
+    props: {
+        webhook: {
+            type: Object as PropType<Webhook>,
+            required: true
+        }
+    }
+})
 
 </script>
 

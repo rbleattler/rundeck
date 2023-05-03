@@ -17,16 +17,10 @@ export const webhookui = reactive({
 export class WebhookStore {
     webhooks: Webhook[] = []
     webhooksByUuid = new Map<string, Webhook>()
-    webhooksByProject = new Map<string, Webhook[]>()
 
     loaded = new Map<string, boolean>()
 
     constructor(readonly root: RootStore, readonly client: RundeckClient) {
-        this.webhooksByProject = this.webhooks.reduce((r, w) => {
-            r[w.project] = r[w.project] || []
-            r[w.project].push(w)
-            return r
-        }, Object.create(null))
     }
 
     async load(project: string): Promise<void> {
@@ -57,7 +51,7 @@ export class WebhookStore {
     remove(webhook: Webhook) {
         const stored = this.webhooksByUuid.get(webhook.uuid)
         if (stored) {
-            this.webhooks.slice(this.webhooks.indexOf(stored), 1)
+            this.webhooks.splice(this.webhooks.indexOf(stored), 1)
             this.webhooksByUuid.delete(webhook.uuid)
         }
     }
@@ -137,7 +131,6 @@ export class WebhookStore {
                 webhookId: webhook.id.toString()
             }
         })
-
         if (resp.status == 200) {
             this.remove(webhook)
         }

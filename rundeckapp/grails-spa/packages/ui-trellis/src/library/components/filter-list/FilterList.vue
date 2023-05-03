@@ -43,31 +43,26 @@ import { RecycleScroller } from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import Skeleton from "../skeleton/Skeleton.vue";
 
-RecycleScroller.updated = function() {
-    if (!ps.value) {
-        nextTick().then(() => {
-            const scrollerEl = scroller.value
-            ps.value = new PerfectScrollbar(scrollerEl.$el, {minScrollbarLength: 20})
-        })
-    } else
-        ps.value.update()
-}
-
-const unmount = RecycleScroller.beforeUnmount
-RecycleScroller.beforeUnmount = function() {
-    unmount.bind(this)()
-    if (ps.value) {
-        try {
-            ps.value.destroy()
-            ps.value = null
-        } catch {}
-    }
-}
-    const ps = ref<PerfectScrollbar>()
-    const root = ref()
-    const search = ref()
-    const scroller = ref(null)
-    const searchTerm = ref<string>('')
+// RecycleScroller.updated = function() {
+//     if (!ps.value) {
+//         nextTick().then(() => {
+//             ps.value = new PerfectScrollbar(this.$el, {minScrollbarLength: 20})
+//         })
+//     } else
+//         ps.value.update()
+// }
+//
+// const unmount = RecycleScroller.beforeUnmount
+// RecycleScroller.beforeUnmount = function() {
+//     unmount.bind(this)()
+//     if (ps.value) {
+//         try {
+//             ps.value.destroy()
+//             ps.value = null
+//         } catch {}
+//     }
+// }
+// const ps = ref<PerfectScrollbar>()
 
 export default defineComponent({
     name:"FilterList",
@@ -109,7 +104,7 @@ export default defineComponent({
     },
     methods: {
         filtered() {
-            return this.items.filter(i => i.name.includes(searchTerm.value))
+            return this.items.filter(i => i.name.includes(this.searchTerm))
         },
         itemClicked(item: any) {
             (<HTMLElement>this.$refs[item[this.idField]]).blur()
@@ -122,7 +117,7 @@ export default defineComponent({
             this.$forceUpdate()
         }
         nextTick().then(() => {
-            (<HTMLElement>search.value).focus()
+            (<HTMLElement>this.$refs['search']).focus()
         })
     }
 })
