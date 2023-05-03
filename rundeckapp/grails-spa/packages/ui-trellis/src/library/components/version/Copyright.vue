@@ -5,10 +5,12 @@
 </template>
 
 <script>
+import * as AppConstants from "@/app/utilities/AppConstants";
+
 export default {
     data () {
         return {
-            copyright: BUILD_COPYRIGHT
+            copyright: AppConstants.buildCopyright
         }
     }
 }

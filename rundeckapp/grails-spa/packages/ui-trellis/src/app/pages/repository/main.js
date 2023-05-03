@@ -31,6 +31,7 @@ const i18n = createI18n({
 
 /* eslint-disable no-new */
 const app = createApp({
+  name: "RepositoryApp",
   components: {
     App
   },

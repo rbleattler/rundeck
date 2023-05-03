@@ -1,11 +1,10 @@
 import {RootStore} from './RootStore'
 import {RundeckClient} from '@rundeck/client'
-import { action, computed, observable } from 'mobx'
 
 export class UtilityBar {
-    @observable items: Array<UtilityItem> = []
+    items: Array<UtilityItem> = []
 
-    @observable overflow: Array<UtilityItem> = []
+    overflow: Array<UtilityItem> = []
 
     constructor(readonly root: RootStore, readonly client: RundeckClient) {
         if (window._rundeck.navbar) {

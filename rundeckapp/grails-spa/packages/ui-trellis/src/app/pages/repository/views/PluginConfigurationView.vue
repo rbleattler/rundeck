@@ -324,8 +324,6 @@ const FuseSearchOptions = {
   keys: ["display", "name", "title"]
 };
 
-import axios from "axios";
-
 import { mapState, mapActions, mapGetters } from "vuex";
 import ProviderCard from "../components/ProviderCard";
 import ProviderCardRow from "../components/ProviderCardRow";
@@ -334,14 +332,6 @@ import ConfigureFrameworkString from "../components/ConfigureFrameworkString";
 export default {
   name: "PluginConfigurationView",
   components: { ProviderCard, ProviderCardRow, ConfigureFrameworkString },
-  filters: {
-    splitAtCapitalLetter: function(value) {
-      if (!value) return "";
-      value = value.toString();
-      if(value.match(/^[A-Z]+$/g)) return value;
-      return value.match(/[A-Z][a-z]+|[0-9]+/g).join(" ");
-    }
-  },
   methods: {
     ...mapActions("plugins", [
       "initData",

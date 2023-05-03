@@ -8,37 +8,31 @@
 </template>
 
 
-<script setup lang="ts">
-import  {onBeforeMount, onMounted, ref} from 'vue'
-
-import { Releases } from '../../../stores/Releases'
-import { SystemStore } from '../../../stores/System'
-
+<script lang="ts">
+import {defineComponent} from 'vue'
 import InfoDisplay from './RundeckInfo.vue'
-import {getRundeckContext} from "../../../rundeckService";
-import {RundeckContext} from "../../../interfaces/rundeckWindow";
 
-    const system = ref<SystemStore>()
-
-    const releases = ref<Releases>()
-
-    const loaded = ref<boolean>(false)
-
-    onBeforeMount(() => {
-        const rootStore = (getRundeckContext() as RundeckContext).rootStore
-        system.value = rootStore.system
-        releases.value = rootStore.releases
-    })
-
-    onMounted(async () => {
-
-        releases.value.load()
+export default defineComponent({
+    name:"RundeckInfoWidget",
+    components: {
+        InfoDisplay
+    },
+    data() {
+        return {
+            system: window._rundeck.rootStore.system,
+            releases: window._rundeck.rootStore.releases,
+            loaded: false
+        }
+    },
+    async mounted() {
+        this.releases.load()
         try {
             await Promise.all([
-                system.value.load(),
+                this.system.load(),
             ])
         } catch(e) {}
-        loaded.value = true
-    })
+        this.loaded = true
+    }
+})
 
 </script>

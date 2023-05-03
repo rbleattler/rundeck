@@ -14,28 +14,26 @@
 </template>
 
 
-<script setup lang="ts">
-import {onBeforeMount, ref} from 'vue'
-
-import {UtilityBar} from '../../stores/UtilityBar'
+<script lang="ts">
+import {defineComponent} from 'vue'
 import UtilItem from './UtilityBarItem.vue'
-import {getRundeckContext} from "../../rundeckService";
-import {RundeckContext} from "../../interfaces/rundeckWindow";
-
-
-    const utilityBar = ref<UtilityBar>()
-
-    const open = ref<boolean>(false)
-
-    onBeforeMount(() => {
-        const context: RundeckContext = getRundeckContext() as RundeckContext
-        utilityBar.value = context.rootStore.utilityBar
-    })
-
-    function handleClick() {
-        open.value = !open.value
+export default defineComponent({
+    name:"UtilityBar",
+    components: {
+        UtilItem
+    },
+    data() {
+        return {
+            open: false,
+            utilityBar: window._rundeck.rootStore.utilityBar
+        }
+    },
+    methods: {
+        handleClick() {
+            open.value = !open.value
+        }
     }
-
+})
 </script>
 
 <style scoped lang="scss">

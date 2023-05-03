@@ -16,7 +16,7 @@
                     <span v-else class="rundeck-version-tag" :style="versionColorStyle">{{versionTag}}</span>
                 </span>
                 <span v-if="showRelativeDate"
-                      class="rundeck-version-relative-date">{{date | moment("from", "now")}}</span>
+                      class="rundeck-version-relative-date">{{DateTimeFormatters.formatFromNow(date)}}</span>
                 <version-date-display v-if="showDate" :title="date" :date="date"/>
             </span>
 
@@ -35,6 +35,7 @@ import {defineComponent} from 'vue'
 import {RundeckVersion} from '../../utilities/RundeckVersion'
 import VersionIconNameDisplay from './VersionIconNameDisplay.vue'
 import VersionDateDisplay from './VersionDateDisplay.vue'
+import * as DateTimeFormatters from "../../../app/utilities/DateTimeFormatters";
 
 export default defineComponent({
   components: {
@@ -118,6 +119,9 @@ export default defineComponent({
         background: rdversion.stripeBg(color, 15, '#5c5c5c', 20),
         color: 'white'
       } : {}
+    },
+    DateTimeFormatters() {
+      return DateTimeFormatters
     }
   },
   watch:{

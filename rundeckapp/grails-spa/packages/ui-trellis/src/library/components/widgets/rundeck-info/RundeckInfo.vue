@@ -3,12 +3,12 @@
         <div class="rundeck-info-widget__group">
             <div class="rundeck-info-widget__more-link">
                 <a :href="welcomeUrl()">
-                    <RundeckLogo v-if="props.appInfo.title === 'Rundeck'"/>
+                    <RundeckLogo v-if="appInfo.title === 'Rundeck'"/>
                     <PagerdutyLogo v-else/>
                 </a>
             </div>
             <div class="rundeck-info-widget__header">
-                <RundeckVersion :app="false" :logo="false" :title="props.appInfo.title" :logocss="props.appInfo.logocss" :number="version.number" :tag="version.tag"/>
+                <RundeckVersion :app="false" :logo="false" :title="appInfo.title" :logocss="appInfo.logocss" :number="version.number" :tag="version.tag"/>
             </div>
             <div>
                 <VersionDisplay :text="`${version.name} ${version.color} ${version.icon}`" :icon="version.icon" :color="version.color" />
@@ -35,12 +35,9 @@
     </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
 
-import {VersionInfo, ServerInfo, AppInfo} from '../../../stores/System'
-import { Release } from '../../../stores/Releases'
-
-import {getRundeckContext, url} from '../../../rundeckService'
+import { url} from '../../../rundeckService'
 
 import RundeckLogo from '../../svg/RundeckLogo.vue'
 import PagerdutyLogo from '../../svg/PagerdutyLogo.vue'
@@ -49,22 +46,40 @@ import Copyright from '../../version/Copyright.vue'
 import RundeckVersion from '../../version/RundeckVersionDisplay.vue'
 import VersionDisplay from '../../version/VersionIconNameDisplay.vue'
 import ServerDisplay from '../../version/ServerDisplay.vue'
-import {onMounted} from "vue";
+import {defineComponent} from "vue";
+import {AppInfo, ServerInfo, VersionInfo} from "../../../stores/System";
+import {PropType} from "Vue";
+import {Release} from "../../../stores/Releases";
 
-const props = defineProps( {
-    version: VersionInfo,
-    latest: Release,
-    server: ServerInfo,
-    appInfo: AppInfo
-})
-
-    onMounted(() => {
-        const context = getRundeckContext()
-    })
-
-    function welcomeUrl() {
-        return url('menu/welcome').toString()
+export default defineComponent({
+    name:"RundeckInfo",
+    components: {
+        RundeckLogo, PagerdutyLogo, Copyright, RundeckVersion, VersionDisplay, ServerDisplay
+    },
+    props: {
+        version: {
+            type: Object as PropType<VersionInfo>,
+            required: true
+        },
+        latest: {
+            type: Object as PropType<Release>,
+            required: true
+        },
+        server: {
+            type: Object as PropType<ServerInfo>,
+            required: true
+        },
+        appInfo: {
+            type: Object as PropType<AppInfo>,
+            required: true
+        }
+    },
+    methods: {
+        welcomeUrl() {
+            return url('menu/welcome').toString()
+        }
     }
+})
 </script>
 
 <style scoped lang="scss">

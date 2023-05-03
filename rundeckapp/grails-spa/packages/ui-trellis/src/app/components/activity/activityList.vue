@@ -382,7 +382,7 @@ import {getRundeckContext} from "../../../library"
 import {Execution, ExecutionBulkDeleteResponse} from '@rundeck/client/dist/lib/models';
 import {clearTimeout, setTimeout} from 'timers';
 import * as DOMPurify from 'dompurify';
-import * as MomentFormatters from "../../utilities/MomentFormatters";
+import * as DateTimeFormatters from "../../utilities/DateTimeFormatters";
 
 /**
  * Generate a URL
@@ -493,13 +493,13 @@ export default defineComponent({
   },
   methods: {
     momentFromNow(val: MomentInput) {
-        return MomentFormatters.formatFromNow(val)
+        return DateTimeFormatters.formatFromNow(val)
     },
     momentCalendarFormat(val:MomentInput) {
-        return moment(val).calendar(null)
+        return DateTimeFormatters.formatCalendar(val)
     },
     momentJobFormatDate(val: MomentInput) {
-      return moment(val).format(this.momentJobFormat)
+      return DateTimeFormatters.formatDate(val,this.momentJobFormat)
     },
     purify(text:string) {
       return DOMPurify.sanitize(text);

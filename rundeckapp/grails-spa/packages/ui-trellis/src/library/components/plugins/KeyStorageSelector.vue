@@ -34,6 +34,7 @@ import {defineComponent} from 'vue';
 
     import KeyStorageView from "../../components/storage/KeyStorageView.vue"
     import KeyStorageEdit from "../../components/storage/KeyStorageEdit.vue"
+import * as DateTimeFormatters from "../../../app/utilities/DateTimeFormatters";
 
     export default defineComponent({
       name: 'KeyStorageSelector',
@@ -67,22 +68,33 @@ import {defineComponent} from 'vue';
           }
           return path;
         },
-        allowedResource(meta: any) {
-          const filterArray = this.storageFilter.split('=');
-          const key = filterArray[0];
-          const value = filterArray[1];
-          if (key == 'Rundeck-key-type') {
-            if (value === meta['rundeckKeyType']) {
-              return true;
-            }
-          } else {
-            if (key == 'Rundeck-data-type') {
-              if (value === meta['Rundeck-data-type']) {
-                return true;
-              }
-            }
+        computed: {
+          showRootPath: function () {
+              return "keys/"
+          },
+          uploadFullPath(): string {
+              return 'keys/' + this.getKeyPath();
+          },
+          DateTimeFormatters() {
+              return DateTimeFormatters
           }
-          return false;
+        },
+        allowedResource(meta: any) {
+            const filterArray = this.storageFilter.split('=');
+            const key = filterArray[0];
+            const value = filterArray[1];
+            if (key == 'Rundeck-key-type') {
+                if (value === meta['rundeckKeyType']) {
+                    return true;
+                }
+            } else {
+                if (key == 'Rundeck-data-type') {
+                    if (value === meta['Rundeck-data-type']) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         },
         beforeModalClose(args: string | Array<any>) {
           if(args === "ok") {

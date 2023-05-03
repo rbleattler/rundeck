@@ -6,11 +6,9 @@
 
 
 <script lang="ts">
-import Vue, {defineComponent} from 'vue'
+import {defineComponent} from 'vue'
 
 import PluginInfo from '../../../../library/components/plugins/PluginInfo.vue'
-
-import {Webhook} from '../../../../library/stores/Webhooks'
 
 export default defineComponent({
     components: {

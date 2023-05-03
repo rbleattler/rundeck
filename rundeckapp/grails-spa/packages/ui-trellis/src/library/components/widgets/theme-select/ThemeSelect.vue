@@ -11,26 +11,26 @@
     </div>
 </template>
 
-<script setup lang="ts">
-import  {onBeforeMount, ref, watch} from 'vue'
+<script lang="ts">
+import {defineComponent} from 'vue'
 
-import { ThemeStore } from '../../../stores/Theme'
-import {getRundeckContext} from "../../../rundeckService";
-import {RundeckContext} from "../../../interfaces/rundeckWindow";
-
-    const themes = ['system', 'light', 'dark']
-
-    const theme = ref<string>('')
-
-    const themeStore = ref<ThemeStore>()
-
-    onBeforeMount(() => {
-        themeStore.value = (getRundeckContext() as RundeckContext).rootStore.theme
-        theme.value = themeStore.value.userPreferences.theme!
-    })
-
-   watch(theme, (newVal: any) => {
-       themeStore.value.setUserTheme(newVal)
-   })
+export default defineComponent({
+    name:"ThemeSelect",
+    data() {
+        return {
+            themes : ['system', 'light', 'dark'],
+            theme : '',
+            themeStore : window._rundeck.rootStore.theme
+        }
+    },
+    beforeMount() {
+        this.theme = this.themeStore.userPreferences.theme!
+    },
+    watch: {
+        theme(newVal: any) {
+            this.themeStore.setUserTheme(newVal)
+        }
+    }
+})
 
 </script>

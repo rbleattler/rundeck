@@ -23,7 +23,7 @@
               <h6
                 class="pub-date"
                 style="padding-bottom:.6em; color: #989898;"
-              >{{blog.publish_date | moment("MMMM Do YYYY hh:mm")}}</h6>
+              >{{DateTimeFormatters.formatPublishDate(blog.publish_date)}}</h6>
               <h3 class="blog-title">{{blog.title}}</h3>
             </div>
             <div>{{blog.meta_description}}</div>
@@ -52,9 +52,15 @@
 
 <script>
 import axios from "axios";
+import * as DateTimeFormatters from "../../utilities/DateTimeFormatters";
 
 export default {
   name: "CommunityNewsFeed",
+    computed: {
+        DateTimeFormatters() {
+            return DateTimeFormatters
+        }
+    },
   data() {
     return {
       showLoading: true,

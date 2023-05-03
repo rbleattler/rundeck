@@ -160,7 +160,7 @@
           <div>
             Created:
             <span class="timeabs text-strong">
-                                    {{createdTime() | moment("dddd, MMMM Do YYYY, h:mm:ss a") }}
+                                    {{DateTimeFormatters.formatKeyStorageDate(createdTime()) }}
                                 </span>
 
             <span v-if="createdUsername()!==''">
@@ -174,7 +174,7 @@
           <div>
             Modified:
             <span class="timeago text-strong">
-                                    {{modifiedTimeAgoText()| duration('humanize') }} ago
+                                    {{DateTimeFormatters.formatHumanizedDuration(modifiedTimeAgoText()) }} ago
                                 </span>
 
             <span v-if="modifiedUsername()!==''">
@@ -210,6 +210,7 @@ import {getRundeckContext} from "../../index"
 import {defineComponent} from "vue"
 import KeyType from "../../types/KeyType";
 import InputType from "../../types/InputType";
+import * as DateTimeFormatters from "../../../app/utilities/DateTimeFormatters";
 
 export default defineComponent({
   name: "KeyStorageView",
@@ -248,6 +249,11 @@ export default defineComponent({
       projectList: [],
       jumpLinks: [] as Array<{ name: string | undefined; path: string }>,
     }
+  },
+  computed: {
+      DateTimeFormatters() {
+          return DateTimeFormatters
+      }
   },
   mounted() {
     this.loadKeys()

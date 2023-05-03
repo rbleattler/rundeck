@@ -159,12 +159,10 @@
 </template>
 
 <script>
-import Vue, {defineComponent} from 'vue'
+import {defineComponent} from 'vue'
 import {createI18n} from 'vue-i18n'
 import i18n from '../i18n'
 import axios from 'axios'
-
-import {observable, autorun, reaction} from 'mobx'
 
 import PluginConfig from "../../../../library/components/plugins/pluginConfig.vue"
 import PluginInfo from "../../../../library/components/plugins/PluginInfo.vue"
@@ -313,14 +311,7 @@ export default defineComponent({
       this.curHook = this.rootStore.webhooks.clone(selected)
       this.origUseAuthVal = this.curHook.useAuth
 
-      this.dirty = false
-
-      reaction(() => {
-        return JSON.stringify(this.curHook.toApi())
-      }, (data) => {
-        this.dirty = true
-      })
-
+      this.dirty = true
       this.setValidation(true)
       this.setSelectedPlugin(true)
     },

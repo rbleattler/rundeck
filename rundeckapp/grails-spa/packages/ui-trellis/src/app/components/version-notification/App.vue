@@ -24,7 +24,7 @@
           {{$t("message.currentVersion")}}
           <strong>{{currentReleaseVersion.stringVersion}}</strong>.
         </p>
-        <p>This version was released {{currentReleaseVersion.releaseDate | moment("M/D/YYYY")}}.</p>
+        <p>This version was released {{formatReleaseDate(currentReleaseVersion.releaseDate)}}.</p>
         <a
           v-if="isOSSVersion"
           href="https://docs.rundeck.com/downloads.html"
@@ -62,6 +62,7 @@ import Trellis, {
   getSynchronizerToken,
   RundeckBrowser
 } from "../../../library";
+import {formatReleaseDate} from "@/app/utilities/DateTimeFormatters";
 
 // import motd from '@/components/motd/motd'
 
@@ -91,6 +92,7 @@ export default {
     };
   },
   methods: {
+      formatReleaseDate,
     hideNotificationForThisVersion() {
       Trellis.FilterPrefs.setFilterPref(
         "hideVersionUpdateNotification",
