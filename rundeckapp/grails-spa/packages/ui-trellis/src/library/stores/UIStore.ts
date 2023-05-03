@@ -1,9 +1,7 @@
-import { observable} from 'mobx'
-
 export class UIStore {
-  @observable items: Array<UIItem> = []
-  @observable watchers: Array<UIWatcher> = []
-  @observable uiMessages: Array<UiMessage> = []
+  items: Array<UIItem> = []
+  watchers: Array<UIWatcher> = []
+  uiMessages: Array<UiMessage> = []
 
   notifyWatchers() {
     this.watchers.forEach((w) => {

@@ -19,27 +19,27 @@ export class RootStore {
     navBar: UnwrapNestedRefs<NavBar>
     utilityBar: UnwrapNestedRefs<UtilityBar>
     releases: UnwrapNestedRefs<Releases>
-    system: SystemStore
+    system: UnwrapNestedRefs<SystemStore>
     projects: UnwrapNestedRefs<ProjectStore>
     news: NewsStore
     plugins: UnwrapNestedRefs<PluginStore>
     webhooks: UnwrapNestedRefs<WebhookStore>
-    theme: ThemeStore
-    ui: UIStore
+    theme: UnwrapNestedRefs<ThemeStore>
+    ui: UnwrapNestedRefs<UIStore>
 
     constructor(readonly client: RundeckClient, appMeta: any = {}) {
         this.executionOutputStore = new ExecutionOutputStore(this, client)
         this.workflowStore = reactive(new WorkflowStore(this, client))
         this.navBar = reactive(new NavBar(this, client))
         this.utilityBar = reactive(new UtilityBar(this, client))
-        this.system = new SystemStore(this, client)
+        this.system = reactive(new SystemStore(this, client))
         this.system.loadMeta(appMeta)
         this.releases = reactive(new Releases(this, client))
         this.projects = reactive(new ProjectStore(this, client))
         this.news = new NewsStore(this, client)
         this.plugins = reactive(new PluginStore(this, client))
         this.webhooks = reactive(new WebhookStore(this, client))
-        this.theme = new ThemeStore()
-        this.ui = new UIStore()
+        this.theme = reactive(new ThemeStore())
+        this.ui = reactive(new UIStore())
     }
 }
