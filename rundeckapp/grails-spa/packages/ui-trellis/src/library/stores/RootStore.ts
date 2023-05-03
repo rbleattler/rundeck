@@ -21,7 +21,7 @@ export class RootStore {
     releases: UnwrapNestedRefs<Releases>
     system: UnwrapNestedRefs<SystemStore>
     projects: UnwrapNestedRefs<ProjectStore>
-    news: NewsStore
+    news: UnwrapNestedRefs<NewsStore>
     plugins: UnwrapNestedRefs<PluginStore>
     webhooks: UnwrapNestedRefs<WebhookStore>
     theme: UnwrapNestedRefs<ThemeStore>
@@ -36,7 +36,7 @@ export class RootStore {
         this.system.loadMeta(appMeta)
         this.releases = reactive(new Releases(this, client))
         this.projects = reactive(new ProjectStore(this, client))
-        this.news = new NewsStore(this, client)
+        this.news = reactive(new NewsStore(this, client))
         this.plugins = reactive(new PluginStore(this, client))
         this.webhooks = reactive(new WebhookStore(this, client))
         this.theme = reactive(new ThemeStore())

@@ -1,7 +1,7 @@
 <template>
     <div class="news-widget">
-        <Skeleton :loading="!news.loaded" type="community-news">
-            <div class="news-article" v-for="article in news.articles.slice(0,4)" :key="article.name">
+        <Skeleton :loading="!newsStore.loaded" type="community-news">
+            <div class="news-article" v-for="article in newsStore.articles.slice(0,4)" :key="article.name">
                 <div style="margin-right: 10px; flex-basis: 50px; flex-shrink: 0;align-items: center;align-content: center; display: flex;">
                     <img :src="article.imageUrl"/>
                 </div>
@@ -17,26 +17,27 @@
     </div>
 </template>
 
-<script setup lang="ts">
-import {onBeforeMount, onMounted, ref} from 'vue'
-
+<script lang="ts">
+import {defineComponent} from 'vue'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
-
-import { NewsStore } from '../../../stores/News'
-
 import Skeleton from '../../skeleton/Skeleton.vue'
-import {RundeckContext} from "../../../interfaces/rundeckWindow";
-import {getRundeckContext} from "../../../rundeckService";
 
-    const news = ref<NewsStore>()
+export default defineComponent({
+    name:"News",
+    components: {
+        Skeleton
+    },
+    emits:['news:select-all'],
+    data() {
+        return {
+            newsStore: window._rundeck.rootStore.news
+        }
+    },
+    mounted() {
+        this.newsStore.load()
+    }
+})
 
-    onBeforeMount(() => {
-        news.value = (getRundeckContext() as RundeckContext).rootStore.news
-    })
-
-    onMounted(() => {
-        news.value.load()
-    })
 </script>
 
 <style scoped lang="scss">
