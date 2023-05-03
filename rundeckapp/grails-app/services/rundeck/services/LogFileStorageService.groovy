@@ -34,6 +34,7 @@ import com.dtolabs.rundeck.core.plugins.configuration.PropertyScope
 import com.dtolabs.rundeck.plugins.logging.ExecutionFileStoragePlugin
 import com.dtolabs.rundeck.server.plugins.services.ExecutionFileStoragePluginProviderService
 import grails.events.EventPublisher
+import grails.gorm.transactions.NotTransactional
 import grails.gorm.transactions.Transactional
 import org.hibernate.sql.JoinType
 import org.rundeck.app.services.ExecutionFile
@@ -243,6 +244,7 @@ class LogFileStorageService
      * Run a storage request task, and if it fails submit a retry depending on the configured retry count and delay
      * @param task
      */
+    @NotTransactional
     void runStorageRequest(Map task){
         if (!task.partial && !task.count) {
             storageTotalCounter?.inc()
