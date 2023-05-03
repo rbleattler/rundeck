@@ -5,16 +5,16 @@
         <span v-if="item.count" class="utility-bar__item-counter">{{item.count}}</span>
         <Popper v-if="open" @close="close">
             <div class="card card--popover utility-bar__widget">
-                <component :is="item.widget"/>
+                <component :is="item.widget" />
             </div>
         </Popper>
     </li>
 </template>
 
 <script lang="ts">
-import Vue, {defineComponent, PropType} from 'vue'
+import {defineComponent, PropType} from 'vue'
 
-import {UtilityItem} from '../../stores/UtilityBar'
+import { UtilityWidgetItem} from '../../stores/UtilityBar'
 
 import Popper from './Popper.vue'
 
@@ -26,7 +26,7 @@ export default defineComponent({
         Popper
     },
     props: {
-        item: Object as PropType<UtilityItem>
+        item: Object as PropType<UtilityWidgetItem>
     },
     methods: {
         handleClick() {

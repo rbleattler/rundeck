@@ -1,5 +1,6 @@
 import {RootStore} from './RootStore'
 import {RundeckClient} from '@rundeck/client'
+import {Component} from "vue";
 
 export class UtilityBar {
     items: Array<UtilityItem> = []
