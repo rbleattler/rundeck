@@ -96,9 +96,11 @@ function mount(e) {
   const template = `\
   <LogViewer
     executionId="${e.dataset.executionId}"
-    jumpToLine="${jumpToLine || null}"
+    :jumpToLine="${jumpToLine || null}"
     ref="viewer"
-    trimOutput="${e.dataset.trimOutput}"
+    trimOutput="${e.dataset.trimOutput || ""}"
+    @lineSelect="(e) => { this.$emit('line-select', e) }"
+    @lineDeselect="(e) => { this.$emit('line-deselect', e) }"
   />
   `
 
@@ -106,6 +108,7 @@ function mount(e) {
     name:"LogViewerApp",
     components: {LogViewer},
     template: template,
+    emits: ['line-select', 'line-deselect'],
     mounted() {
       // this.$refs.viewer.$on('line-select', (e) => this.$emit('line-select', e))
       // this.$refs.viewer.$on('line-deselect', e => this.$emit('line-deselect', e))

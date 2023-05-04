@@ -10,7 +10,7 @@
         :closable="true"
         :get-container="false"
         :wrap-style="{ position: 'absolute' }"
-        @close="() => {settingsVisible = false}"
+        @close="closeSettings"
     >
       <form style="padding: 10px;">
         <div class="form-group">
@@ -55,23 +55,25 @@
     </rd-drawer>
     <div 
       ref="scroller"
-      class="execution-log__scroller" v-bind:class="{
-      'execution-log--no-transition': logLines > 1000,
-      'ansicolor-on': settings.ansiColor
-    }">
+      class="execution-log__scroller"
+      :class="{
+        'execution-log--no-transition': logLines > 1000,
+        'ansicolor-on': settings.ansiColor
+      }"
+    >
       <div ref="log">
         <div v-if="showSettings" class="execution-log__settings"  style="margin-left: 5px; margin-right: 5px;">
           <btn-group>
-            <btn size="xs" @click="(e) => {settingsVisible = !settingsVisible; e.target.blur();}">
+            <btn size="xs" @click="toggleSettings">
               <i class="fas fa-cog"/>Settings
             </btn>
-            <btn size="xs" @click="(e) => {mfollow = !mfollow; e.target.blur();}">
+            <btn size="xs" @click="toggleFollow">
               <i :class="[followIcon]"/>Follow
             </btn>
           </btn-group>
           <transition name="fade">
             <div class="execution-log__progress-bar" v-if="showProgress">
-              <progress-bar v-model="barProgress" :type="progressType" :label-text="progressText" label min-width striped active @click="() => {consumeLogs = !consumeLogs}"/>
+              <progress-bar v-model="barProgress" :type="progressType" :label-text="progressText" label min-width striped active @click="toggleProgressBar"/>
             </div>
           </transition>
         </div>
@@ -83,7 +85,7 @@
         <div class="execution-log__warning" v-if="errorMessage">
           <h4>{{errorMessage}}</h4>
         </div>
-        <div class="execution-log__warning" v-if="completed && logLines == 0">
+        <div class="execution-log__warning" v-if="completed && logLines === 0">
           <h5>No output</h5>
         </div>
       </div>
@@ -98,7 +100,8 @@
 import {CancellationTokenSource, CancellationToken} from 'prex'
 
 import {ExecutionLog, EnrichedExecutionOutput} from '../../utilities/ExecutionLogConsumer'
-import Vue, {ComponentOptions, computed, getCurrentInstance, onBeforeMount, onMounted, ref, watch} from 'vue'
+import {ComponentOptions, computed, getCurrentInstance, onBeforeMount, onMounted, ref, watch} from 'vue'
+import type { DefineComponent } from 'vue'
 import {LogBuilder} from './logBuilder'
 import { RootStore } from '../../stores/RootStore'
 import RdDrawer from '../containers/drawer/Drawer.vue'
@@ -261,14 +264,14 @@ const props = withDefaults(defineProps<{
 
     const scroller = ref(null) //html element with ref="scroller"
     const log = ref(null) //html element with ref="log"
-    const root = ref(null) //html element with ref="log"
+    const root = ref(null) //html element with ref="root"
 
-    const options = ref<ComponentOptions<Vue> & {
+    const options = ref<ComponentOptions<DefineComponent> & {
         vues: any[]
     }>({vues:[]})
 
     const followIcon = computed(() => {
-      return mfollow ? 'fas fa-eye' : 'fas fa-eye-slash'
+      return mfollow.value ? 'fas fa-eye' : 'fas fa-eye-slash'
     })
 
     const barProgress= computed(() => {
@@ -481,7 +484,7 @@ const props = withDefaults(defineProps<{
     function handleNewLine(entries: Array<any>) {
       for (const vue of entries) {
         // @ts-ignore
-        const _selected = vue._props.logEntry.lineNumber == props.jumpToLine
+        const _selected = vue._props.logEntry.lineNumber === props.jumpToLine
         //TODO: VUE3-MIGRATION do this differently, this doesn't work
           //vue.$on('line-select', handleLineSelect)
         if (_selected) {
@@ -552,6 +555,20 @@ const props = withDefaults(defineProps<{
       else
         return settings.value.theme
 
+    }
+    const toggleSettings = (e) => {
+      settingsVisible.value = !settingsVisible.value
+      e.target.blur()
+    }
+    const toggleFollow = (e) => {
+      mfollow.value = !mfollow.value
+      e.target.blur()
+    }
+    const closeSettings = () => {
+      settingsVisible.value = false
+    }
+    const toggleProgressBar = () => {
+      consumeLogs.value = !consumeLogs.value
     }
 
 </script>
