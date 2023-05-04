@@ -312,7 +312,14 @@
 </template>
 
 <script>
+import { defineComponent } from 'vue'
+import Fuse from 'fuse.js'
+import { mapState, mapActions, mapGetters } from "vuex";
+
 import * as StringFormatters from "../../../utilities/StringFormatters";
+import ProviderCard from "../components/ProviderCard";
+import ProviderCardRow from "../components/ProviderCardRow";
+import ConfigureFrameworkString from "../components/ConfigureFrameworkString";
 
 const FuseSearchOptions = {
   shouldSort: true,
@@ -324,14 +331,9 @@ const FuseSearchOptions = {
   keys: ["display", "name", "title"]
 };
 
-import { mapState, mapActions, mapGetters } from "vuex";
-import ProviderCard from "../components/ProviderCard";
-import ProviderCardRow from "../components/ProviderCardRow";
-import ConfigureFrameworkString from "../components/ConfigureFrameworkString";
-
-export default {
+export default defineComponent({
   name: "PluginConfigurationView",
-  components: { ProviderCard, ProviderCardRow, ConfigureFrameworkString },
+  components: {ProviderCard, ProviderCardRow, ConfigureFrameworkString},
   methods: {
     ...mapActions("plugins", [
       "initData",
@@ -359,17 +361,15 @@ export default {
         return;
       }
       let theRepo = this.plugins;
-      this.$search(this.searchString, theRepo, FuseSearchOptions).then(
-        results => {
-          this.setSearchResultPlugins(results);
-        }
-      );
+      const fuse = new Fuse(theRepo, FuseSearchOptions);
+      const results = fuse.search(this.searchString).map((result) => result.item)
+      this.setSearchResultPlugins(results);
     }
   },
   computed: {
-      StringFormatters() {
-          return StringFormatters
-      },
+    StringFormatters() {
+      return StringFormatters
+    },
     ...mapState("modal", ["modalOpen"]),
     ...mapState("plugins", [
       "plugins",
@@ -381,10 +381,10 @@ export default {
       "providersDetails"
     ]),
     isModalOpen: {
-      get: function() {
+      get: function () {
         return this.modalOpen;
       },
-      set: function() {
+      set: function () {
         this.closeModal().then(() => {
           return this.modalOpen;
         });
@@ -412,11 +412,11 @@ export default {
     };
   },
   watch: {
-    checkedServiceProviders: function(newVal, oldVal) {
+    checkedServiceProviders: function (newVal, oldVal) {
       this.getProvidersInfo(newVal);
     }
   }
-};
+})
 </script>
 
 <style lang="scss" scoped>

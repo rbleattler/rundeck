@@ -3,7 +3,6 @@
 import {createApp} from 'vue'
 import VueCookies from 'vue-cookies'
 import VueScrollTo from 'vue-scrollto'
-import VueFuse from 'vue-fuse'
 import {createI18n} from 'vue-i18n'
 import uivLang from '../../../library/utilities/uivi18n'
 import * as uiv from 'uiv'
@@ -40,7 +39,6 @@ app.use(store)
 app.use(router)
 app.use(VueCookies)
 app.use(VueScrollTo)
-app.use(VueFuse)
 app.use(uiv)
 app.use(i18n)
 app.mount('#repository-vue')

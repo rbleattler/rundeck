@@ -1,10 +1,9 @@
-import Vue, {createApp} from 'vue'
+import {createApp} from 'vue'
 import VueCookies from 'vue-cookies'
 import VueScrollTo from 'vue-scrollto'
-import VueFuse from 'vue-fuse'
 import * as uiv from 'uiv'
 import App from './App.vue'
-import VueI18n, {createI18n} from 'vue-i18n'
+import {createI18n} from 'vue-i18n'
 
 import {getRundeckContext} from '@/library'
 import uivLang from '../../../library/utilities/uivi18n'
@@ -46,7 +45,6 @@ const app = createApp({
 app.component('rd-ace-editor', AceEditor)
 app.use(VueCookies)
 app.use(VueScrollTo)
-app.use(VueFuse)
 app.use(uiv)
 app.use(i18n)
 app.mount('#webhook-vue')

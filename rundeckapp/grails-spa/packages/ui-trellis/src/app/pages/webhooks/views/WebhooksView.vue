@@ -444,7 +444,7 @@ export default defineComponent({
       this.dirty = true
     },
     loadProPlugins() {
-      if (window.ProWebhookComponents == undefined)
+      if (window.ProWebhookComponents === undefined)
         return
 
       for (let [k, comp] of Object.entries(window.ProWebhookComponents)) {

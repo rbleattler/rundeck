@@ -74,7 +74,7 @@
 import { defineComponent } from 'vue'
 import _ from "lodash";
 import axios from "axios";
-import fuse from "fuse.js";
+import Fuse from "fuse.js";
 import RepositoryRow from "../components/Repository";
 import { mapState, mapActions } from "vuex";
 
@@ -128,43 +128,41 @@ export default defineComponent({
       }
       for (let index = 0; index < this.repositories.length; index++) {
         let theRepo = this.repositories[index].results;
-        this.$search(this.searchString, theRepo, FuseSearchOptions).then(
-          results => {
-            if (
-              !window.repositoryLocalSearchOnly &&
-              this.repositories[index].repositoryName === "official"
-            ) {
-              let versionNumber = null;
-              let mappedResults = _.map(results, "id");
-              let rundeckVersionNumberContainer = document.getElementsByClassName(
-                "rundeck-version-identity"
-              );
-              if (
-                rundeckVersionNumberContainer[0] &&
-                rundeckVersionNumberContainer[0].dataset &&
-                rundeckVersionNumberContainer[0].dataset.versionString
-              ) {
-                versionNumber =
-                  rundeckVersionNumberContainer[0].dataset.versionString;
-              }
-              let payload = {
-                searchString: this.searchString,
-                results: mappedResults,
-                rundeckVer: versionNumber
-              };
-              axios({
-                method: "post",
-                url: `https://api.rundeck.com/repo/v1/oss/search/save`,
-                data: payload
-              });
-            }
-
-            this.searchResults.push({
-              repositoryName: this.repositories[index].repositoryName,
-              results: results
-            });
+        const fuse = new Fuse(theRepo, FuseSearchOptions)
+        const results = fuse.search(this.searchString).map((result) => result.item)
+        if (
+            !window.repositoryLocalSearchOnly &&
+            this.repositories[index].repositoryName === "official"
+        ) {
+          let versionNumber = null;
+          let mappedResults = _.map(results, "id");
+          let rundeckVersionNumberContainer = document.getElementsByClassName(
+              "rundeck-version-identity"
+          );
+          if (
+              rundeckVersionNumberContainer[0] &&
+              rundeckVersionNumberContainer[0].dataset &&
+              rundeckVersionNumberContainer[0].dataset.versionString
+          ) {
+            versionNumber =
+                rundeckVersionNumberContainer[0].dataset.versionString;
           }
-        );
+          let payload = {
+            searchString: this.searchString,
+            results: mappedResults,
+            rundeckVer: versionNumber
+          };
+          axios({
+            method: "post",
+            url: `https://api.rundeck.com/repo/v1/oss/search/save`,
+            data: payload
+          });
+        }
+
+        this.searchResults.push({
+          repositoryName: this.repositories[index].repositoryName,
+          results: results
+        });
       }
     }
   },
