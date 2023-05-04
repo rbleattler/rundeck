@@ -35,6 +35,7 @@ import UiSocket from '../utils/UiSocket.vue'
 import {IBuilderOpts} from "./logBuilder"
 import {EventBus} from "../../utilities/vueEventBus";
 import {PropType} from "Vue";
+import {logviewerui} from "../../stores/ExecutionOutput";
 
 export default defineComponent({
     name:"EntryFlex",
@@ -45,10 +46,6 @@ export default defineComponent({
         eventBus: {
             type: Object as PropType<typeof EventBus>,
             required: false
-        },
-        selected: {
-            type: Boolean,
-            default: false
         },
         config: {
           type: Object as PropType<IBuilderOpts>,
@@ -63,10 +60,14 @@ export default defineComponent({
     },
     data: function() {
         return {
+            logviewerui,
             cfg : this.config
         }
     },
     computed: {
+        selected() {
+            return this.logviewerui.selectedLine === this.logEntry.lineNumber
+        },
         timestamps() {
             return (this.cfg.time?.visible) ? this.cfg.time.visible : false
         },
@@ -89,10 +90,13 @@ export default defineComponent({
             return this.cfg.gutter?.visible && (this.cfg.time?.visible || this.cfg.command?.visible)
         }
     },
-    emits : ['line-select'],
     methods: {
         lineSelect() {
-            this.$emit('line-select', this.logEntry.lineNumber)
+            if(this.logviewerui.selectedLine === this.logEntry.lineNumber) {
+                this.logviewerui.deselectLine()
+            } else {
+                this.logviewerui.setSelectedLine(this.logEntry.lineNumber)
+            }
         },
         handleSettingsChanged(newSettings: any) {
             Object.assign(this.cfg, newSettings);

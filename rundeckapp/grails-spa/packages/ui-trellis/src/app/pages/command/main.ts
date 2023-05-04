@@ -14,7 +14,7 @@ eventBus.on('ko-adhoc-running', (data: any) => {
     <LogViewer
         v-if="this.$el.parentNode.display != 'none'"
         executionId="${data.id}"
-        :showSettings="false"
+        :showSettings="showSettings"
         :config="config"
         ref="viewer"
     />
@@ -24,17 +24,17 @@ eventBus.on('ko-adhoc-running', (data: any) => {
         el: elm!,
         components: {LogViewer},
         template: template,
-        props: {
-            config: {default: () => ({
+        provide: {
+            rootStore
+        }
+    }, {
+        showSettings: true,
+        config: {default: () => ({
                 gutter: true,
                 command: false,
                 nodeBadge: true,
                 timestamps: true,
                 stats: false,
             })}
-        },
-        provide: {
-            rootStore
-        }
     })
 })

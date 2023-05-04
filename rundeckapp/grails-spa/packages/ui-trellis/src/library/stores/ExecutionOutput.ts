@@ -6,11 +6,22 @@ import { RootStore } from './RootStore'
 import { JobWorkflow, RenderedStepList } from '../utilities/JobWorkflow'
 import { ExecutionStatusGetResponse, ExecutionOutputGetResponse, ExecutionOutputEntry as ApiExecutionOutputEntry } from '@rundeck/client/dist/lib/models'
 import { Serial } from '../utilities/Async'
+import {reactive, ref} from "vue";
 
 // export type EnrichedExecutionOutput = Omit<ExecutionOutput, 'entries'> & {entries: IRenderedEntry[]}
 
 const BACKOFF_MIN = 100
 const BACKOFF_MAX = 5000
+
+export const logviewerui = reactive({
+    selectedLine : null,
+    setSelectedLine(num: number) {
+        this.selectedLine = num
+    },
+    deselectLine() {
+        this.selectedLine = null
+    }
+})
 
 export class ExecutionOutputStore {
     @observable executionOutputsById: Map<string, ExecutionOutput> = new Map()
