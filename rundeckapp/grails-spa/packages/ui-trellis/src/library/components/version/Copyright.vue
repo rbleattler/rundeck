@@ -5,15 +5,15 @@
 </template>
 
 <script>
-import * as AppConstants from "@/app/utilities/AppConstants";
+import { defineComponent } from 'vue'
 
-export default {
+export default defineComponent({
     data () {
         return {
-            copyright: AppConstants.buildCopyright
+            copyright: process.env.VUE_APP_BUILD_COPYRIGHT
         }
     }
-}
+})
 </script>
 
 <style scoped lang="scss">

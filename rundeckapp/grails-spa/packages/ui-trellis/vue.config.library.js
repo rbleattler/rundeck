@@ -8,6 +8,8 @@ const webpack = require('webpack')
 const nodeExternals = require('webpack-node-externals');
 const BUILD_COPYRIGHT = `© ${new Date().getFullYear()} PagerDuty, Inc. All Rights Reserved.`
 
+process.env.VUE_APP_BUILD_COPYRIGHT = BUILD_COPYRIGHT
+
 /** Create a "page" for each component */
 pages = {}
 walk.walkSync('./src/library/components', {
@@ -166,7 +168,7 @@ module.exports = {
     })
     config.plugins.push(
         new webpack.DefinePlugin({
-          BUILD_COPYRIGHT: JSON.stringify(BUILD_COPYRIGHT)
+          VUE_APP_BUILD_COPYRIGHT: JSON.stringify(BUILD_COPYRIGHT)
         })
     )
   }

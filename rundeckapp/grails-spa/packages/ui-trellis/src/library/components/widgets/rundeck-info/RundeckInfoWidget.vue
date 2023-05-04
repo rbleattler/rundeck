@@ -25,7 +25,7 @@ export default defineComponent({
         }
     },
     async mounted() {
-        this.releases.load()
+        await this.releases.load()
         try {
             await Promise.all([
                 this.system.load(),

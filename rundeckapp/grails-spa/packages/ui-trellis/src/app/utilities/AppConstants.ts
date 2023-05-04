@@ -1,2 +1,2 @@
 
-export const buildCopyright = "BUILD_COPYRIGHT"
+export const buildCopyright = process.env.VUE_APP_BUILD_COPYRIGHT
