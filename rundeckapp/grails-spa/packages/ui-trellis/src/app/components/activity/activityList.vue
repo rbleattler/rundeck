@@ -39,26 +39,27 @@
             <!-- bulk edit controls -->
             <span  v-if="auth.deleteExec && pagination.total>0 && showBulkDelete" class="spacing-x">
                 <span v-if="bulkEditMode" >
-                  <i18n path="bulk.selected.count">
+                  <span>
+                    {{ $t("bulk.selected.count") }}
                     <strong>{{bulkSelectedIds.length}}</strong>
-                  </i18n>
+                  </span>
                   <span class="btn btn-default btn-xs   " @click="bulkEditSelectAll">
-                      <i18n path="select.all"/>
+                      {{$t('select.all')}}
                   </span>
                   <span class="btn btn-default btn-xs   "
                         @click="showBulkEditCleanSelections=true">
-                      <i18n path="select.none"/>
+                      {{$t('select.none')}}
                   </span>
 
                   <btn size="xs" type="danger" class="btn-fill"
                         :disabled="bulkSelectedIds.length<1"
                         @click="showBulkEditConfirm=true">
-                      <i18n path="delete.selected.executions"/>
+                      {{$t('delete.selected.executions')}}
                   </btn>
                   <span class="btn btn-default btn-xs"
                         @click="bulkEditMode=false"
                         >
-                      <i18n path="cancel.bulk.delete"/>
+                      {{$t('cancel.bulk.delete')}}
                   </span>
               </span>
 
@@ -74,9 +75,10 @@
     <!-- Bulk edit modals -->
     <modal  v-model="showBulkEditCleanSelections" id="cleanselections" :title="$t('Clear bulk selection')" append-to-body>
 
-      <i18n tag="p" path="clearselected.confirm.text">
+      <p>
+          {{ $t("clearselected.confirm.text")}}
         <strong>{{bulkSelectedIds.length}}</strong>
-      </i18n>
+      </p>
 
       <template v-slot:footer>
         <div>
@@ -97,10 +99,11 @@
     </modal>
 
     <modal v-model="showBulkEditConfirm" id="bulkexecdelete" :title="$t('Bulk Delete Executions')" append-to-body>
-      <i18n tag="p" path="delete.confirm.text">
-        <strong>{{bulkSelectedIds.length}}</strong>
-        <span>{{$tc('execution',bulkSelectedIds.length)}}</span>
-      </i18n>
+      <p>
+          {{ $t("delete.confirm.text")}}
+          <strong>{{bulkSelectedIds.length}}</strong>
+          <span>{{$tc('execution',bulkSelectedIds.length)}}</span>
+      </p>
 
       <template v-slot:footer>
         <div>
@@ -129,9 +132,10 @@
                     v-if="bulkEditResults && bulkEditResults.requestCount > 0"
                         class="text-info">
 
-                        <i18n path="bulkresult.attempted.text" tag="p" >
+                        <p>
+                          {{ $t("bulkresult.attempted.text")}}
                           <strong >{{bulkEditResults.requestCount}}</strong>
-                        </i18n>
+                        </p>
 
                     </p>
                     <p
@@ -139,17 +143,19 @@
                         class="text-success">
 
 
-                        <i18n path="bulkresult.success.text" tag="p" >
+                        <p>
+                          {{ $t("bulkresult.success.text")}}
                           <strong >{{bulkEditResults.successCount}}</strong>
-                        </i18n>
+                        </p>
                     </p>
                     <p
                       v-if="bulkEditResults && bulkEditResults.failedCount > 0"
                             class="text-warning">
 
-                        <i18n path="bulkresult.failed.text" tag="p" >
+                        <p>
+                          {{$t("bulkresult.failed.text")}}
                           <strong >{{bulkEditResults.failedCount}}</strong>
-                        </i18n>
+                        </p>
                     </p>
                     <div v-if="bulkEditResults && bulkEditResults.failures && bulkEditResults.failures.length > 0">
                         <ul v-for="(message,ndx) in bulkEditResults.failures" :key="ndx">
@@ -217,7 +223,7 @@
                 </td>
 
                 <td class="  user text-right " style="white-space: nowrap;">
-                    <em><i18n path="by" default="by"/></em>
+                    <em>{{$t('by')}}</em>
                     {{exec.user}}
                 </td>
 
@@ -297,7 +303,7 @@
                 <span class="duration" v-else>{{formatDurationMomentHumanize(rpt.duration)}}</span>
             </td>
             <td class="  user text-right " style="white-space: nowrap;">
-                <em><i18n path="by" default="by"/></em>
+                <em>{{$t('by')}}</em>
                 {{rpt.user}}
             </td>
             <td class="eventtitle " :class="{job:rpt.jobId,adhoc:!rpt.jobId}" >

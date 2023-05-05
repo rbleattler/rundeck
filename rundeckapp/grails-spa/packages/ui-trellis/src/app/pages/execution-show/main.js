@@ -93,14 +93,13 @@ function mount(e) {
    * Since the viewer is a class component that would make its
    * constructor the root constructor and chaos ensues...
    * */
+  const trimOutput = e.dataset.trimOutput ? `trimOutput="${e.dataset.trimOutput}"` : ""
   const template = `\
   <LogViewer
     executionId="${e.dataset.executionId}"
     :jumpToLine="${jumpToLine || null}"
     ref="viewer"
-    trimOutput="${e.dataset.trimOutput || ""}"
-    @lineSelect="(e) => { this.$emit('line-select', e) }"
-    @lineDeselect="(e) => { this.$emit('line-deselect', e) }"
+    ${trimOutput}
   />
   `
 
@@ -108,11 +107,6 @@ function mount(e) {
     name:"LogViewerApp",
     components: {LogViewer},
     template: template,
-    emits: ['line-select', 'line-deselect'],
-    mounted() {
-      // this.$refs.viewer.$on('line-select', (e) => this.$emit('line-select', e))
-      // this.$refs.viewer.$on('line-deselect', e => this.$emit('line-deselect', e))
-    },
     provide: {
       rootStore
     }

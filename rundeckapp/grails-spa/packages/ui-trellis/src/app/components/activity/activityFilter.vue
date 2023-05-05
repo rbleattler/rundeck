@@ -2,13 +2,13 @@
   <span>
     <dropdown v-if="query.recentFilter!=='-' && displayOpts.showRecentFilter">
       <span class="dropdown-toggle text-info cursor-pointer mr-2">
-        <i18n :path="'period.label.'+period.name" />
+        {{ $t(`period.label.${period.name}`)}}
         <span class="caret"></span>
       </span>
       <template v-slot:dropdown>
         <li v-for="perobj in periods" :key="perobj.name">
           <a role="button" @click="changePeriod(perobj)">
-            <i18n :path="'period.label.'+perobj.name" />
+              {{ $t(`period.label.${perobj.name}`)}}
             <span v-if="period.name===perobj.name">√</span>
           </a>
         </li>
@@ -25,7 +25,7 @@
       <span v-if="hasQuery" class="query-params-summary">
         <ul class="list-inline">
           <li v-for="qname in queryParamsList" :key="qname">
-            <i18n :path="'jobquery.title.'+qname" />:
+              {{ $t(`jobquery.title.${qname}`) }}:
             <code class="queryval">{{query[qname]}}</code>
           </li>
         </ul>
@@ -55,7 +55,7 @@
             <div class="col-xs-12 col-sm-4">
               <div class="form-group">
                 <label for="jobIdFilter" class="sr-only">
-                  <i18n path="jobquery.title.jobFilter" />
+                    {{ $t('jobquery.title.jobFilter') }}
                 </label>
                 <input
                   type="text"
@@ -69,7 +69,7 @@
 
               <div class="form-group" v-if="query.jobIdFilter">
                 <label for="jobIdFilter" class="sr-only">
-                  <i18n path="jobquery.title.jobIdFilter" />
+                  {{ $t("jobquery.title.jobIdFilter") }}
                 </label>
                 <input
                   type="text"
@@ -83,7 +83,7 @@
             <div class="col-xs-12 col-sm-4">
               <div class="form-group">
                 <label for="userFilter" class="sr-only">
-                  <i18n path="jobquery.title.userFilter" />
+                    {{ $t("jobquery.title.userFilter") }}
                 </label>
                 <input
                   type="text"
@@ -97,7 +97,7 @@
             <div class="col-xs-12 col-sm-4">
               <div class="form-group">
                 <label for="execnodeFilter" class="sr-only">
-                  <i18n path="jobquery.title.filter" />
+                    {{ $t("jobquery.title.filter") }}
                 </label>
                 <input
                   type="text"
@@ -113,7 +113,7 @@
             <div class="col-xs-12 col-sm-4">
               <div class="form-group">
                 <label for="titleFilter" class="sr-only">
-                  <i18n path="jobquery.title.titleFilter" />
+                    {{ $t("jobquery.title.titleFilter") }}
                 </label>
                 <input
                   type="text"
@@ -127,7 +127,7 @@
             <div class="col-xs-12 col-sm-4">
               <div class="form-group">
                 <label for="statFilter" class="sr-only">
-                  <i18n path="jobquery.title.statFilter" />
+                    {{ $t("jobquery.title.statFilter") }}
                 </label>
                 <select
                   name="statFilter"
@@ -147,7 +147,7 @@
             <div class="col-xs-12 col-sm-4">
               <div class="form-group">
                 <label for="recentFilter" class="sr-only">
-                  <i18n path="jobquery.title.recentFilter" />
+                    {{ $t("jobquery.title.recentFilter") }}
                 </label>
                 <span class="radiolist">
                   <select name="recentFilter" v-model="query.recentFilter" class="form-control">
@@ -191,6 +191,7 @@ export default {
     SavedFilters
   },
   props: ["eventBus", "value", "eventBus", "opts"],
+  emit: ["invoke-save-filter","input"],
   data() {
     return {
       displayOpts: {
@@ -340,7 +341,7 @@ export default {
       // where the saving of a filter (giving it a name) didn't actually
       // save the filter itself, just the name
       setTimeout(() => {
-        this.eventBus.$emit("invoke-save-filter");
+        this.eventBus.emit("invoke-save-filter");
         this.didSearch = true;
         this.filterOpen = false;
       }, 500);

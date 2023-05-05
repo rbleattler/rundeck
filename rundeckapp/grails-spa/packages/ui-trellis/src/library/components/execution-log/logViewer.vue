@@ -475,22 +475,6 @@ export default defineComponent({
                 this.logviewerui.setSelectedLine(idx)
             }
 
-            // const line = this.options.vues[e-1]
-
-            // if (this.selected) {
-            //     this.selected.selected = false
-            // }
-
-            // if (this.selected === line) {
-            //     this.selected = undefined
-            //     this.logviewerui.deselectLine()
-            //     return
-            // }
-
-            // line.selected = true
-            // this.selected = line
-
-            // emit('line-select', e)
         },
         toggleSettings(e) {
             this.settingsVisible = !this.settingsVisible
@@ -507,17 +491,6 @@ export default defineComponent({
             this.consumeLogs = !this.consumeLogs
         },
         handleNewLine(entries: Array<any>) {
-            // for (const vue of entries) {
-            //   // @ts-ignore
-            //   const _selected = vue._props.logEntry.lineNumber === props.jumpToLine
-            //   //TODO: VUE3-MIGRATION do this differently, this doesn't work
-            //     //vue.$on('line-select', handleLineSelect)
-            //   if (_selected) {
-            //     selected.value = vue
-            //     vue.selected = true
-            //   }
-            // }
-
             this.options.vues.push(...entries)
 
             if (this.jumpToLine && this.jumpToLine <= this.options.vues.length && !this.jumped) {

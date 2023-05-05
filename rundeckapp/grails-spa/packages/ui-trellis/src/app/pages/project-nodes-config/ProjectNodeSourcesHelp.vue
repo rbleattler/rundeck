@@ -11,9 +11,10 @@
           <form method="POST" :action="projectAclConfigPageUrl">
             <input type="hidden" name="fileText" :value="aclExample"/>
 
-          <i18n path="unauthorized.status.help.4" tag="p" >
+          <p>
+            {{$t('unauthorized.status.help.4')}}
             <button class="btn btn-sm btn-default" type="submit">{{ $t('acl.config.link.title') }}</button>
-          </i18n>
+          </p>
           <details>
             <summary>{{$t('acl.example.summary')}}</summary>
             <pre>{{aclExample}}
@@ -26,9 +27,10 @@
           <input type="hidden" name="fileText" :value="systemAclExample"/>
           <input type="hidden" name="fileType" value="storage"/>
 
-          <i18n path="unauthorized.status.help.5" tag="p" >
+          <p>
+            {{$t('unauthorized.status.help.5')}}
             <button class="btn btn-sm btn-default" type="submit">{{ $t('acl.config.system.link.title') }}</button>
-          </i18n>
+          </p>
           <details>
             <summary>{{$t('acl.example.summary')}}</summary>
             <pre>{{systemAclExample}}
