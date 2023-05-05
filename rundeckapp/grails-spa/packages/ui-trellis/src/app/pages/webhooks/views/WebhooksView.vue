@@ -77,7 +77,7 @@
                 </div>
                 <div class="card">
                 <div class="card-content">
-                  <div class="form-group"><label>{{ $t('message.webhookNameLabel') }}</label><input v-model="curHook.name" class="form-control"></div>
+                  <div class="form-group"><label>{{ $t('message.webhookNameLabel') }}</label><input v-model="curHook.name" class="form-control" @change="input"></div>
                   <div class="form-group"><label>{{ $t('message.webhookUserLabel') }}</label>
                     <input v-model="curHook.user" class="form-control" v-if="curHook.new">
                     <span class="form-control readonly fc-span-adj" v-else>{{curHook.user}}</span>
@@ -85,13 +85,13 @@
                       {{$t('message.webhookUserHelp')}}
                     </div>
                   </div>
-                  <div class="form-group"><label>{{ $t('message.webhookRolesLabel') }}</label><input v-model="curHook.roles" class="form-control">
+                  <div class="form-group"><label>{{ $t('message.webhookRolesLabel') }}</label><input v-model="curHook.roles" class="form-control" @change="input">
                     <div class="help-block">
                       {{$t('message.webhookRolesHelp')}}
                     </div>
                   </div>
                   <div class="form-group">
-                    <div class="checkbox"><input type="checkbox" v-model="curHook.enabled" class="form-control" id="wh-enabled"><label for="wh-enabled">{{ $t('message.webhookEnabledLabel') }}</label></div>
+                    <div class="checkbox"><input type="checkbox" v-model="curHook.enabled" class="form-control" id="wh-enabled" @change="input"><label for="wh-enabled">{{ $t('message.webhookEnabledLabel') }}</label></div>
                   </div>
                 </div>
                 </div>
@@ -244,6 +244,7 @@ export default defineComponent({
   },
   methods: {
     confirmAuthToggle() {
+      this.input()
       if(this.curHook.useAuth) {
         var self = this
         self.$confirm({
@@ -259,6 +260,7 @@ export default defineComponent({
     },
     setRegenerate() {
       this.curHook.regenAuth = true
+      this.input()
     },
     input() {
       this.dirty = true
@@ -311,8 +313,8 @@ export default defineComponent({
     handleSelect(selected) {
       this.cleanAction(() => this.select(selected))
     },
-    select(selected) {
-      if (!this.curHook || this.curHook.uuid !== selected.uuid) {
+    select(selected, showAuth) {
+      if (!this.curHook || !showAuth) {
           this.hkSecret = null
       }
       this.curHook = this.webhookStore.clone(selected)
@@ -352,11 +354,15 @@ export default defineComponent({
         return
       }
       webhook.config = this.selectedPlugin.config
+      let showAuthString = false
       let resp
-      if (webhook.new)
-        resp = await this.webhookStore.create(webhook)
-      else
-        resp = await this.webhookStore.save(webhook)
+      if (webhook.new) {
+          showAuthString = webhook.useAuth
+          resp = await this.webhookStore.create(webhook)
+      } else {
+          showAuthString = webhook.regenAuth
+          resp = await this.webhookStore.save(webhook)
+      }
 
       const data = resp.parsedBody
 
@@ -371,7 +377,7 @@ export default defineComponent({
         this.setValidation(true)
         this.dirty = false
         await this.webhookStore.refresh(this.projectName)
-        this.select(this.webhookStore.webhooksByUuid.get(data.uuid))
+        this.select(this.webhookStore.webhooksByUuid.get(data.uuid), showAuthString)
       }
     },
     handleCancel() {

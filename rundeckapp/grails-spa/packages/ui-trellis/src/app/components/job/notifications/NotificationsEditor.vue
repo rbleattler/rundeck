@@ -252,6 +252,7 @@ export default {
   name: 'NotificationsEditor',
   props: ['notificationData'],
   components: {PluginInfo,PluginConfig,ExtendedDescription,UndoRedo, VMarkdownView},
+  emits: ['changed'],
   data () {
     return {
       notifyAvgDurationThreshold:null,
@@ -350,7 +351,7 @@ export default {
       await this.operationCreate(value)
       let value1 = this.doClone(value)
       let index = this.notifications.length - 1
-      this.$emit(
+      this.eventBus.emit(
           "change",
           {
             index: index,
@@ -364,7 +365,7 @@ export default {
       let oldval = this.doClone(this.notifications[index])
       await this.operationModify(index,value)
       let clone = this.doClone(value)
-      this.$emit("change",{
+      this.eventBus.emit("change",{
         index: index,
         value: clone,
         orig: oldval,
@@ -455,9 +456,11 @@ export default {
       return this.notifications.findIndex(s=>s.trigger===trigger)>=0
     },
     doUndo(change){
+        console.log("do undo")
       this.perform(change.undo, {index:change.index,value:change.orig||change.value})
     },
     doRedo(change){
+        console.log("do redo")
       this.perform(change.operation,change)
     },
     async perform(operation,change){
@@ -474,7 +477,7 @@ export default {
   },
   watch:{
     notifications(){
-      this.eventBus.emit('changed',this.notifications)
+      this.$emit('changed',this.notifications)
     }
   },
   async mounted () {
@@ -492,6 +495,10 @@ export default {
             this.pluginLabels = data.labels;
           }
         });
+  },
+  beforeUnmount() {
+      this.eventBus.off("undo")
+      this.eventBus.off("redo")
   }
 }
 </script>
