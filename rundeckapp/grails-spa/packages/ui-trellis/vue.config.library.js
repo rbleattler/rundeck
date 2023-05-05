@@ -166,10 +166,5 @@ module.exports = {
         })
       }
     })
-    config.plugins.push(
-        new webpack.DefinePlugin({
-          VUE_APP_BUILD_COPYRIGHT: JSON.stringify(BUILD_COPYRIGHT)
-        })
-    )
   }
 };

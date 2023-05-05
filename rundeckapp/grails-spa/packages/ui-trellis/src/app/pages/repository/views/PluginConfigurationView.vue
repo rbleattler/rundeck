@@ -412,7 +412,7 @@ export default defineComponent({
     };
   },
   watch: {
-    checkedServiceProviders: function (newVal, oldVal) {
+    checkedServiceProviders(newVal) {
       this.getProvidersInfo(newVal);
     }
   }

@@ -4,7 +4,7 @@ import {autorun} from 'mobx'
 
 import LogViewer from '../../../library/components/execution-log/logViewer.vue'
 import { getRundeckContext } from '../../../library'
-import uiv from "uiv";
+import * as uiv from 'uiv'
 
 const rootStore = getRundeckContext().rootStore
 

@@ -4,7 +4,7 @@ import FilterPrefs from './modules/filterPrefs'
 export * from './rundeckService'
 
 export {RundeckBrowser} from '@rundeck/client'
-export {RundeckContext} from './interfaces/rundeckWindow'
+export type {RundeckContext} from './interfaces/rundeckWindow'
 
 export default {
   FilterPrefs,

@@ -38,7 +38,7 @@
         <asset:javascript src="vendor/vue.global.js.js"/>
     </g:if>
     <g:else>
-        <asset:javascript src="vendor/vue.global.js"/>
+        <asset:javascript src="vendor/vue.global.prod.js"/>
     </g:else>
     <asset:javascript src="static/components/server-identity.js" asset-defer="true" />
 

@@ -18,9 +18,9 @@
 
 <script lang="ts">
 
-import Dropdown from 'uiv'
+import { Dropdown } from 'uiv'
 
-import Vue, {defineComponent} from "vue";
+import {defineComponent} from "vue";
 
 export default defineComponent({
   name: "TextAutocomplete",

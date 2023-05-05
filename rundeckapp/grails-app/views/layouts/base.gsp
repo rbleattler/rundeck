@@ -25,7 +25,7 @@
         <asset:javascript src="vendor/vue.global.js"/>
     </g:if>
     <g:else>
-        <asset:javascript src="vendor/vue.global.js"/>
+        <asset:javascript src="vendor/vue.global.prod.js"/>
     </g:else>
     <title>
       <g:layoutTitle default="${g.appTitle()}"/>

@@ -366,7 +366,7 @@ export default defineComponent({
 
       const data = resp.parsedBody
 
-      if (data?.err) {
+      if (!data || data.err) {
         this.setError("Failed to save!\n" + data.err)
         this.setValidation(false, data.errors)
       } else {

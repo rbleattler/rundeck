@@ -9,6 +9,7 @@ import {defineComponent} from "vue";
 import {webhookui} from "../../../stores/Webhooks";
 
 export default defineComponent({
+    name: 'Tab',
     props:{
         index: {
             type: Number,

@@ -129,7 +129,7 @@
 }
 </style>
 <script lang="ts">
-import Vue from 'vue'
+import { defineComponent } from 'vue'
 
 import AceEditor from '../utils/AceEditor.vue'
 import Expandable from '../utils/Expandable.vue'
@@ -151,7 +151,7 @@ interface PropGroup{
   props:any[],
 }
 
-export default {
+export default defineComponent({
   name: 'PluginConfig',
   components: {
     Expandable,
@@ -483,7 +483,7 @@ export default {
   beforeMount () {
     this.loadForMode()
   }
-}
+})
 </script>
 <style lang="scss" scoped>
 .header-reset{

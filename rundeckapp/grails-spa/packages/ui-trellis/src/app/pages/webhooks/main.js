@@ -35,7 +35,6 @@ const i18n = createI18n({
   messages // set locale messages,
 })
 
-// eslint-disable-next-line no-new
 const app = createApp({
   name:"WebhookApp",
   components: { App },
