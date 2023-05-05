@@ -318,13 +318,10 @@ jobs:
       - checkout
       - install-node
       - restore-gradle-cache
+      - install-java
       - run:
           name: Build
           command: |
-            sudo apt-get update
-            sudo apt-get install -y openjdk-11-jdk
-            sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java
-            export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/
             source .circleci/circle-shim.sh
             bash scripts/circle-build.sh build
       - setup_remote_docker:
@@ -416,13 +413,7 @@ jobs:
     steps:
       - checkout
       - install-node
-      - run:
-          name: Install JDK 11
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y openjdk-11-jdk
-            sudo update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java
-            export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/
+      - install-java
       - restore-gradle-cache
       - run: ./gradlew --no-daemon check --stacktrace --info --parallel --build-cache
       - collect-gradle-tests
