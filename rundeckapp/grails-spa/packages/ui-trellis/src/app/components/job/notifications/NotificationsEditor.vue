@@ -234,8 +234,7 @@
   </div>
 </template>
 <script>
-
-
+import { defineComponent } from 'vue'
 import {
   getRundeckContext,
   RundeckContext
@@ -248,7 +247,7 @@ import ExtendedDescription from "../../../../library/components/utils/ExtendedDe
 import UndoRedo from "../../util/UndoRedo.vue"
 import {VMarkdownView} from "vue3-markdown";
 
-export default {
+export default defineComponent({
   name: 'NotificationsEditor',
   props: ['notificationData'],
   components: {PluginInfo,PluginConfig,ExtendedDescription,UndoRedo, VMarkdownView},
@@ -476,8 +475,11 @@ export default {
     },
   },
   watch:{
-    notifications(){
-      this.$emit('changed',this.notifications)
+    notifications: {
+      handler() {
+        this.$emit('changed', this.notifications)
+      },
+      deep: true,
     }
   },
   async mounted () {
@@ -500,7 +502,7 @@ export default {
       this.eventBus.off("undo")
       this.eventBus.off("redo")
   }
-}
+})
 </script>
 <style lang="scss" scoped>
 .list-group-item {

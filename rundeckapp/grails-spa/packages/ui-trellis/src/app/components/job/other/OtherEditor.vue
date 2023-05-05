@@ -246,8 +246,9 @@ import type { PropType } from 'Vue'
 
 import {
   getRundeckContext,
-  getAppLinks
+  getAppLinks,
 } from '../../../../library'
+import {EventBus} from "../../../../library/utilities/vueEventBus";
 
 export default defineComponent({
   name: 'OtherEditor',
@@ -261,7 +262,7 @@ export default defineComponent({
       required: true,
     },
     eventBus: {
-      type: Object as PropType<Vue>,
+      type: Object as PropType<typeof EventBus>,
       required: true,
     }
   },
@@ -283,10 +284,9 @@ export default defineComponent({
       }
     }
   },
-  setup() {
-    const modelData = ref({})
+  data() {
     return {
-      modelData,
+      modelData: {},
     }
   },
   mounted() {
@@ -295,6 +295,7 @@ export default defineComponent({
   watch: {
     modelData: {
       handler() {
+        console.log(this.modelData);
         this.$emit('update:modelValue', this.modelData)
       },
       deep: true

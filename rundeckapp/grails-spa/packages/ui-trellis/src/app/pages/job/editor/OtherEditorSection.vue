@@ -29,15 +29,19 @@ export default {
     }
   },
   watch:{
-    updatedData(){
-        if(this.watching) {
-            if(!_.isEqual(this.otherData,this.updatedData)){
-                window.jobWasEdited()
-            }
+    updatedData: {
+      handler() {
+        console.log(this.updatedData)
+        if (this.watching) {
+          if (!_.isEqual(this.otherData, this.updatedData)) {
+            window.jobWasEdited()
+          }
         }
+      },
+      deep: true,
     }
   },
-  async mounted () {
+  mounted () {
     if(window._rundeck && window._rundeck.data){
         this.otherData = window._rundeck.data.otherData
         this.updatedData = Object.assign({}, this.otherData)

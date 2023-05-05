@@ -7,19 +7,21 @@
 </template>
 
 <script>
+import { defineComponent } from 'vue'
+import _ from 'lodash'
+
 import ResourcesEditor from '../../../components/job/resources/ResourcesEditor.vue'
 import UiSocket from '../../../../library/components/utils/UiSocket.vue'
 import JsonEmbed from './JsonEmbed.vue'
 
 import {
   getRundeckContext,
-  RundeckContext
 } from "../../../../library"
 
 const rootStore = getRundeckContext().rootStore
-export default {
+export default defineComponent({
   name: 'ResourcesEditorSection',
-  props:['eventBus' ],
+  props:['eventBus'],
   provide:{
     rootStore
   },
@@ -36,12 +38,15 @@ export default {
     }
   },
   watch:{
-    updatedData(){
-        if(this.watching) {
-            if(!_.isEqual(this.resourcesData,this.updatedData)){
-                window.jobWasEdited()
-            }
+    updatedData: {
+      handler() {
+        if (this.watching) {
+          if (!_.isEqual(this.resourcesData, this.updatedData)) {
+            window.jobWasEdited()
+          }
         }
+      },
+      deep: true,
     }
   },
   async mounted () {
@@ -51,7 +56,7 @@ export default {
         this.watching = true
     }
   }
-}
+})
 </script>
 
 <style>
