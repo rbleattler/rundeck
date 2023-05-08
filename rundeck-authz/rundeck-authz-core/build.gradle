@@ -7,8 +7,8 @@ dependencies {
     testImplementation "org.spockframework:spock-core:2.0-groovy-3.0"
     implementation project(':rundeck-authz:rundeck-authz-api')
 
-    compileOnly "org.projectlombok:lombok:1.18.20"
-    annotationProcessor "org.projectlombok:lombok:1.18.20"
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 }
 
 ext.description= "Rundeck project ${project.name}"
