@@ -295,7 +295,6 @@ export default defineComponent({
   watch: {
     modelData: {
       handler() {
-        console.log(this.modelData);
         this.$emit('update:modelValue', this.modelData)
       },
       deep: true

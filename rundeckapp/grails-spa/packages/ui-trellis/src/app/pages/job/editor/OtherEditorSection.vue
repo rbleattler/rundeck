@@ -31,7 +31,6 @@ export default {
   watch:{
     updatedData: {
       handler() {
-        console.log(this.updatedData)
         if (this.watching) {
           if (!_.isEqual(this.otherData, this.updatedData)) {
             window.jobWasEdited()
