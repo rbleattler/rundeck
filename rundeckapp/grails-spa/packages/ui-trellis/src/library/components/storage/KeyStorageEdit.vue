@@ -130,8 +130,6 @@
 
 <script lang="ts">
 import {getRundeckContext} from "../../index"
-import KeyType from "./KeyType"
-import InputType from "./InputType"
 import {defineComponent} from "vue"
 import type { PropType } from 'vue'
 import InputType from "../../types/InputType";
