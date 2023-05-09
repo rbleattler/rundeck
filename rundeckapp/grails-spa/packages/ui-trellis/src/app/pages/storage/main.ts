@@ -1,32 +1,12 @@
 import {createApp} from 'vue'
+import * as uiv from 'uiv'
+
 import KeyStoragePage from "../../../library/components/storage/KeyStoragePage.vue";
 import KeyStorageView from "../../../library/components/storage/KeyStorageView.vue";
 import KeyStorageEdit from "../../../library/components/storage/KeyStorageEdit.vue";
+import {initI18n} from "../../utilities/i18n"
 
-import * as uiv from 'uiv'
-import {createI18n} from 'vue-i18n'
-import uivLang from '../../../library/utilities/uivi18n'
-import international from './i18n'
-
-let messages = international.messages
-let locale = window['_rundeck'].locale || 'en_US'
-let lang = window['_rundeck'].language || 'en'
-
-// include any i18n injected in the page by the app
-const consolidatedMessages = {
-    [locale]: Object.assign({},
-        uivLang[locale] || uivLang[lang] || {},
-        window['Messages'],
-        messages[locale] || messages[lang] || messages['en_US'] || {}
-    )
-}
-
-const i18n = createI18n({
-    silentTranslationWarn: false,
-    locale: locale, // set locale
-    messages: { ...consolidatedMessages } // set locale messages,
-
-})
+const i18n = initI18n()
 
 const elm = document.getElementById('keyStoragePage')
 

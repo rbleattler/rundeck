@@ -2,44 +2,25 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import {createApp} from 'vue'
 import VueCookies from 'vue-cookies'
+import * as uiv from 'uiv'
+import moment from 'moment'
+
 import NotificationsEditorSection from './NotificationsEditorSection'
 import ResourcesEditorSection from './ResourcesEditorSection'
 import SchedulesEditorSection from './SchedulesEditorSection'
 import OtherEditorSection from './OtherEditorSection'
-import * as uiv from 'uiv'
-import international from './i18n'
-import {createI18n} from 'vue-i18n'
-import moment from 'moment'
 import {
     EventBus
 } from '../../../../library/utilities/vueEventBus'
-import uivLang from '../../../../library/utilities/uivi18n'
+import {initI18n} from "../../../utilities/i18n"
 
-let messages = international.messages
 let locale = window._rundeck.locale || 'en_US'
-let lang = window._rundeck.language || 'en'
 moment.locale(locale)
 
-// include any i18n injected in the page by the app
-messages =
-    {
-        [locale]: Object.assign(
-            {},
-            uivLang[locale] || uivLang[lang] || {},
-            window.Messages,
-            messages[locale] || messages[lang] || messages['en_US'] || {}
-        )
-    }
-
-// Create VueI18n instance with options
-const i18n = createI18n({
-    silentTranslationWarn: true,
-    locale: locale, // set locale
-    messages // set locale messages,
-})
+const i18n = initI18n()
 const els = document.body.getElementsByClassName('job-editor-notifications-vue')
 
-for (var i = 0; i < els.length; i++) {
+for (let i = 0; i < els.length; i++) {
     const e = els[i]
     /* eslint-disable no-new */
     const app = createApp({
@@ -54,7 +35,7 @@ for (var i = 0; i < els.length; i++) {
 }
 const resels = document.body.getElementsByClassName('job-editor-resources-vue')
 
-for (var i = 0; i < resels.length; i++) {
+for (let i = 0; i < resels.length; i++) {
     const e = resels[i]
     /* eslint-disable no-new */
     const rapp = createApp({
@@ -68,7 +49,7 @@ for (var i = 0; i < resels.length; i++) {
 }
 const scsels = document.body.getElementsByClassName('job-editor-schedules-vue')
 
-for (var i = 0; i < scsels.length; i++) {
+for (let i = 0; i < scsels.length; i++) {
   const e = scsels[i]
   /* eslint-disable no-new */
   const sapp = createApp({
@@ -82,7 +63,7 @@ for (var i = 0; i < scsels.length; i++) {
 
   const othels = document.body.getElementsByClassName('job-editor-other-vue')
 
-  for (var i = 0; i < othels.length; i++) {
+  for (let i = 0; i < othels.length; i++) {
     const e = othels[i]
     /* eslint-disable no-new */
     const oapp = createApp({

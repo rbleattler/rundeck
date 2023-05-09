@@ -53,21 +53,25 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-::v-deep .plugin-icon {
+:deep(.plugin-icon) {
     height: 20px !important;
     width: 20px !important;
 }
 
-::v-deep .scroller__item {
+:deep(.scroller__item) {
     border-radius: 5px;
     padding-left: 10px;
 
-    &--selected, &:hover {
+    &:hover {
         background-color: var(--background-color-accent);
     }
 
     &:before {
         content: none !important;
     }
+}
+
+:deep(.scroller__item--selected) {
+  background-color: var(--background-color-accent);
 }
 </style>

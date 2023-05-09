@@ -3,30 +3,14 @@
 import {createApp} from 'vue'
 import VueCookies from 'vue-cookies'
 import VueScrollTo from 'vue-scrollto'
-import {createI18n} from 'vue-i18n'
-import uivLang from '../../../library/utilities/uivi18n'
 import * as uiv from 'uiv'
 
 import { store } from './stores'
 import router from './router'
 import App from './App'
+import {initI18n} from "../../utilities/i18n"
 
-let locale = window._rundeck.locale || 'en_US'
-let lang = window._rundeck.language || 'en'
-
-// include any i18n injected in the page by the app
-let messages = {
-  [locale]: Object.assign({},
-    uivLang[locale] || uivLang[lang] || {},
-    window.Messages
-  )
-}
-
-const i18n = createI18n({
-  silentTranslationWarn: true,
-  locale, // set locale
-  messages // set locale messages,
-})
+const i18n = initI18n()
 
 const app = createApp({
   name: "RepositoryApp",

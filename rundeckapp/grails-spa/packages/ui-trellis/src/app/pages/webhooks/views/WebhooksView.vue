@@ -400,7 +400,7 @@ export default defineComponent({
         const data = response.parsedBody
         if (data.err) {
           this.setError("Failed to delete! " + data.err)
-        } else if (response.status != 200) {
+        } else if (response.status !== 200) {
           this.setMessage('Failed')
         } else {
           this.curHook = null
@@ -559,7 +559,7 @@ main{
     }
   }
 
-  ::v-deep [data-tabkey="webhook-header"] > .rdtabs__tabheader {
+  :deep([data-tabkey="webhook-header"]) > .rdtabs__tabheader {
     background-color: var(--background-color-accent-lvl2);
     border: none;
     padding: 0 2em;

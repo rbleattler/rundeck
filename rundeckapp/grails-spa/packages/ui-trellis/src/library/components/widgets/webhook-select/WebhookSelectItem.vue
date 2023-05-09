@@ -27,7 +27,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-::v-deep .plugin-icon {
+:deep(.plugin-icon) {
     border-radius: 4px;
     height: 20px;
     width: 20px;

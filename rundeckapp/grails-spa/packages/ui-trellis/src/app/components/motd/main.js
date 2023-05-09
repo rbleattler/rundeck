@@ -1,8 +1,8 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue, {createApp} from 'vue'
+import {createApp} from 'vue'
 import * as uiv from 'uiv'
-import VueI18n, {createI18n} from 'vue-i18n'
+import {createI18n} from 'vue-i18n'
 import VueCookies from 'vue-cookies'
 import { EventBus } from '../../../library/utilities/vueEventBus'
 import Motd from './motd.vue'
@@ -21,8 +21,6 @@ let messages =
           window.Messages
       )
     }
-
-/* eslint-disable no-new */
 
 const els = document.body.getElementsByClassName('vue-project-motd')
 

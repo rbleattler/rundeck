@@ -63,7 +63,7 @@
                   <template v-slot:dropdown>
                     <li @click="doCopyNotification(notif)">
                       <a role="button">
-                        {{$t('Duplicate...')}}
+                        {{$t('duplicate')}}...
                       </a>
                     </li>
                     <li role="separator" class="divider"></li>

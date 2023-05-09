@@ -1,34 +1,19 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import {createApp} from 'vue'
-import {createI18n} from 'vue-i18n'
+import VueCookies from "vue-cookies";
 import * as uiv from 'uiv'
 
 import { getRundeckContext } from '../../../library'
 import LogViewer from '../../../library/components/execution-log/logViewer.vue'
-import uivLang from '../../../library/utilities/uivi18n'
-
 import './nodeView'
-import VueCookies from "vue-cookies";
+import {initI18n} from "../../utilities/i18n"
 
 const VIEWER_CLASS = 'execution-log-viewer'
 
 const rootStore = getRundeckContext().rootStore
 
 let MOUNTED = false
-
-let locale = window._rundeck.locale || 'en_US'
-let lang = window._rundeck.language || 'en'
-
-// include any i18n injected in the page by the app
-let messages =
-    {
-      [locale]: Object.assign(
-        {},
-        uivLang[locale] || uivLang[lang] || {},
-        window.Messages
-      )
-    }
 
 const els = document.body.getElementsByClassName(VIEWER_CLASS)
 
@@ -75,13 +60,7 @@ window.onhashchange = () => {
 
 function mount(e) {
   // Create VueI18n instance with options
-  const i18n = createI18n({
-    silentTranslationWarn: true,
-    locale: locale, // set locale
-    messages // set locale messages,
-
-  })
-  /* eslint-disable no-new */
+  const i18n = initI18n()
 
   let jumpToLine
   const line = window.location.hash.split('L')[1]
