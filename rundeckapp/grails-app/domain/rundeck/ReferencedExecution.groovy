@@ -25,38 +25,26 @@ class ReferencedExecution implements RdReferencedExecution{
         }
     }
 
-    static List<ScheduledExecution> parentList(ScheduledExecution se, int max = 0){
-        if(!se) return []
+    static List<String> executionProjectList(String jobUuid, int max = 0){
+        if(!jobUuid) return []
         return createCriteria().list(max: (max!=0)?max:null) {
             createAlias('execution', 'e', JoinType.LEFT_OUTER_JOIN)
-            isNotNull( 'e.jobUuid')
-            eq("jobUuid", se.uuid)
-            projections {
-                distinct('e.jobUuid')
-            }
-        } as List<ScheduledExecution>
-    }
-
-    static List executionProjectList(ScheduledExecution se, int max = 0){
-        if(!se) return []
-        return createCriteria().list(max: (max!=0)?max:null) {
-            createAlias('execution', 'e', JoinType.LEFT_OUTER_JOIN)
-            eq("jobUuid", se.uuid)
+            eq("jobUuid", jobUuid)
             projections {
                 groupProperty('e.project', "project")
             }
-        }
+        } as List<String>
     }
 
-    static List<Long> parentListScheduledExecutionId(ScheduledExecution se, int max = 0){
+    static List<String> parentListScheduledExecutionUuid(String jobUuid, int max = 0){
         return createCriteria().list(max: (max!=0)?max:null) {
             createAlias('execution', 'e', JoinType.LEFT_OUTER_JOIN)
-            isNotNull( 'e.scheduledExecution')
-            eq("jobUuid", se.uuid)
+            isNotNull( 'e.jobUuid')
+            eq("jobUuid", jobUuid)
             projections {
-                distinct('e.scheduledExecution.id')
+                distinct('e.jobUuid')
             }
-        } as List<Long>
+        } as List<String>
     }
 
     Serializable getExecutionId(){

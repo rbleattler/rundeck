@@ -9,8 +9,8 @@ import java.util.List;
 public interface ReferencedExecutionDataProvider extends DataProvider {
     Long updateOrCreateReference(Long refId, String jobUuid, Long execId, String status);
     RdReferencedExecution findByJobUuid(String jobUuid);
-    List<Long> parentList(String jobUuid, int max);
-    List executionProjectList(String jobUuid, int max);
+    List<String> parentList(String jobUuid, int max);
+    List<String> executionProjectList(String jobUuid, int max);
     int countByJobUuid(String jobUuid);
     int countByJobUuidAndStatus(String jobUuid, String status);
     void deleteByExecutionId(Long id);

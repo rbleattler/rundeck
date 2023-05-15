@@ -28,15 +28,13 @@ class GormReferencedExecutionDataProvider implements ReferencedExecutionDataProv
     }
 
     @Override
-    List<Long> parentList(String jobUuid, int max) {
-        def se = ScheduledExecution.findByUuid(jobUuid)
-        return ReferencedExecution.parentListScheduledExecutionId(se, max)
+    List<String> parentList(String jobUuid, int max) {
+        return ReferencedExecution.parentListScheduledExecutionUuid(jobUuid, max)
     }
 
     @Override
-    List executionProjectList(String jobUuid, int max = 0) {
-        def se = ScheduledExecution.findByUuid(jobUuid)
-        return ReferencedExecution.executionProjectList(se, max)
+    List<String> executionProjectList(String jobUuid, int max = 0) {
+        return ReferencedExecution.executionProjectList(jobUuid, max)
     }
 
     @Override
