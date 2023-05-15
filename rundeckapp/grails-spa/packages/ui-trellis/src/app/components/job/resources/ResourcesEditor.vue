@@ -385,8 +385,8 @@ export default defineComponent({
     }
   },
   setup() {
-    const modelData = ref({doNodedispatch: false, orchestrator: {type: null, config: {}}})
-    const nodeSummary = ref({})
+    const modelData = ref<any>({doNodedispatch: false, orchestrator: {type: null, config: {}}})
+    const nodeSummary = ref<any>({})
     return {
       modelData,
       nodeSummary,

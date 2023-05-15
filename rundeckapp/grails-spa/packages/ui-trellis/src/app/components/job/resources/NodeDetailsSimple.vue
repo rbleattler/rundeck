@@ -31,9 +31,8 @@
 
           <node-filter-link
               style="margin-right: 0.5em;"
-              v-for="attr in ['osName','osFamily','osVersion','osArch']"
+              v-for="attr in filteredAttrs"
               :key="attr"
-              v-if="attributes[attr]"
               :filter-key="attr"
               :filter-val="attributes[attr]"
               :class="{'text-parenthetical':attr==='osFamily' || attr==='osArch'}"
@@ -99,9 +98,9 @@
       </tbody>
       <!--  node attributes with no namespaces -->
       <tbody>
-      <tr class="hover-action-holder" v-for="(value,attr) in (useNamespace?displayAttributes:attributes)">
+      <tr class="hover-action-holder" v-for="(value, attr, index) in attributesWithNoNamespaces">
         <td class="key setting">
-          <node-filter-link :filter-key="attr"
+          <node-filter-link :filter-key="attr as string"
                             filter-val=".*"
                             @nodefilterclick="filterClick"
           >{{ attr }}:
@@ -111,7 +110,7 @@
           <div class="value">
             {{ attributes[attr] }}
 
-            <node-filter-link :filter-key="attr"
+            <node-filter-link :filter-key="attr as string"
                               :filter-val="value"
                               class="textbtn textbtn-info textbtn-saturated hover-action"
                               @nodefilterclick="filterClick"
@@ -122,7 +121,7 @@
             <node-filter-link
                 v-if="showExcludeFilterLinks"
                 :exclude="true"
-                :filter-key="attr"
+                :filter-key="attr as string"
                 :filter-val="value"
                 class="text-danger textbtn textbtn-info textbtn-saturated hover-action"
                 @nodefilterclick="filterClick"
@@ -219,7 +218,7 @@ export default defineComponent({
   emits: ['filter'],
   props: {
     attributes: {
-      type: Object as PropType<any>,
+      type: Object as PropType<{[key:string]: string}>,
       required: true,
     },
     tags: {
@@ -263,7 +262,7 @@ export default defineComponent({
      * @param attrs
      */
     displayAttributes() {
-      let result: any = {}
+      let result: { [key:string]: string } = {}
       for (let e in this.attributes) {
         if (e.indexOf(':') < 0 && OsAttributeNames.indexOf(e) < 0) {
           result[e] = this.attributes[e]
@@ -273,7 +272,7 @@ export default defineComponent({
     },
     attributeNamespaces() {
       let index: any = {}
-      let names = []
+      let names: string[] = []
       for (let e in this.attributes) {
         let found = e.match(this.attributeNamespaceRegex)
         if (found && found.length > 1) {
@@ -290,7 +289,7 @@ export default defineComponent({
       }
       names.sort()
 
-      let results = []
+      let results: { ns: string, values: any[] }[] = []
       for (let i = 0; i < names.length; i++) {
         let values = index[names[i]]
         values.sort(function(a: any, b: any) {
@@ -305,6 +304,13 @@ export default defineComponent({
     },
     attributeNamespaceRegex() {
       return /^(.+?):.+$/
+    },
+    attributesWithNoNamespaces(): { [key: string]: any } {
+      return this.useNamespace ? this.displayAttributes : this.attributes
+    },
+    filteredAttrs() {
+      const attr = ['osName','osFamily','osVersion','osArch']
+      return attr.filter((val) => this.attributes[val])
     }
   },
   setup() {
@@ -331,7 +337,7 @@ export default defineComponent({
       return (a.length >= (b.length)) && a.substring(0, b.length) == b
     },
     attributesInNamespace(attrs: any, ns: string) {
-      let result = []
+      let result: {name: string, value: string, shortname: string}[] = []
       for (let e in attrs) {
         if (this.startsWith(e, ns + ':') && attrs[e]) {
           result.push({name: e, value: attrs[e], shortname: e.substring(ns.length + 1)})
@@ -343,7 +349,7 @@ export default defineComponent({
       return result
     },
     attributeNamespaceNames(attrs: any) {
-      let namespaces = []
+      let namespaces: string[] = []
       for (let e in attrs) {
         let found = e.match(this.attributeNamespaceRegex)
         if (found && found.length > 1) {

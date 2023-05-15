@@ -12,9 +12,8 @@
 </template>
 <script lang="ts">
 
-import {defineComponent} from "vue"
-import {PropType} from "Vue";
-import {EventBus} from "../../../library/utilities/vueEventBus";
+import { PropType, defineComponent } from "vue"
+import { EventBus } from "../../../library"
 
 export default defineComponent({
   name: "UndoRedo",

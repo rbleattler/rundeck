@@ -2,7 +2,7 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import {createApp} from 'vue'
 import VueCookies from 'vue-cookies'
-import App from './App'
+import App from './App.vue'
 import {initI18n} from "../../utilities/i18n";
 
 const els = document.body.getElementsByClassName('dynamic-form-vue')

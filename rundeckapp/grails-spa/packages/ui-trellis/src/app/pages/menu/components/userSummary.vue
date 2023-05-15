@@ -255,8 +255,8 @@
 
 <script>
 import axios from "axios";
-import OffsetPagination from "../../../../library/components/utils/OffsetPagination";
-import LoginStatus from "./LoginStatus";
+import OffsetPagination from "../../../../library/components/utils/OffsetPagination.vue";
+import LoginStatus from "./LoginStatus.vue";
 import * as DateTimeFormatters from "../../../utilities/DateTimeFormatters";
 
 export default {

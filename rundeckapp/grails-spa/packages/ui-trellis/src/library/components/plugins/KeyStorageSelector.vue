@@ -35,6 +35,7 @@ import {defineComponent} from 'vue';
     import KeyStorageView from "../../components/storage/KeyStorageView.vue"
     import KeyStorageEdit from "../../components/storage/KeyStorageEdit.vue"
 import * as DateTimeFormatters from "../../../app/utilities/DateTimeFormatters";
+import {UploadSetting} from "../storage/KeyStorageEdit.vue"
 
     export default defineComponent({
       name: 'KeyStorageSelector',
@@ -45,6 +46,7 @@ import * as DateTimeFormatters from "../../../app/utilities/DateTimeFormatters";
         'allowUpload',
         'readOnly'
       ],
+      emits: ['update:modelValue'],
       data() {
           return {
               modalOpen: false,
@@ -54,8 +56,19 @@ import * as DateTimeFormatters from "../../../app/utilities/DateTimeFormatters";
               inputPath: '',
               invalid: false,
               errorMsg: '',
-              uploadSetting: {}
+              uploadSetting: {} as UploadSetting
           };
+      },
+      computed: {
+        showRootPath: function () {
+          return "keys/"
+        },
+        uploadFullPath(): string {
+          return 'keys/' + this.getKeyPath();
+        },
+        DateTimeFormatters() {
+          return DateTimeFormatters
+        }
       },
       methods: {
         cleanPath(path: any) {
@@ -68,27 +81,16 @@ import * as DateTimeFormatters from "../../../app/utilities/DateTimeFormatters";
           }
           return path;
         },
-        computed: {
-          showRootPath: function () {
-              return "keys/"
-          },
-          uploadFullPath(): string {
-              return 'keys/' + this.getKeyPath();
-          },
-          DateTimeFormatters() {
-              return DateTimeFormatters
-          }
-        },
         allowedResource(meta: any) {
             const filterArray = this.storageFilter.split('=');
             const key = filterArray[0];
             const value = filterArray[1];
-            if (key == 'Rundeck-key-type') {
+            if (key === 'Rundeck-key-type') {
                 if (value === meta['rundeckKeyType']) {
                     return true;
                 }
             } else {
-                if (key == 'Rundeck-data-type') {
+                if (key === 'Rundeck-data-type') {
                     if (value === meta['Rundeck-data-type']) {
                         return true;
                     }
@@ -98,14 +100,14 @@ import * as DateTimeFormatters from "../../../app/utilities/DateTimeFormatters";
         },
         beforeModalClose(args: string | Array<any>) {
           if(args === "ok") {
-            // Save the selected value - Emit a key changd event with the selected value
+            // Save the selected value - Emit a key changed event with the selected value
             if(this.selectedKey !== this.value) {
-              this.$emit("input", this.selectedKey)
+              this.$emit("update:modelValue", this.selectedKey)
             }
-          } 
+          }
           return true
         },
-        clean() {            
+        clean() {
           this.selectedKey = this.value;
           this.inputPath = '';
           this.invalid = false;

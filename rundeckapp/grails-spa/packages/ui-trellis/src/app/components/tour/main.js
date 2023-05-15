@@ -7,13 +7,10 @@ import uivLang from '../../../library/utilities/uivi18n'
 import * as uiv from 'uiv'
 import axios from 'axios'
 import TourConstants from './constants'
-import TourPicker from './tourPicker/App'
-import TourDisplay from './tourDisplay/App'
-import {
-  EventBus
-} from '../../../library/utilities/vueEventBus'
+import TourPicker from './tourPicker/App.vue'
+import TourDisplay from './tourDisplay/App.vue'
 
-import { getRundeckContext } from '../../../library'
+import { getRundeckContext, EventBus } from '../../../library'
 
 const rootStore = getRundeckContext().rootStore
 

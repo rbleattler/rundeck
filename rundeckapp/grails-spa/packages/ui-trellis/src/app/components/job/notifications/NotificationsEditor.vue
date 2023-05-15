@@ -237,7 +237,6 @@
 import { defineComponent } from 'vue'
 import {
   getRundeckContext,
-  RundeckContext
 } from "../../../../library"
 
 import PluginInfo from "../../../../library/components/plugins/PluginInfo.vue";
@@ -281,7 +280,7 @@ export default defineComponent({
       autocompleteCallback: {
         type: Function
       },
-      eventBus:window._rundeck.eventBus
+      eventBus: getRundeckContext().eventBus
     }
   },
   computed:{

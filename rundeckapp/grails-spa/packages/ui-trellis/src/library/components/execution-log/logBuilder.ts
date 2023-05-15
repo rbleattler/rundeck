@@ -1,10 +1,9 @@
-import Vue, {createApp} from 'vue'
+import {App, createApp} from 'vue'
 
 import EntryFlex from './logEntryFlex.vue'
 import { ExecutionOutput, ExecutionOutputEntry } from '../../stores/ExecutionOutput'
 import { IObservableArray, autorun } from 'mobx'
 import { EventBus } from '../../utilities/vueEventBus'
-import {CompatVue} from "@vue/runtime-dom";
 
 export interface IBuilderOpts {
   node?: string,
@@ -37,7 +36,7 @@ export class LogBuilder {
 
   private opts: Required<IBuilderOpts>
 
-  newLineHandlers: Array<(entries: Array<typeof Vue>) => void> = []
+  newLineHandlers: Array<(entries: Array<App<Element>>) => void> = []
 
   private lastEntry?: {id: number} & ExecutionOutputEntry
   private count: number = 0
@@ -57,7 +56,7 @@ export class LogBuilder {
     })
   }
 
-  onNewLines(handler: (entries: Array<typeof Vue>) => void) {
+  onNewLines(handler: (entries: Array<App<Element>>) => void) {
     this.newLineHandlers.push(handler)
   }
 
@@ -119,7 +118,7 @@ export class LogBuilder {
     }
   }
 
-  addLine(logEntry: ExecutionOutputEntry, selected: boolean): typeof Vue {
+  addLine(logEntry: ExecutionOutputEntry, selected: boolean): App<Element> {
     this.count++
     const {lastEntry, count} = this
 
@@ -175,7 +174,7 @@ export class LogBuilder {
 
     this.lastEntry = newEntry
 
-    return vue as unknown as CompatVue
+    return vue
   }
 
   private entryStepType(newEntry: ExecutionOutputEntry) {

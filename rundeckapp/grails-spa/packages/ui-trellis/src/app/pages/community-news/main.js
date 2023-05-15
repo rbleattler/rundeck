@@ -6,7 +6,7 @@ import {createApp} from 'vue'
 import VueCookies from 'vue-cookies'
 import moment from 'moment'
 // Component Files
-import App from './App'
+import App from './App.vue'
 import { initI18n } from "../../utilities/i18n"
 
 let locale = window._rundeck.locale || 'en_US'

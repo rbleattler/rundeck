@@ -92,12 +92,12 @@ export default defineComponent({
     filterParamValues() {
       let params = {[this.filterParam]: this.getFilter()}
       if (this.nodeFilterName) {
-        params['filterName'] = this.nodeFilterName
+        params[this.filterParam] = this.nodeFilterName
       }
       return params
     },
     href() {
-      return url(_genUrl('/project/' + project + '/nodes', Object.assign({}, this.filterParamValues)))
+      return url(_genUrl('/project/' + project + '/nodes', Object.assign({}, this.filterParamValues))).href
     }
   },
 })

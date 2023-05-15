@@ -50,7 +50,8 @@
           <label for="logview_stats">Display Stats</label>
         </div>
         <ui-socket section="execution-log-viewer" location="settings"
-                   :event-bus="eventBus"/>
+                   :event-bus="eventBus"
+        />
       </form>
     </RdDrawer>
     <div 
@@ -100,16 +101,7 @@
 import {CancellationTokenSource, CancellationToken} from 'prex'
 
 import {ExecutionLog, EnrichedExecutionOutput} from '../../utilities/ExecutionLogConsumer'
-import {
-    ComponentOptions,
-    computed,
-    defineComponent,
-    getCurrentInstance,
-    onBeforeMount,
-    onMounted,
-    ref,
-    watch
-} from 'vue'
+import { defineComponent } from 'vue'
 import type { DefineComponent } from 'vue'
 import {LogBuilder} from './logBuilder'
 import { RootStore } from '../../stores/RootStore'
@@ -138,7 +130,11 @@ interface IEventViewerSettings {
 export default defineComponent({
     name:"LogViewer",
     components: {
-      UiSocket, RdDrawer, Btn, BtnGroup, ProgressBar
+      UiSocket,
+      RdDrawer,
+      Btn,
+      BtnGroup,
+      ProgressBar,
     },
     props: {
         executionId: {
@@ -194,7 +190,7 @@ export default defineComponent({
             type: Boolean,
             required: false,
             default: true
-        }
+        },
     },
     data() {
         return {

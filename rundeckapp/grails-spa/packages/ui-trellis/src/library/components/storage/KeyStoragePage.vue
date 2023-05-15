@@ -9,8 +9,8 @@
 
 <script lang="ts">
 import KeyStorageView from "./KeyStorageView.vue";
-import KeyStorageEdit from "./KeyStorageEdit.vue";
-import Vue, {defineComponent} from "vue";
+import KeyStorageEdit, { UploadSetting } from "./KeyStorageEdit.vue";
+import {defineComponent} from "vue";
 import { getRundeckContext } from "../../index"
 
 export default defineComponent({
@@ -28,7 +28,7 @@ export default defineComponent({
       bus: window._rundeck.eventBus,
       modalEdit: false,
       path: '',
-      uploadSetting: {},
+      uploadSetting: {} as UploadSetting,
       ready: false,
       selectedKey: {}
     }
@@ -42,7 +42,7 @@ export default defineComponent({
     handleCancelEditing() {
       this.modalEdit = false
     },
-    openEditor(uploadSetting: {}) {
+    openEditor(uploadSetting: UploadSetting) {
       this.uploadSetting = uploadSetting
       this.modalEdit = true
     },

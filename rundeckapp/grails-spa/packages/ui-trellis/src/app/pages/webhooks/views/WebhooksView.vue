@@ -246,7 +246,7 @@ export default defineComponent({
     confirmAuthToggle() {
       this.input()
       if(this.curHook.useAuth) {
-        var self = this
+        const self = this
         self.$confirm({
           title:"Confirm",
           content:"Are you sure you want to remove this webhook authorization string?"
@@ -389,7 +389,7 @@ export default defineComponent({
       this.dirty = false
     },
     handleDelete() {
-      var self = this
+      const self = this
       self.$confirm({
         title:"Confirm",
         content:"Are you sure you want to delete this webhook?",
@@ -412,7 +412,7 @@ export default defineComponent({
       })}).catch(() => {})
     },
     ajax(method, url, payload) {
-      var params = {
+      const params = {
         method: method,
         headers: {
           "x-rundeck-ajax": true

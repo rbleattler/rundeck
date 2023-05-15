@@ -72,7 +72,8 @@ RecycleScroller.beforeUnmount = function() {
 export default defineComponent({
   name:"ProjectSelect",
   components: {
-    Skeleton, RecycleScroller
+    Skeleton,
+    RecycleScroller
   },
   data() {
       return {
@@ -85,7 +86,7 @@ export default defineComponent({
           return getAppLinks().menuHome
       },
       createProjectLink() {
-          return url('resources/createProject')
+          return url('resources/createProject').href
       }
   },
   methods: {

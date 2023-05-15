@@ -129,9 +129,9 @@ export default defineComponent({
   },
   emits: ['update:modelValue'],
   setup() {
-    const pluginProviders = ref([] as Array<any>)
-    const pluginLabels = ref({} as { [name: string]: string })
-    const updatedValue = ref({})
+    const pluginProviders = ref<any[]>([])
+    const pluginLabels = ref<{ [name: string]: string }>({})
+    const updatedValue = ref<{ [name: string]: string }>({})
     return {
       pluginProviders,
       pluginLabels,

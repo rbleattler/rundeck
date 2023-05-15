@@ -79,6 +79,7 @@
                                         :rkey="'g_'+gindex+'_'+rkey"
                                         :readOnly="readOnly"
                                         :pindex="pindex"
+                                        :selector.data="propsComputedSelectorData"
                                         :autocompleteCallback="autocompleteCallback"/>
                   </div>
 
@@ -112,6 +113,7 @@
                                         :readOnly="readOnly"
                                         :rkey="'g_'+gindex+'_'+rkey"
                                         :pindex="pindex"
+                                        :selector.data="propsComputedSelectorData"
                                         :autocompleteCallback="autocompleteCallback"/>
                   </div>
               </div>

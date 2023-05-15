@@ -3,10 +3,10 @@
 import {createApp} from 'vue'
 import VueCookies from 'vue-cookies'
 import * as uiv from 'uiv'
-import PageConfirm from '../../../library/components/utils/PageConfirm'
+import PageConfirm from '../../../library/components/utils/PageConfirm.vue'
 import {getRundeckContext} from '../../../library'
-import PluginSetConfig from './PluginSetConfig'
-import ProjectPluginGroups from "./ProjectPluginGroups"
+import PluginSetConfig from './PluginSetConfig.vue'
+import ProjectPluginGroups from "./ProjectPluginGroups.vue"
 import {initI18n} from "../../utilities/i18n"
 
 

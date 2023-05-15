@@ -11,6 +11,7 @@ const i18n = initI18n()
 const elm = document.getElementById('keyStoragePage')
 
 const vue = createApp({
+    name: 'StorageApp',
     components: { KeyStoragePage, KeyStorageView, KeyStorageEdit },
 })
 vue.use(uiv)

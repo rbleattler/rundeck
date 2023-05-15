@@ -16,7 +16,7 @@
                v-model="inputPath" @keyup.enter="loadDirInputPath()"
                :disabled="readOnly"
                placeholder="Enter a path"/>
-        <div v-if="!this.isProject" class="input-group-btn" :class="isDropdownOpen ? 'open input-group-btn' : 'input-group-btn'">
+        <div v-if="!isProject" class="input-group-btn" :class="isDropdownOpen ? 'open input-group-btn' : 'input-group-btn'">
           <button
               type="button"
               class="btn btn-default dropdown-toggle"
@@ -113,7 +113,7 @@
         </tr>
         </tbody>
 
-        <tbody v-if="notFound()===true">
+        <tbody v-if="notFound()">
         <tr>
           <td colspan="2">
               <span class="text-strong">Nothing found at this path.
@@ -156,12 +156,12 @@
             <i class="glyphicon glyphicon-link"></i>
           </a>
         </div>
-        <div v-if="createdTime()!==''">
+        <div v-if="createdTime!==''">
           <div>
             Created:
             <span class="timeabs text-strong">
-                                    {{DateTimeFormatters.formatKeyStorageDate(createdTime()) }}
-                                </span>
+              {{ formatKeyStorageCreatedTime }}
+            </span>
 
             <span v-if="createdUsername()!==''">
                                     by:
@@ -170,12 +170,12 @@
 
           </div>
         </div>
-        <div v-if="wasModified()!==''">
+        <div v-if="wasModified!==''">
           <div>
             Modified:
             <span class="timeago text-strong">
-                                    {{DateTimeFormatters.formatHumanizedDuration(modifiedTimeAgoText()) }} ago
-                                </span>
+              {{ formatHumanizedModifiedTimeAgoDuration }} ago
+            </span>
 
             <span v-if="modifiedUsername()!==''">
                                 by:
@@ -197,7 +197,7 @@
     <div class="card-footer">
       <hr>
       <span class="text-info">
-          {{ $t('Key Storage provides a global directory-like structure to save Public and Private Keys and Passwords, for use with Node Execution authentication.') }}
+          {{ t('Key Storage provides a global directory-like structure to save Public and Private Keys and Passwords, for use with Node Execution authentication.') }}
       </span>
     </div>
   </div>
@@ -207,7 +207,8 @@
 <script lang="ts">
 import moment from 'moment'
 import {getRundeckContext} from "../../index"
-import {defineComponent} from "vue"
+import {defineComponent, ref} from "vue"
+import { useI18n } from "vue-i18n"
 import KeyType from "../../types/KeyType";
 import InputType from "../../types/InputType";
 import * as DateTimeFormatters from "../../../app/utilities/DateTimeFormatters";
@@ -224,51 +225,101 @@ export default defineComponent({
   } ,
   emits: ['input','openEditor'],
   data() {
+    const errorMsg = ref('')
+    const isDropdownOpen = ref(false)
+    const modalOpen = ref(false)
+    const invalid = ref(false)
+    const project = ref('')
+    const staticRoot = ref(true)
+    const inputPath = ref('')
+    const upPath = ref('')
+    const rootPath = ref('')
+    const path = ref('')
+    const isConfirmingDeletion = ref(false)
+    const modalEdit = ref(false)
+    const upload = ref<any>({})
+    const selectedKey = ref<any>({})
+    const isSelectedKey = ref(false)
+    const files = ref<any[]>([])
+    const selectedClass = ref('success')
+    const directories = ref<any[]>([])
+    const uploadErrors = ref<any>({})
+    const selectedIsDownloadable = ref(true)
+    const loading = ref(true)
+    const linksTitle = ref('')
+    const projectList = ref([])
+    const jumpLinks = ref<Array<{ name: string | undefined; path: string }>>([])
+    const {t, locale} = useI18n({
+      useScope: 'global',
+    })
     return {
-      errorMsg: '',
-      isDropdownOpen: false,
-      modalOpen: false,
-      invalid: false,
-      project: '',
-      staticRoot: true,
-      inputPath: '',
-      upPath: '',
-      path: '',
-      isConfirmingDeletion: false,
-      modalEdit: false,
-      upload: {} as any,
-      selectedKey: {} as any,
-      isSelectedKey: false,
-      files: [] as any,
-      selectedClass: 'success',
-      directories: [] as any,
-      uploadErrors: {} as any,
-      selectedIsDownloadable: true,
-      loading: true,
-      linksTitle: '',
-      projectList: [],
-      jumpLinks: [] as Array<{ name: string | undefined; path: string }>,
+      errorMsg,
+      isDropdownOpen,
+      modalOpen,
+      invalid,
+      project,
+      staticRoot,
+      inputPath,
+      upPath,
+      rootPath,
+      path,
+      isConfirmingDeletion,
+      modalEdit,
+      upload,
+      selectedKey,
+      isSelectedKey,
+      files,
+      selectedClass,
+      directories,
+      uploadErrors,
+      selectedIsDownloadable,
+      loading,
+      linksTitle,
+      projectList,
+      jumpLinks,
+      t,
+      locale,
     }
-  },
-  computed: {
-      DateTimeFormatters() {
-          return DateTimeFormatters
-      }
   },
   mounted() {
     this.loadKeys()
     this.loadProjectNames()
   },
   watch : {
-    createdKey : function (newValue, oldValue) {
+    createdKey : function (newValue) {
       if(newValue !== null){
         this.selectKey(newValue)
       }
     }
   },
   computed: {
+    formatKeyStorageCreatedTime() {
+      return DateTimeFormatters.formatKeyStorageDate(this.createdTime)
+    },
+    formatHumanizedModifiedTimeAgoDuration() {
+      return DateTimeFormatters.formatHumanizedDuration(this.modifiedTimeAgoText)
+    },
     isProject(): boolean {
       return this.rootPath.startsWith("keys/project");
+    },
+    createdTime() {
+      let value = '';
+      if (this.selectedKey != null &&
+          this.selectedKey.meta != null &&
+          this.selectedKey.meta['Rundeck-content-creation-time'] != null) {
+        value = this.selectedKey.meta['Rundeck-content-creation-time'];
+      }
+      return value;
+    },
+    modifiedTimeAgoText() {
+      let value = 0;
+      if (this.selectedKey != null &&
+          this.selectedKey.meta != null &&
+          this.selectedKey.meta['Rundeck-content-modify-time'] != null) {
+        const time = this.selectedKey.meta['Rundeck-content-modify-time'];
+        value = this.duration(time);
+      }
+      return value;
     },
   },
   methods: {
@@ -411,16 +462,6 @@ export default defineComponent({
       }
       return value;
     },
-    modifiedTimeAgoText() {
-      var value = 0;
-      if (this.selectedKey != null &&
-          this.selectedKey.meta != null &&
-          this.selectedKey.meta['Rundeck-content-modify-time'] != null) {
-        var time = this.selectedKey.meta['Rundeck-content-modify-time'];
-        value = this.duration(time);
-      }
-      return value;
-    },
     wasModified() {
       if (this.selectedKey != null &&
           this.selectedKey.meta != null &&
@@ -436,15 +477,6 @@ export default defineComponent({
           this.selectedKey.meta != null &&
           this.selectedKey.meta['Rundeck-auth-created-username'] != null) {
         return this.selectedKey.meta['Rundeck-auth-created-username'];
-      }
-      return value;
-    },
-    createdTime() {
-      var value = '';
-      if (this.selectedKey != null &&
-          this.selectedKey.meta != null &&
-          this.selectedKey.meta['Rundeck-content-creation-time'] != null) {
-        value = this.selectedKey.meta['Rundeck-content-creation-time'];
       }
       return value;
     },

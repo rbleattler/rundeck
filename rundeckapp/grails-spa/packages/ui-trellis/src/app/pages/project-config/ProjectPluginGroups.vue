@@ -92,7 +92,7 @@
           <div class="list-group-item" v-if="workingData.length<1 && showEmpty">
             <slot name="empty-message">
               <span  class="text-muted">
-                {{$t("No Plugin Groups Configured",serviceName)}}
+                {{$t("No Plugin Groups Configured", {serviceName})}}
               </span>
             </slot>
           </div>
@@ -113,8 +113,7 @@
           >
             <div class="list-group">
               <a
-                v-for="plugin in pluginProviders"
-                v-if="!plugin['configSet']"
+                v-for="plugin in filteredPluginProviders"
                 v-bind:key="plugin.name"
                 href="#"
                 @click="addPlugin(plugin.name)"
@@ -147,7 +146,7 @@
 
 <script lang="ts">
 import axios from "axios";
-import Vue, {defineComponent} from "vue";
+import {defineComponent} from "vue";
 import { Notification } from "uiv";
 import { getRundeckContext, RundeckContext } from "../../../library";
 import Expandable from "../../../library/components/utils/Expandable.vue";
@@ -206,7 +205,7 @@ export default defineComponent({
       configOrig: [] as any[],
       rundeckContext: {} as RundeckContext,
       modalAddOpen: false,
-      pluginProviders: [] as any,
+      pluginProviders: [] as any[],
       pluginLabels: {},
       projectSettings: {},
       editFocus: -1,
@@ -222,7 +221,10 @@ export default defineComponent({
         data.push({type: plugin.entry.type, config: plugin.entry.config})
       });
       return data
-    }
+    },
+    filteredPluginProviders(): any[] {
+      return this.pluginProviders.filter((plugin) => !plugin['configSet'])
+    },
   },
   props: {
     editMode: {
@@ -338,10 +340,10 @@ export default defineComponent({
         plugin.entry.config
       );
       if (!validation.valid) {
-        Vue.set(plugin, "validation", validation);
+        plugin.validation = validation;
         return;
       }
-      Vue.delete(plugin, "validation");
+      delete plugin.validation;
       this.pluginConfigs = array_clone(this.workingData)
       plugin.create = false;
       plugin.modified = true;

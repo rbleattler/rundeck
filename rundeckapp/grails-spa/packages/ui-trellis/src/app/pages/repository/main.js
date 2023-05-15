@@ -7,7 +7,7 @@ import * as uiv from 'uiv'
 
 import { store } from './stores'
 import router from './router'
-import App from './App'
+import App from './App.vue'
 import {initI18n} from "../../utilities/i18n"
 
 const i18n = initI18n()

@@ -61,6 +61,7 @@ export interface UtilityItem {
     group?: string
     visible: boolean
     count?: number
+    type: string
 }
 
 export interface UtilityActionItem extends UtilityItem {

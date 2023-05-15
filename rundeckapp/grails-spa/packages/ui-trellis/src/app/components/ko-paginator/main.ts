@@ -48,12 +48,13 @@ window._rundeck.eventBus.on('ko-pagination', (event: any) => {
         const elements = document.querySelectorAll(`[data-ko-pagination='${name}']`)
 
         for (const elm of elements) {
-            createApp(KoPaginator,{
+            const app = createApp(KoPaginator,{
                 el: elm,
                 propsData: {
                     pager
                 }
             })
+            app.mount(elm)
         }
 
         mounted.set(name, true)

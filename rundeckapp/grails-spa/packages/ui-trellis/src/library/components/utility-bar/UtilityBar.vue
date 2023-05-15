@@ -1,12 +1,12 @@
 <template>
     <div id="utility-bar" class="utility-bar">
         <ul>
-            <template v-for="item in utilityBar.containerGroupItems('root', 'left')" :key="item.id">
+            <template v-for="item in utilityBar?.containerGroupItems('root', 'left')" :key="item.id">
                 <UtilItem :item="item" />
             </template>
         </ul>
         <ul style="flex-grow: 1; flex-direction: row-reverse;">
-            <template v-for="item in utilityBar.containerGroupItems('root', 'right')" :key="item.id" >
+            <template v-for="item in utilityBar?.containerGroupItems('root', 'right')" :key="item.id" >
                 <UtilItem :item="item"/>
             </template>
         </ul>
@@ -16,7 +16,9 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue'
+import type {PropType} from "vue"
 import UtilItem from './UtilityBarItem.vue'
+
 export default defineComponent({
     name:"UtilityBar",
     components: {
@@ -30,7 +32,7 @@ export default defineComponent({
     },
     methods: {
         handleClick() {
-            open.value = !open.value
+            this.open = !this.open
         }
     }
 })

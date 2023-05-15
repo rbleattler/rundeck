@@ -238,17 +238,11 @@
   </div>
 </template>
 <script lang="ts">
-import {_genUrl} from '../../../utilities/genUrl'
-import axios from 'axios'
 import InlineValidationErrors from '../../form/InlineValidationErrors.vue'
-import { defineComponent, ref } from 'vue'
-import type { PropType } from 'Vue'
+import { defineComponent } from 'vue'
+import type { PropType } from 'vue'
 
-import {
-  getRundeckContext,
-  getAppLinks,
-} from '../../../../library'
-import {EventBus} from "../../../../library/utilities/vueEventBus";
+import {EventBus} from "../../../../library/utilities/vueEventBus"
 
 export default defineComponent({
   name: 'OtherEditor',
@@ -286,7 +280,7 @@ export default defineComponent({
   },
   data() {
     return {
-      modelData: {},
+      modelData: {} as { [key: string]: any },
     }
   },
   mounted() {

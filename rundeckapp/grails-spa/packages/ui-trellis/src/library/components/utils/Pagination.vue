@@ -84,7 +84,7 @@ import {computed} from 'vue'
   })
   const emit = defineEmits(['update:modelValue','change'])
   function changePage(page: number) {
-    if (!props.disabled && page > 0 && page <= props.totalPages && page !== value) {
+    if (!props.disabled && page > 0 && page <= props.totalPages && page !== value.value) {
       value.value = page
       emit('change', page)
     }
@@ -95,8 +95,8 @@ import {computed} from 'vue'
   })
 
   const windowLeftPage = computed(() => {
-    const leftNum = Math.floor(maxPagesDisplay / 2)
-    const windowLeft = this.value - leftNum
+    const leftNum = Math.floor(maxPagesDisplay.value / 2)
+    const windowLeft = value.value - leftNum
 
     const adjustL = windowLeft < 1 ? 1 - windowLeft : 0
 
@@ -104,7 +104,7 @@ import {computed} from 'vue'
   })
 
   const windowRightPage = computed(() => {
-    return windowLeftPage + (maxPagesDisplay - 1)
+    return windowLeftPage.value + (maxPagesDisplay.value - 1)
   })
 
   /**
@@ -113,7 +113,7 @@ import {computed} from 'vue'
   const pageList = computed(() => {
     const pages: any[] = []
     let skipped = false
-    const curPage = this.value
+    const curPage = value.value
 
     // creates sliding window of size pagingWindowSize
 
@@ -123,8 +123,8 @@ import {computed} from 'vue'
     // assume total pages >1 because we do not show paging otherwise
     // and always show last page
 
-    const minPage = this.windowLeftPage
-    const maxPage = this.windowRightPage
+    const minPage = windowLeftPage.value
+    const maxPage = windowRightPage.value
 
     // always add first page
     pages.push({page: 1})
@@ -153,11 +153,11 @@ import {computed} from 'vue'
   })
 
   const hasPreviousButton = computed<boolean>(() => {
-    return this.value > 1
+    return value.value > 1
   })
 
   const hasNextButton = computed<boolean>(() => {
-    return this.value < this.totalPages
+    return value.value < props.totalPages
   })
 
 </script>

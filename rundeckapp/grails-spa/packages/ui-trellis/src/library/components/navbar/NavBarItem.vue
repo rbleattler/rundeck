@@ -3,12 +3,12 @@
         :id="item.id"
         class="navbar__item"
         :class="{
-            'navbar__item--icon': itemStyle == 'icon',
-            'navbar__item--list': itemStyle == 'list',
+            'navbar__item--icon': itemStyle === 'icon',
+            'navbar__item--list': itemStyle === 'list',
             'navbar__item--active': item.active
         }">
         <a :href="item.link">
-            <i style="" :class="item.class"/>
+            <i style="" :class="item.class"></i>
             <div>{{label}}</div>
         </a>
     </li>
@@ -17,7 +17,7 @@
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
 
-import {NavItem} from '../../stores/NavBar'
+import { NavItem } from '../../stores/NavBar'
 
 export default defineComponent({
     props: {
@@ -25,11 +25,14 @@ export default defineComponent({
             default: 'icon',
             type: String as PropType<'icon' | 'list'>
         },
-        item: Object as PropType<NavItem>
+        item: {
+          type: Object as PropType<NavItem>,
+          required: true,
+        }
     },
     computed: {
         label(): string {
-            return this.item!.label!.toUpperCase()
+            return this.item.label?.toUpperCase() || ''
         }
     }
 })

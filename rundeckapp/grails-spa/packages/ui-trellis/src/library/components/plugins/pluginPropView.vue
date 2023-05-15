@@ -27,8 +27,8 @@
             <plugin-prop-val :prop="prop" :value="optval"/>
           </span>
           </span>
-          <span v-else-if="value.length>0">
-            <span v-for="optval in value" :key="optval" class="text-success">
+          <span v-else-if="typeof value==='string' && `${value}`.length>0">
+            <span v-for="optval in `${value}`" :key="optval" class="text-success">
             <i class="glyphicon glyphicon-ok-circle" v-if="!(prop.options && prop.options['valueDisplayType'])"></i>
             <plugin-prop-val :prop="prop" :value="optval"/>
           </span>
@@ -38,7 +38,7 @@
       <span v-else class="configpair">
         <template v-if="prop.options && prop.options['displayType']==='CODE'">
           <expandable >
-            <template v-slot:label><span :title="prop.desc">{{ prop.title }}:</span> <span class="text-info">{{value.split(/\r?\n/).length}} lines</span></template>
+            <template v-slot:label><span :title="prop.desc">{{ prop.title }}:</span> <span class="text-info">{{`${value}`.split(/\r?\n/).length}} lines</span></template>
              <ace-editor
               v-model="value"
               :lang="prop.options['codeSyntaxMode']"
@@ -50,7 +50,7 @@
         </template>
         <template v-else-if="prop.options && prop.options['displayType']==='MULTI_LINE'" >
           <expandable>
-            <template v-slot:label><span :title="prop.desc">{{ prop.title }}:</span> <span class="text-info">{{value.split(/\r?\n/).length}} lines</span></template>
+            <template v-slot:label><span :title="prop.desc">{{ prop.title }}:</span> <span class="text-info">{{`${value}`.split(/\r?\n/).length}} lines</span></template>
             <ace-editor
               v-model="value"
               height="200"
@@ -76,7 +76,7 @@
     </span>
 </template>
 <script lang="ts">
-import Vue, {defineComponent} from 'vue'
+import {defineComponent} from 'vue'
 import Expandable from '../utils/Expandable.vue'
 import AceEditor from '../utils/AceEditor.vue'
 import PluginPropVal from './pluginPropVal.vue'
@@ -88,6 +88,7 @@ export default defineComponent({
   },
   props:{
     value:{
+      type: [String, Boolean],
       required:true
     },
     prop:{
@@ -95,7 +96,7 @@ export default defineComponent({
     }
   },
   methods:{
-    getCustomValues(): any{
+    getCustomValues(): any[]{
       if(this.value!==null){
         const data = `${this.value}`
         const json = JSON.parse(data)

@@ -33,8 +33,8 @@
 import { defineComponent} from 'vue'
 import UiSocket from '../utils/UiSocket.vue'
 import {IBuilderOpts} from "./logBuilder"
-import {EventBus} from "../../utilities/vueEventBus";
-import {PropType} from "Vue";
+import { EventBus } from '../../utilities/vueEventBus';
+import type {PropType} from "vue";
 import {logviewerui} from "../../stores/ExecutionOutput";
 
 export default defineComponent({
@@ -52,9 +52,11 @@ export default defineComponent({
           required: true
         },
         prevEntry: {
+            type: Object,
             required: false
         },
         logEntry: {
+            type: Object,
             required: true
         }
     },

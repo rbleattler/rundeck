@@ -1,4 +1,4 @@
-import Vue, {createApp} from 'vue'
+import {createApp} from 'vue'
 
 import LogViewer from '../../../library/components/execution-log/logViewer.vue'
 import {RootStore} from '../../../library/stores/RootStore'
@@ -21,7 +21,7 @@ eventBus.on('ko-adhoc-running', (data: any) => {
     `
 
     const vue = createApp({
-        el: elm!,
+        name: 'Command',
         components: {LogViewer},
         template: template,
         provide: {
@@ -37,4 +37,5 @@ eventBus.on('ko-adhoc-running', (data: any) => {
                 stats: false,
             })}
     })
+    vue.mount(elm)
 })

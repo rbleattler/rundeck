@@ -177,7 +177,7 @@
 
 <script lang="ts">
 import axios from "axios";
-import Vue, {defineComponent} from "vue";
+import { defineComponent } from "vue";
 import { Notification } from "uiv";
 import { getRundeckContext, RundeckContext } from "../../../library";
 import Expandable from "../../../library/components/utils/Expandable.vue";
@@ -220,8 +220,8 @@ export default defineComponent({
       configOrig: [] as any[],
       rundeckContext: {} as RundeckContext,
       modalAddOpen: false,
-      pluginProviders: [],
-      pluginLabels: {},
+      pluginProviders: [] as any[],
+      pluginLabels: {} as any,
       editFocus: -1,
       errors: [] as string[],
       pluginStorageAccess: [] as any[]
@@ -297,7 +297,7 @@ export default defineComponent({
     setFocus(focus: number) {
       this.editFocus = focus;
     },
-    async savePlugin(plugin: ProjectPluginConfigEntry, index: number) {
+    async savePlugin(plugin: ProjectPluginConfigEntry, index: string) {
       //validate
       const validation: PluginValidation = await pluginService.validatePluginConfig(
         this.serviceName,

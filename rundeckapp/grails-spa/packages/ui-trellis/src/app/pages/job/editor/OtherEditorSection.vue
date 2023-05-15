@@ -6,15 +6,15 @@
 </template>
 
 <script>
+import { defineComponent } from 'vue'
 import OtherEditor from '../../../components/job/other/OtherEditor.vue'
 import JsonEmbed from './JsonEmbed.vue'
 
 import {
   getRundeckContext,
-  RundeckContext
 } from "../../../../library"
 
-export default {
+export default defineComponent({
   name: 'App',
   props:['eventBus' ],
   components: {
@@ -41,13 +41,13 @@ export default {
     }
   },
   mounted () {
-    if(window._rundeck && window._rundeck.data){
-        this.otherData = window._rundeck.data.otherData
+    if(getRundeckContext() && getRundeckContext().data){
+        this.otherData = getRundeckContext().data.otherData
         this.updatedData = Object.assign({}, this.otherData)
         this.watching = true
     }
   }
-}
+})
 </script>
 
 <style>

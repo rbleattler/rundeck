@@ -3,10 +3,10 @@
 
     <template  v-if="prop.type==='Boolean'">
         <template v-if="value==='true'||value===true">
-          {{prop.options&&prop.options['booleanTrueDisplayValue']?prop.options['booleanTrueDisplayValue']:$t('yes')}}
+          {{prop.options&&prop.options['booleanTrueDisplayValue']?prop.options['booleanTrueDisplayValue']:t('yes')}}
         </template>
         <template v-if="value==='false'||value===false">
-          {{prop.options&&prop.options['booleanFalseDisplayValue']?prop.options['booleanFalseDisplayValue']:$t('no')}}
+          {{prop.options&&prop.options['booleanFalseDisplayValue']?prop.options['booleanFalseDisplayValue']:t('no')}}
         </template>
     </template>
     <template v-else-if="['Options', 'Select','FreeSelect'].indexOf(prop.type)>=0">
@@ -15,7 +15,7 @@
         <i :class="'fas '+value" v-else-if="typeof(value)==='string' && value.startsWith('fa-')"></i>
         <i :class="'fab fa-'+(value.substring(4))" v-else-if="typeof(value)==='string' && value.startsWith('fab-')"></i>
       </template>
-      {{ prop.selectLabels && prop.selectLabels[value] || value }}
+      {{ prop.selectLabels && prop.selectLabels[`${value}`] || value }}
     </template>
     <template v-else-if="prop.options && prop.options['displayType']==='PASSWORD'">&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</template>
     <template v-else>{{ value }}</template>
@@ -23,17 +23,28 @@
 </template>
 
 <script lang="ts">
-import Vue, {defineComponent} from "vue"
+import {defineComponent} from "vue"
+import {useI18n} from "vue-i18n";
 export default defineComponent({
   props: {
-    'prop': {
+    prop: {
       type: Object,
       required: true
     },
-    'value': {
+    value: {
+      type: [String, Boolean],
       required: true,
       default: ''
     }
-  }
+  },
+  setup() {
+    const { t, locale } = useI18n({
+      useScope: 'global',
+    })
+    return {
+      t,
+      locale,
+    }
+  },
 })
 </script>

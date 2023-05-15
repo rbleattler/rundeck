@@ -11,7 +11,6 @@ import JsonEmbed from './JsonEmbed.vue'
 
 import {
   getRundeckContext,
-  RundeckContext
 } from "../../../../library"
 
 export default {
@@ -40,8 +39,8 @@ export default {
     }
   },
   async mounted () {
-     if(window._rundeck && window._rundeck.data){
-        this.notificationData = window._rundeck.data.notificationData
+     if(getRundeckContext() && getRundeckContext().data){
+        this.notificationData = getRundeckContext().data.notificationData
         this.updatedData=this.notificationData
       }
   }

@@ -2,13 +2,13 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 
 // Dependencies
-import Vue, {createApp} from 'vue'
+import {createApp} from 'vue'
 import * as uiv from 'uiv'
 import international from './i18n'
 import uivLang from '../../../library/utilities/uivi18n'
 import moment from 'moment'
 // Component Files
-import VueI18n, {createI18n} from 'vue-i18n'
+import {createI18n} from 'vue-i18n'
 import App from './App'
 
 let messages = international.messages

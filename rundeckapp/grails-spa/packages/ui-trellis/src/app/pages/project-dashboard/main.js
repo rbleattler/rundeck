@@ -5,7 +5,7 @@ import VueCookies from 'vue-cookies'
 import * as uiv from 'uiv'
 import moment from 'moment'
 
-import App from './App'
+import App from './App.vue'
 import {
   EventBus
 } from '../../../library/utilities/vueEventBus'

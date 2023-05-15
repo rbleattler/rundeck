@@ -314,12 +314,12 @@
 <script>
 import { defineComponent } from 'vue'
 import Fuse from 'fuse.js'
-import { mapState, mapActions, mapGetters } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 import * as StringFormatters from "../../../utilities/StringFormatters";
-import ProviderCard from "../components/ProviderCard";
-import ProviderCardRow from "../components/ProviderCardRow";
-import ConfigureFrameworkString from "../components/ConfigureFrameworkString";
+import ProviderCard from "../components/ProviderCard.vue";
+import ProviderCardRow from "../components/ProviderCardRow.vue";
+import ConfigureFrameworkString from "../components/ConfigureFrameworkString.vue";
 
 const FuseSearchOptions = {
   shouldSort: true,

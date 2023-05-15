@@ -1,4 +1,4 @@
-import Vue, {createApp} from 'vue'
+import {createApp} from 'vue'
 
 import NavigationBar from '../../../library/components/navbar/NavBar.vue'
 import UtilityBar from '../../../library/components/utility-bar/UtilityBar.vue'

@@ -46,13 +46,16 @@
 </template>
 
 <script lang="ts">
-import Vue, {defineComponent} from "vue";
-import { getRundeckContext, RundeckContext } from "../../../library";
+import { defineComponent, PropType } from "vue";
+import { EventBus, getRundeckContext, RundeckContext } from "../../../library";
 
 export default defineComponent({
   name: "ProjectNodeSourcesHelp",
   props:{
-    eventBus:{type:Object,required:false}
+    eventBus:{
+      type:Object as PropType<typeof EventBus>,
+      required:false,
+    }
   },
   data(){
     return {

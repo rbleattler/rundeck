@@ -31,7 +31,7 @@
 
 <script>
 import { defineComponent } from 'vue'
-import PluginCard from "./PluginCard";
+import PluginCard from "./PluginCard.vue";
 
 export default defineComponent({
   name: "RepositoryRow",

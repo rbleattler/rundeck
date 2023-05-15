@@ -17,48 +17,61 @@
   <pagination v-model="currentPage" :total-pages="totalPages" @change="changePage($event)" :disabled="disabled" v-if="pagination.total">
     <template v-if="showPrefix" v-slot:prefix>
     <span>
-      <span class="text-info">{{props.pagination.offset + 1}}-{{props.pagination.offset + props.pagination.max}}</span>
-      <span class="text-muted">of {{props.pagination.total}}</span>
+      <span class="text-info">{{pagination.offset + 1}}-{{pagination.offset + propspagination.max}}</span>
+      <span class="text-muted">of {{pagination.total}}</span>
     </span>
     </template>
   </pagination>
 </template>
-<script setup lang="ts">
-import {computed, onMounted, ref} from 'vue'
+<script lang="ts">
+import { defineComponent } from 'vue'
+import type { PropType } from 'vue'
 import Pagination from './Pagination.vue'
 import {Pageable} from "../../interfaces/UiTypes";
 
-  export interface Props {
-    pagination: Pageable,
-    showPrefix?:boolean,
-    disabled?:boolean
+export default defineComponent({
+  name: 'OffsetPagination',
+  components: {
+    Pagination,
+  },
+  props: {
+    pagination: {
+      type: Object as PropType<Pageable>,
+      required: true,
+    },
+    showPrefix: {
+      type: Boolean,
+      default: true,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    }
+  },
+  emits: ['change'],
+  data() {
+    return {
+      currentPage: 0
+    }
+  },
+  computed: {
+    totalPages() {
+      return Math.ceil(this.pagination.total / this.pagination.max)
+    }
+  },
+  methods: {
+    changePage(page: number) {
+      this.$emit('change', this.pageOffset(page))
+    },
+    pageOffset(page: number) {
+      return (page - 1) * this.pagination.max
+    },
+    pageNumberForOffset(offset: number) {
+      return 1 + (offset / this.pagination.max)
+    }
+  },
+  mounted() {
+    this.currentPage = this.pageNumberForOffset(this.pagination.offset)
   }
-
-  const currentPage = ref<number>(0)
-
-  const props = withDefaults(defineProps<Props>(),{
-      showPrefix: true,
-      disabled: false
-  })
-
-  const totalPages = computed(() => {
-    return Math.ceil(props.pagination.total / props.pagination.max)
-  })
-
-  onMounted(() => {
-    currentPage.value = pageNumberForOffset(props.pagination.offset)
-  })
-
-  const emit = defineEmits(['change'])
-
-  function changePage (page: number) {
-      emit('change', pageOffset(page))
-  }
-  function pageOffset (page: number) {
-    return (page - 1) * props.pagination.max
-  }
-
-  function pageNumberForOffset(offset: number) {
-    return 1 + (offset / props.pagination.max)
-  }
+})
 </script>

@@ -36,7 +36,7 @@
   </div>
 </template>
 <script lang="ts">
-import Vue, {defineComponent} from 'vue'
+import {defineComponent} from 'vue'
 
 import Ace from './AceEditorVue.vue'
 

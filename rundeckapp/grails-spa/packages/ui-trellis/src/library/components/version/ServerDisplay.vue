@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import Vue, {defineComponent, PropType} from 'vue'
+import {defineComponent, PropType} from 'vue'
 
 import {ServerInfo} from '../../stores/System'
 import { RundeckVersion } from '../../utilities/RundeckVersion'

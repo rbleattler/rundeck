@@ -1,6 +1,6 @@
 <template>
     <li :id="item.id" class="utility-bar__item" @click="handleClick">
-        <i class="utility-bar__item-icon" :class="item.class"/>
+        <i class="utility-bar__item-icon" :class="item.class"></i>
         <span v-if="item.label">{{item.label}}</span>
         <span v-if="item.count" class="utility-bar__item-counter">{{item.count}}</span>
         <Popper v-if="open" @close="close">
@@ -14,7 +14,7 @@
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
 
-import { UtilityWidgetItem} from '../../stores/UtilityBar'
+import { UtilityWidgetItem } from '../../stores/UtilityBar'
 
 import Popper from './Popper.vue'
 
@@ -26,7 +26,10 @@ export default defineComponent({
         Popper
     },
     props: {
-        item: Object as PropType<UtilityWidgetItem>
+        item: {
+          type: Object as PropType<UtilityWidgetItem>,
+          required: true,
+        }
     },
     methods: {
         handleClick() {

@@ -35,11 +35,11 @@
 
   </span>
 </template>
-<script>
-import Vue from "vue";
-import { getRundeckContext, RundeckContext } from "../../../library";
+<script lang="ts">
+import { defineComponent } from "vue";
+import { getRundeckContext } from "../../../library";
 
-export default {
+export default defineComponent({
   props: ["query", "hasQuery","eventBus"],
   data() {
     return {
@@ -164,7 +164,7 @@ export default {
   beforeUnmount() {
     this.eventBus && this.eventBus.off('invoke-save-filter')
   }
-};
+})
 </script>
 <style lang="scss">
 .modal-footer .btn-primary{

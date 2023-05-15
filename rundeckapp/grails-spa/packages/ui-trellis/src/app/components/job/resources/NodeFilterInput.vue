@@ -193,7 +193,7 @@
 import {_genUrl} from '../../../utilities/genUrl'
 import {RundeckBrowser} from '@rundeck/client'
 import axios from 'axios'
-import { defineComponent, ref } from 'vue'
+import {defineComponent, PropType, ref } from 'vue'
 import NodeFilterLink from './NodeFilterLink.vue'
 import {
   getAppLinks,
@@ -203,6 +203,11 @@ import Trellis from '../../../../library'
 
 const client: RundeckBrowser = getRundeckContext().rundeckClient
 const rdBase = getRundeckContext().rdBase
+
+interface NodeSummary {
+  filters: any[]
+  defaultFilter: any
+}
 
 export default defineComponent({
   name: 'NodeFilterInput',
@@ -263,7 +268,7 @@ export default defineComponent({
       default: false,
     },
     nodeSummary: {
-      type: Object,
+      type: Object as PropType<NodeSummary>,
       required: false,
       default: () => {
       }
@@ -408,9 +413,6 @@ export default defineComponent({
     filterName() {
       this.selectedFilterName = this.filterName
     },
-    nodeSummary() {
-
-    }
   },
   mounted() {
     this.onMount();

@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts">
-import Vue, {defineComponent} from 'vue';
+import {defineComponent} from 'vue';
 import HelloWorld from './components/HelloWorld.vue';
 import copybox from './components/containers/copybox/CopyBox.vue';
 

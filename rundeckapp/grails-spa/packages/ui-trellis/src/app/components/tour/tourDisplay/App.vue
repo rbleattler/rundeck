@@ -33,9 +33,9 @@
         <progress-bar v-model="progress" label :labelText="progressText" />
       </div>
       <section>
-        <modal v-model="modal.show" size="lg" :title="tour.steps[stepIndex].title" :footer="false" append-to-body>
-          <img :src="modal.image" :alt="modal.alt" class="img-responsive" />
-          <p class="modal-image-caption">{{modal.alt}}</p>
+        <modal v-model="modalData.show" size="lg" :title="tour.steps[stepIndex].title" :footer="false" :append-to-body="true">
+          <img :src="modalData.image" :alt="modalData.alt" class="img-responsive" />
+          <p class="modal-image-caption">{{modalData.alt}}</p>
         </modal>
       </section>
     </div>
@@ -43,7 +43,7 @@
 </template>
 
 <script lang='ts'>
-import {defineComponent} from 'vue';
+  import {defineComponent} from 'vue';
   import _ from "lodash";
   import Trellis, { getRundeckContext } from "../../../../library";
   import TourServices from "../services";
@@ -56,7 +56,7 @@ import {defineComponent} from 'vue';
     props: ["eventBus", "pad"],
     data() {
       return {
-        modal: {
+        modalData: {
           show: false,
           image: null,
           alt: null

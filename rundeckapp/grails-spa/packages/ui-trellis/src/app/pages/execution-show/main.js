@@ -72,13 +72,12 @@ function mount(e) {
    * Since the viewer is a class component that would make its
    * constructor the root constructor and chaos ensues...
    * */
-  const trimOutput = e.dataset.trimOutput ? `trimOutput="${e.dataset.trimOutput}"` : ""
   const template = `\
   <LogViewer
     executionId="${e.dataset.executionId}"
     :jumpToLine="${jumpToLine || null}"
     ref="viewer"
-    ${trimOutput}
+    ${e.dataset.trimOutput ? `trimOutput="${e.dataset.trimOutput}"` : ""}
   />
   `
 

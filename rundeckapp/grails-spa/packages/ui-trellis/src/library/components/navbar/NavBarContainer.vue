@@ -4,17 +4,17 @@
         <NavBarDrawer>
             <template v-slot:default>
             <a :href="item.link">
-                <i style="" :class="item.class"/>
+                <i style="" :class="item.class"></i>
                 <div>{{label}}</div>
             </a>
             </template>
             <template v-slot:content>
                 <ul 
                     :class="{
-                        'navbar__container--icons': item.style == 'icon',
-                        'navbar__container--list': item.style == 'list'
+                        'navbar__container--icons': item.style === 'icon',
+                        'navbar__container--list': item.style === 'list'
                     }">
-                <NavBarItem v-for="entry in navBar.containerItems(item.id)" :item="entry" :key="entry.id" :itemStyle="item.style" />
+                <NavBarItem v-for="entry in navBar?.containerItems(item.id)" :item="entry" :key="entry.id" :itemStyle="item.style" />
                 </ul>
             </template>
         </NavBarDrawer>
@@ -22,16 +22,15 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, onBeforeMount, ref} from 'vue'
+import { defineComponent } from 'vue'
+import type {PropType} from "vue";
 
 import {NavBar, NavContainer, NavItem} from '../../stores/NavBar'
 
 import NavBarItem from './NavBarItem.vue'
 
 import NavBarDrawer from './NavBarDrawer.vue'
-import {RundeckContext} from "../../interfaces/rundeckWindow";
-import {getRundeckContext} from "../../rundeckService";
-import {PropType} from "Vue";
+
 export default defineComponent({
     name:"NavBarContainer",
     components: {
@@ -48,7 +47,7 @@ export default defineComponent({
     computed: {
         label() {
             return this.item.label!.toUpperCase()
-        }
+        },
     }
 })
 </script>

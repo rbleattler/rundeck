@@ -5,7 +5,7 @@
 </template>
 <script>
 import { defineComponent } from 'vue'
-import WebhooksView from "./views/WebhooksView";
+import WebhooksView from "./views/WebhooksView.vue";
 
 export default defineComponent({
   name: "WebhooksApplication",

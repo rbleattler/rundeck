@@ -8,59 +8,80 @@
         </template>
     </span>
 </template>
-<script setup lang="ts">
-
-import Vue, {onMounted, onUnmounted, ref} from 'vue'
+<script lang="ts">
+import { defineComponent, ref} from 'vue'
+import type { PropType } from 'vue'
 
 import {
     getRundeckContext,
 } from '../../rundeckService'
 import {UIItem, UIWatcher} from '../../stores/UIStore'
 import {RundeckContext} from "../../interfaces/rundeckWindow";
+import {EventBus} from "../../utilities/vueEventBus";
 
 
 const rootStore = (getRundeckContext() as RundeckContext).rootStore
-
-    const props = defineProps<{
-        section: string,
-        location: string,
-        eventBus?: Vue,
-        socketData?: any
-    }>()
-
+export default defineComponent({
+  name: 'UiSocket',
+  props: {
+    section: {
+      type: String,
+      required: true,
+    },
+    location: {
+      type: String,
+      required: true,
+    },
+    eventBus: {
+      type: Object as PropType<typeof EventBus>,
+      required: false,
+    },
+    socketData: {
+      type: Object,
+      required: false,
+    },
+  },
+  setup() {
     const items = ref<UIItem[]>([])
-
-    function loadItems() {
-        items.value = rootStore.ui.itemsForLocation(props.section, props.location).filter((a) => a.visible)
+    const uiwatcher = ref<UIWatcher>()
+    return {
+      items,
+      uiwatcher,
+      rootStore,
     }
-
-    onUnmounted(() => {
-        if(uiwatcher.value){
-            rootStore.ui.removeWatcher(uiwatcher.value)
-        }
-    })
-    function itemData(){
-      if(typeof this.socketData === 'string'){
-        try{
+  },
+  computed: {
+    itemData() {
+      if (typeof this.socketData === 'string') {
+        try {
           return JSON.parse(this.socketData)
-        }catch (e){
+        } catch (e) {
           return this.socketData
         }
       }
       return this.socketData
+    },
+  },
+  methods: {
+    loadItems() {
+      this.items.value = this.rootStore.ui.itemsForLocation(this.section, this.location).filter((a) => a.visible)
+    },
+  },
+  mounted() {
+    this.loadItems()
+    this.uiwatcher.value = {
+      section: this.section,
+      location: this.location,
+      callback: (uiItems: UIItem[]) => {
+        this.items.value = uiItems
+      }
+    } as UIWatcher
+    this.rootStore.ui.addWatcher(this.uiwatcher.value)
+  },
+  unmounted() {
+    if (this.uiwatcher.value) {
+      this.rootStore.ui.removeWatcher(this.uiwatcher.value)
     }
-
-    const uiwatcher = ref<UIWatcher|null>(null)
-
-    onMounted(() => {
-        loadItems()
-        uiwatcher.value = {
-            section: props.section,
-            location: props.location,
-            callback: (items: UIItem[])=>{
-                items=items
-            }
-        } as UIWatcher
-        rootStore.ui.addWatcher(uiwatcher.value)
-    })
+  }
+})
 </script>

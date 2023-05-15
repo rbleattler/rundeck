@@ -282,7 +282,8 @@
 <script setup lang="ts">
 import axios from 'axios'
 import UiSocket from '../../../../library/components/utils/UiSocket.vue'
-import Vue, {computed, onBeforeMount, onMounted, ref, watch} from 'vue'
+import {computed, onBeforeMount, onMounted, ref, watch} from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import {
   getDays,
@@ -409,8 +410,9 @@ const props = withDefaults(defineProps<{
    */
   function getHintText(pos:number, text:string){
     let c = getCrontabSection(pos,text)
+    const { t } = useI18n()
     if (c >= 0 && c <= 6) {
-      return $t(`cron.section.${c}`)
+      return t(`cron.section.${c}`)
     }
     return ''
   }

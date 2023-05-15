@@ -5,10 +5,10 @@ import VueCookies from 'vue-cookies'
 import * as uiv from 'uiv'
 import moment from 'moment'
 
-import NotificationsEditorSection from './NotificationsEditorSection'
-import ResourcesEditorSection from './ResourcesEditorSection'
-import SchedulesEditorSection from './SchedulesEditorSection'
-import OtherEditorSection from './OtherEditorSection'
+import NotificationsEditorSection from './NotificationsEditorSection.vue'
+import ResourcesEditorSection from './ResourcesEditorSection.vue'
+import SchedulesEditorSection from './SchedulesEditorSection.vue'
+import OtherEditorSection from './OtherEditorSection.vue'
 import {
     EventBus
 } from '../../../../library/utilities/vueEventBus'
@@ -22,7 +22,6 @@ const els = document.body.getElementsByClassName('job-editor-notifications-vue')
 
 for (let i = 0; i < els.length; i++) {
     const e = els[i]
-    /* eslint-disable no-new */
     const app = createApp({
         name:"JobEditNotificationsApp",
         data(){return{EventBus,}},
@@ -37,7 +36,6 @@ const resels = document.body.getElementsByClassName('job-editor-resources-vue')
 
 for (let i = 0; i < resels.length; i++) {
     const e = resels[i]
-    /* eslint-disable no-new */
     const rapp = createApp({
         name:"JobEditResourcesApp",
         data(){return{EventBus,}},
@@ -51,7 +49,6 @@ const scsels = document.body.getElementsByClassName('job-editor-schedules-vue')
 
 for (let i = 0; i < scsels.length; i++) {
   const e = scsels[i]
-  /* eslint-disable no-new */
   const sapp = createApp({
       name:"JobEditSchedulesApp",
     data(){return{EventBus,}},
@@ -65,7 +62,6 @@ for (let i = 0; i < scsels.length; i++) {
 
   for (let i = 0; i < othels.length; i++) {
     const e = othels[i]
-    /* eslint-disable no-new */
     const oapp = createApp({
       name:"JobEditOtherApp",
       data() {

@@ -33,8 +33,8 @@
   </project-plugin-config>
 </template>
 <script lang="ts">
-import Vue, {defineComponent} from "vue";
-import { getRundeckContext, RundeckContext } from "../../../library";
+import { defineComponent, PropType } from "vue";
+import { EventBus, getRundeckContext, RundeckContext } from "../../../library";
 
 import ProjectPluginConfig from "./ProjectPluginConfig.vue";
 import { getProjectNodeSources, NodeSource } from "./nodeSourcesUtil";
@@ -57,7 +57,10 @@ export default defineComponent({
       type: String,
       default: "show"
     },
-    eventBus: { type: Object, required: false }
+    eventBus: {
+      type: Object as PropType<typeof EventBus>,
+      required: false,
+    }
   },
   emits: ['saved','reset','modified'],
   components: {

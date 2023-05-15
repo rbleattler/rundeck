@@ -12,7 +12,6 @@ function init(){
 
     for (var i = 0; i < els.length; i++) {
         const e = els[i]
-        /* eslint-disable no-new */
         const app = createApp({
             components: { copyBox }
         })

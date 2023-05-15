@@ -1,18 +1,18 @@
 <template>
-    <div class="rd-copybox" :title="title()" @click="handleClick">
+    <div class="rd-copybox" :title="title" @click="handleClick">
         <div ref="content" class="rd-copybox__content" :class="{'rd-copybox__content--active': active}">
             {{content}}
         </div>
-        <div class="rd-copybox__spacer" :class="{'rd-copybox__content--active': active}"/>
+        <div class="rd-copybox__spacer" :class="{'rd-copybox__content--active': active}"></div>
         <div class="rd-copybox__icon">
-            <i class="fas fa-clipboard"/>
+            <i class="fas fa-clipboard"></i>
         </div>
         <span class="rd-copybox__success" :class="{'rd-copybox__success--active': active}">Copied to clipboard!</span>
     </div>
 </template>
 
 <script lang="ts">
-import Vue, {defineComponent, VNode} from 'vue'
+import {defineComponent, VNode} from 'vue'
 
 import {CopyToClipboard} from '../../../utilities/Clipboard'
 
@@ -24,10 +24,12 @@ export default defineComponent({
     data() { return {
         active: false
     }},
-    methods: {
+    computed: {
         title() {
             return this.content
-        },
+        }
+    },
+    methods: {
         async handleClick() {
             const content = (<HTMLElement>this.$refs['content'])
 

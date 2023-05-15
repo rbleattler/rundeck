@@ -8,7 +8,7 @@
                 {{versionSemantic}}
             </span>
 
-            <version-date-display v-if="isGa && showDate" :title="date" :date="date"/>
+            <version-date-display v-if="isGa && showDate" :title="date" :date="date || ''"/>
 
             <span v-if="!isGa && (showDate||showRelativeDate||showTag)">
                 <span v-if="showTag">
@@ -17,14 +17,14 @@
                 </span>
                 <span v-if="showRelativeDate"
                       class="rundeck-version-relative-date">{{DateTimeFormatters.formatFromNow(date)}}</span>
-                <version-date-display v-if="showDate" :title="date" :date="date"/>
+                <version-date-display v-if="showDate" :title="date" :date="date || ''"/>
             </span>
 
             <version-icon-name-display :icon="versionIcon" :text="versionText" :color="versionColor" v-if="showName"/>
         </span>
         <template v-slot:popover>
             {{version}}
-            <version-date-display :date="date"/>
+            <version-date-display :date="date || ''"/>
             <version-icon-name-display :icon="versionIcon" :text="versionText" :color="versionColor"/>
         </template>
     </popover>

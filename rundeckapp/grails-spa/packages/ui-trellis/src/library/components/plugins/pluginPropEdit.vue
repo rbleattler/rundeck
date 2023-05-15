@@ -58,7 +58,7 @@
 
       <input  type="hidden" :id="rkey" :name="prop.name">
 
-      <dynamic-form-plugin-prop :id="rkey" :fields="value" v-model="currentValue"
+      <dynamic-form-plugin-prop :id="rkey" :fields="modelValue" v-model="currentValue"
            :hasOptions="hasAllowedValues()"
            :options="parseAllowedValues()"
            :element="rkey" :name="prop.name"></dynamic-form-plugin-prop>
@@ -307,7 +307,7 @@
         <select v-model="currentValue" class="form-control input-sm">
           <option disabled value>-- Select Plugin Type --</option>
           <option
-            v-for="opt in propsComputedSelectorData[prop.name]"
+            v-for="opt in selectorDataForName"
             v-bind:value="opt.value"
             v-bind:key="opt.key"
           >{{opt.key}}</option>
@@ -355,7 +355,6 @@
 import {defineComponent} from "vue"
 import {VMarkdownView} from "vue3-markdown"
 import 'vue3-markdown/dist/style.css'
-import { Typeahead } from 'uiv';
 
 import JobConfigPicker from './JobConfigPicker.vue'
 import KeyStorageSelector from './KeyStorageSelector.vue'
@@ -365,6 +364,20 @@ import PluginPropVal from './pluginPropVal.vue'
 import { client } from '../../modules/rundeckClient'
 import DynamicFormPluginProp from "./DynamicFormPluginProp.vue";
 import TextAutocomplete from '../utils/TextAutocomplete.vue'
+import type {PropType} from "vue";
+import { getRundeckContext } from "../../rundeckService";
+
+interface Prop {
+  type: string
+  defaultValue: any
+  title: string
+  required: boolean
+  options: object
+  allowed: string
+  name: string
+  desc: string
+  staticTextDefaultValue: string
+}
 
 export default defineComponent({
   components:{
@@ -378,7 +391,7 @@ export default defineComponent({
   },
   props:{
     'prop':{
-      type:Object,
+      type:Object as PropType<Prop>,
       required:true
      },
     'readOnly':{
@@ -395,7 +408,7 @@ export default defineComponent({
       required:false
      },
     'validation':{
-      type:Object,
+      type:Object as PropType<any>,
       required:false
      },
     'rkey':{
@@ -426,6 +439,10 @@ export default defineComponent({
     'autocompleteCallback':{
       type:Function,
       required:false
+    },
+    selectorData: {
+      type: Object as PropType<any>,
+      required: true,
     }
   },
   emits: ['update:modelValue','pluginPropsMounted'],
@@ -481,6 +498,9 @@ export default defineComponent({
         }
         return null;
     },
+    selectorDataForName(): any[] {
+      return this.selectorData[this.prop.name]
+    },
     currentValue: {
         get() {
             return this.modelValue
@@ -494,8 +514,8 @@ export default defineComponent({
   mounted(){
     this.$emit("pluginPropsMounted")
     this.setJobName(this.modelValue)
-    if (window._rundeck && window._rundeck.projectName) {
-      this.keyPath = 'keys/project/' + window._rundeck.projectName +'/'
+    if (getRundeckContext() && getRundeckContext().projectName) {
+      this.keyPath = 'keys/project/' + getRundeckContext().projectName +'/'
     }
 
     if(this.autocompleteCallback && this.contextAutocomplete){

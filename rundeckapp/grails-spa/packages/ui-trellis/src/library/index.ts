@@ -5,6 +5,8 @@ export * from './rundeckService'
 
 export {RundeckBrowser} from '@rundeck/client'
 export type {RundeckContext} from './interfaces/rundeckWindow'
+export type {AppLinks} from './interfaces/AppLinks'
+export {EventBus} from './utilities/vueEventBus'
 
 export default {
   FilterPrefs,

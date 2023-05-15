@@ -19,9 +19,9 @@
           >Uninstall</button>
 
           <div v-if="provider.author" style="margin-bottom:1em;">Author: {{provider.author}}</div>
-          <div class="plugin-description">{{StringFormatters.limitString200ClickForMore(provider.description)}}</div>
+          <div class="plugin-description">{{limitString200ClickForMore(provider.description)}}</div>
           <ul class="provides">
-            <li>{{StringFormatters.splitAtCapitalLetter(provider.service)}}</li>
+            <li>{{splitAtCapitalLetter(provider.service)}}</li>
           </ul>
           <!-- <button class="btn btn-sm btn-block square-button" @click="openInfo">More Info</button> -->
         </div>
@@ -41,11 +41,12 @@
   </div>
 </template>
 <script>
+import { defineComponent } from 'vue'
 import axios from "axios";
 import { mapActions, mapState } from "vuex";
-import * as StringFormatters from "../../../utilities/StringFormatters";
+import { limitString200ClickForMore, splitAtCapitalLetter } from "../../../utilities/StringFormatters";
 
-export default {
+export default defineComponent({
   name: "ProviderCard",
   props: ["provider"],
   methods: {
@@ -58,12 +59,15 @@ export default {
     },
     handleUninstall(provider) {
       this.uninstallPlugin(provider);
-    }
+    },
+    limitString200ClickForMore(text) {
+      return limitString200ClickForMore(text)
+    },
+    splitAtCapitalLetter(text) {
+      return splitAtCapitalLetter(text)
+    },
   },
   computed: {
-      StringFormatters() {
-          return StringFormatters
-      },
     ...mapState("plugins", ["selectedServiceFacet"]),
     displayCard() {
       if (
@@ -76,7 +80,7 @@ export default {
       }
     }
   }
-};
+})
 </script>
 <style lang="scss" scoped>
 .px-3{

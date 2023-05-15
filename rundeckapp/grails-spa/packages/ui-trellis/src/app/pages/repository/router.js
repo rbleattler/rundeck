@@ -1,11 +1,10 @@
-import Vue from 'vue';
-import Router, {createRouter, createWebHistory} from 'vue-router';
+import {createRouter, createWebHistory} from 'vue-router';
 
-import PluginRepositoryView from "./views/PluginRepositoryView"
-import PluginConfigurationView from './views/PluginConfigurationView'
-import UploadPluginView from './views/UploadPluginView'
+import PluginRepositoryView from "./views/PluginRepositoryView.vue"
+import PluginConfigurationView from './views/PluginConfigurationView.vue'
+import UploadPluginView from './views/UploadPluginView.vue'
 
-var ctx = window._rundeck.context;
+let ctx = window._rundeck.context;
 if(ctx !== "/") ctx += "/";
 
 const router = createRouter({

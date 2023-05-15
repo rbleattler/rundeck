@@ -19,8 +19,8 @@
 import { defineComponent } from 'vue';
 import { mapActions } from 'vuex';
 
-import PluginUploadForm from "../components/PluginUploadForm";
-import PluginURLUploadForm from "../components/PluginURLUploadForm";
+import PluginUploadForm from "../components/PluginUploadForm.vue";
+import PluginURLUploadForm from "../components/PluginURLUploadForm.vue";
 export default defineComponent({
   name: "UploadPluginView",
   components: { PluginUploadForm, PluginURLUploadForm },

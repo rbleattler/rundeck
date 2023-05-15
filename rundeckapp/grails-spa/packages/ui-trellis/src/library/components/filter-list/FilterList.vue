@@ -37,11 +37,12 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, nextTick, ref} from 'vue'
-import PerfectScrollbar from 'perfect-scrollbar'
-import { RecycleScroller } from 'vue-virtual-scroller'
+import {defineComponent, nextTick} from 'vue'
+import type {PropType} from 'vue'
+import {RecycleScroller} from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import Skeleton from "../skeleton/Skeleton.vue";
+import {Webhook} from '../../stores/Webhooks'
 
 // RecycleScroller.updated = function() {
 //     if (!ps.value) {
@@ -86,7 +87,7 @@ export default defineComponent({
             default: ''
         },
         items: {
-            type: Array,
+            type: Array as PropType<Webhook[]>,
             required: true
         },
         itemSize: {

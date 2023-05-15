@@ -444,7 +444,7 @@ export default defineComponent({
       activityPageHref:'',
       sinceUpdatedUrl:'',
       reports:[],
-      running: null as null|any,
+      running: null as null | { executions: any[], paging: any },
       lastDate:-1,
       pagination:{
         offset:0,

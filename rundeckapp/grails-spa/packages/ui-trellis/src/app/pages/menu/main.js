@@ -4,11 +4,10 @@ import {createApp} from 'vue'
 import * as uiv from 'uiv'
 import VueCookies from 'vue-cookies'
 import moment from 'moment'
-import uivLang from '../../../library/utilities/uivi18n'
 
-import App from './App'
+import App from './App.vue'
 import {initI18n} from "../../utilities/i18n"
-import {getRundeckContext} from '@/library'
+import {getRundeckContext} from '../../../library'
 
 let locale = window._rundeck.locale || 'en_US'
 moment.locale(locale)

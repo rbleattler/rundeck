@@ -5,7 +5,7 @@
     </a> -->
     <section>
       <modal v-model="tourSelectionModal" title="Available Tours" ref="modal" appendToBody>
-        <div v-for="tourLoader in tours" v-bind:key="tourLoader.$index">
+        <div v-for="(tourLoader, tIndex) in tours" v-bind:key="tIndex">
           <div class="panel panel-default" style="padding-bottom:1px;">
             <div class="panel-heading">
               <strong>{{tourLoader.loader}}</strong>
@@ -14,8 +14,8 @@
               <a
                 class="list-group-item"
                 href="#"
-                v-for="tour in tourLoader.tours"
-                v-bind:key="tour.$index"
+                v-for="(tour, index) in tourLoader.tours"
+                v-bind:key="index"
                 @click="startTour(tour.provider ? tour.provider : tourLoader.provider,tour)"
               >
                 {{tour.name}}
@@ -42,6 +42,17 @@ import {defineComponent} from "vue";
 
   const context = getRundeckContext();
 
+  interface Tour {
+    name: string
+    author: string
+    provider: string
+  }
+  interface TourLoader {
+    tours: Tour[]
+    provider: string
+    loader: string
+  }
+
   export default defineComponent({
     inject: ['rootStore'],
     name: "TourPicker",
@@ -50,7 +61,7 @@ import {defineComponent} from "vue";
       return {
         hasActiveTour: false,
         tourSelectionModal: false,
-        tours: [] as any[]
+        tours: [] as TourLoader[]
       };
     },
     mounted() {

@@ -73,7 +73,7 @@ export class WebhookStore {
         return clone
     }
 
-    webhooksForProject(project: string) {
+    webhooksForProject(project: string): Webhook[] {
         return this.webhooks.filter( wh => wh.project == project) || []
     }
 

@@ -7,6 +7,4 @@ declare module '*.vue' {
 declare module 'vue2-ace-editor' {
 
 }
-declare module 'vue3-markdown'{
-
-}
+declare module 'vue3-markdown';

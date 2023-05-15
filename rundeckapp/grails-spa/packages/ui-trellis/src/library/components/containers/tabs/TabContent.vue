@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import Vue, {defineComponent} from 'vue'
+import {defineComponent} from 'vue'
 
 export default defineComponent({
     name: 'rd-tab-pane',

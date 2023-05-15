@@ -1,13 +1,13 @@
 <template>
     <div class="news-widget">
         <Skeleton :loading="!newsStore.loaded" type="community-news">
-            <div class="news-article" v-for="article in newsStore.articles.slice(0,4)" :key="article.name">
+            <div class="news-article" v-for="article in newsStore.articles.slice(0,4)" :key="article.title">
                 <div style="margin-right: 10px; flex-basis: 50px; flex-shrink: 0;align-items: center;align-content: center; display: flex;">
                     <img :src="article.imageUrl"/>
                 </div>
                 <div class="news-article__details">
-                    <p class="news-article__date">{{article.date.toUTCString('MMMM Do YYYY hh:mm')}}</p>
-                    <p class="news-article__description"><a :href="article.url" target="_blank">{{article.title}}</a></p>
+                  <p class="news-article__date">{{article.date.toUTCString()}}</p><!--'MMMM Do YYYY hh:mm'-->
+                  <p class="news-article__description"><a :href="article.url" target="_blank">{{article.title}}</a></p>
                 </div>
             </div>
         </Skeleton>

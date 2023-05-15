@@ -45,7 +45,7 @@ export default defineComponent({
   },
   props: {
     nodes: {
-      type: Array as PropType<any>,
+      type: Array as PropType<any[]>,
       required: true,
     },
     tagsummary: {

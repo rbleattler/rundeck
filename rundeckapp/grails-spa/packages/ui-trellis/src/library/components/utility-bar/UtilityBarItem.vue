@@ -1,6 +1,6 @@
 <template>
-    <UtilActionItem v-if="item.type == 'action'" :item="item"/>
-    <UtilWidgetItem v-else-if="item.type == 'widget'" :item="item"/>
+    <UtilActionItem v-if="item.type === 'action'" :item="(item as UtilityActionItem)"/>
+    <UtilWidgetItem v-else-if="item.type === 'widget'" :item="(item as UtilityWidgetItem)"/>
 </template>
 
 <script lang="ts">
@@ -17,7 +17,10 @@ export default defineComponent({
         UtilWidgetItem
     },
     props: {
-        item: Object as PropType<UtilityItem>
+        item: {
+          type: Object as PropType<UtilityItem>,
+          required: true,
+        }
     }
 })
 </script>

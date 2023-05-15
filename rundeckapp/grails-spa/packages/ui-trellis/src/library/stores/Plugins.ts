@@ -23,7 +23,7 @@ export class PluginStore {
         })
 
         plugins.parsedBody.forEach((p: any) => {
-            if (this.pluginsById[p.name])
+            if (this.pluginsById.get(p.name))
                 return
             else
                 this.plugins.push(p)
@@ -47,8 +47,8 @@ export class PluginStore {
         }, Object.create(null))
     }
 
-    getServicePlugins(service: string) {
-        return this.pluginsByService[service]?.sort((a, b) => a.title.localeCompare(b.title)) || []
+    getServicePlugins(service: string): Plugin[] {
+        return this.pluginsByService.get(service)?.sort((a, b) => a.title.localeCompare(b.title)) || []
     }
 }
 

@@ -18,8 +18,8 @@
 
 </template>
 <script lang="ts">
-import Vue, {defineComponent} from "vue";
-import {getRundeckContext} from "../../../library";
+import {PropType, defineComponent} from "vue";
+import {EventBus, getRundeckContext} from "../../../library";
 import {RundeckBrowser} from "../../../library";
 import PluginValidation from "../../../library/interfaces/PluginValidation";
 import ProjectPluginGroups from "./ProjectPluginGroups.vue";
@@ -54,7 +54,7 @@ export default defineComponent({
       type: Boolean,
       default: true
     },
-    eventBus: { type: Vue, required: false },
+    eventBus: { type: Object as PropType<typeof EventBus>, required: false },
     configPrefix:String,
     project: String,
   },

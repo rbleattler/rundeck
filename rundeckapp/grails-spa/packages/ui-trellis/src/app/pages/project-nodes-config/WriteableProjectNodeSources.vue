@@ -42,12 +42,13 @@
   </div>
 </template>
 <script lang="ts">
-import Vue, {defineComponent} from "vue"
+import { defineComponent, PropType } from "vue"
 import PluginConfig from "../../../library/components/plugins/pluginConfig.vue"
 import {
   getProjectNodeSources,
   NodeSource
 } from "./nodeSourcesUtil"
+import { EventBus } from "../../../library"
 
 export default defineComponent({
   components: {
@@ -81,7 +82,10 @@ export default defineComponent({
       type: String,
       default: ""
     },
-    eventBus:{type:Object,required:false}
+    eventBus:{
+      type: Object as PropType<typeof EventBus>,
+      required:false,
+    }
   },
 
   mounted() {

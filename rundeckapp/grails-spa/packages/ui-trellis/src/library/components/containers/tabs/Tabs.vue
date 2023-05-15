@@ -2,7 +2,7 @@
     <div class="patabs" :class="[type]">
         <div class="patabs-list">
             <div v-for="(tab, index) in tabs" :key="tab.title" @click="selectTab(index)" class="patab-item"
-                 :class="[index === webhookui.activeTab ? 'patab-item--active' : '']">
+                 :class="{ 'patab-item--active': index === webhookui.activeTab}">
                 {{ tab.props.title }}
             </div>
         </div>
