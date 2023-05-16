@@ -270,8 +270,7 @@ export default defineComponent({
     nodeSummary: {
       type: Object as PropType<NodeSummary>,
       required: false,
-      default: () => {
-      }
+      default: () => {}
     }
   },
   emits: ['filters-updated', 'filter', 'update:modelValue'],

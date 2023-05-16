@@ -1,0 +1,57 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "useDefineForClassFields": true,
+    "baseUrl": ".",
+    "sourceMap": true,
+    //"strict": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "declaration": true,
+    "jsx": "preserve",
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+
+    "module": "ESNext",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "types": ["@intlify/unplugin-vue-i18n/messages"],
+
+    "moduleResolution": "node",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+
+    /* Linting */
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": false,
+    "strict": false,
+    "noImplicitAny": false,
+    "noImplicitThis": false,
+    "strictBindCallApply": false,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    "strictPropertyInitialization": false,
+    "alwaysStrict": false
+  },
+  "paths": {
+    "@": [
+      "./src"
+    ]
+  },
+  "include": [
+    "main.ts",
+    "src/*.d.ts",
+    "src/**/*.js",
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue"
+    // "./src/library/**/*",
+    // "tests/**/*.ts",
+    // "tests/**/*.tsx"
+  ],
+  "references": [{ "path": "./tsconfig.node.json"}]
+}

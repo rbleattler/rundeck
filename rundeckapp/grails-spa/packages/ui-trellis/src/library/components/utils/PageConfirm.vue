@@ -30,7 +30,7 @@ export default defineComponent({
   },
   computed: {
     needsConfirm() {
-      return this.confirmData.value.length > 0
+      return this.confirmData.value.length>0
     },
   },
   methods: {

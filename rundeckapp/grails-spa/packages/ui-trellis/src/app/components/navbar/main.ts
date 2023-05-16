@@ -26,7 +26,7 @@ rootStore.utilityBar.addItems([
       "visible": true,
       widget: {
         components: {RundeckInfoWidget},
-        template: `<RundeckInfoWidget/>`,
+        template: `<RundeckInfoWidget :system="rootStore.system" :releases="rootStore.releases"/>`,
         provide: {
           rootStore
         }
@@ -66,7 +66,7 @@ function initNav() {
     const vue = createApp({
         name:"NavigationBarApp",
         components: {NavigationBar},
-        template: `<NavigationBar />`,
+        template: `<NavigationBar :nav-bar="rootStore.navBar" />`,
         provide: {
           rootStore
         }
@@ -80,7 +80,7 @@ function initUtil() {
   const vue = createApp({
       name:"UtilityBarApp",
       components: {UtilityBar},
-      template: `<UtilityBar />`,
+      template: `<UtilityBar :utility-bar="rootStore.utilityBar"/>`,
       provide: {
         rootStore
       }

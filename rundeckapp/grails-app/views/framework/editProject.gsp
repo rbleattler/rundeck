@@ -89,6 +89,7 @@
     ]}"/>
     <asset:javascript src="leavePageConfirm.js"/>
     <asset:javascript src="framework/editProject.js"/>
+    <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/pages/project-config/main.js" defer="${true}" />
     <asset:javascript src="static/pages/project-config.js" defer="defer" />
     <asset:stylesheet href="static/css/pages/project-config.css" />
     <g:jsMessages code="page.unsaved.changes"/>

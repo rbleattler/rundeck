@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import { defineComponent } from 'vue'
 import { addons } from '@storybook/addons'
 
 
@@ -6,7 +6,7 @@ export default {
     title: 'Data/List'
 }
 
-export const ListHorizontal = () => (Vue.extend({
+export const ListHorizontal = () => (defineComponent({
     render(h) {
         return (
             <div class="rs-container">

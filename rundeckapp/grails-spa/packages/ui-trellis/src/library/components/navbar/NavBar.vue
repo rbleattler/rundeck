@@ -5,7 +5,7 @@
                 <ul class="nav-bar__list-group" ref="group-main">
                     <template v-for="item in navBar.containerGroupItems('root', 'main')">
                         <NavBarItem v-if="item.type === 'link'" :item="item" :key="item.id" itemStyle="icon" />
-                        <NavBarContainer v-if="item.type === 'container'" :item="item" :key="item.id" />
+                        <NavBarContainer v-if="item.type === 'container'" :item="(item as NavContainer)" :key="item.id" :nav-bar="navBar" />
                     </template>
                 </ul>
             </li>
@@ -14,7 +14,7 @@
                     <NavBarContainer v-if="navBar.isOverflowing" :item="navBar.overflowItem" />
                     <template v-for="item in navBar.containerGroupItems('root', 'bottom')">
                         <NavBarItem v-if="item.type === 'link'" :item="item" :key="item.id" itemStyle="icon" />
-                        <NavBarContainer v-if="item.type === 'container'" :item="item" :key="item.id" />
+                        <NavBarContainer v-if="item.type === 'container'" :item="(item as NavContainer)" :key="item.id" :nav-bar="navBar"/>
                     </template>
                 </ul>
             </li>
@@ -23,6 +23,7 @@
 </template>
 
 <script lang="ts">
+import type {PropType} from 'vue'
 import {defineComponent, ref} from 'vue'
 
 import {NavBar, NavContainer, NavItem} from '../../stores/NavBar'
@@ -31,50 +32,60 @@ import NavBarItem from './NavBarItem.vue'
 import NavBarContainer from './NavBarContainer.vue'
 
 export default defineComponent({
-    name: 'NavBar',
-    components: {
-        NavBarItem,
-        NavBarContainer
-    },
-mounted() {
+  name: 'NavBar',
+  components: {
+    NavBarItem,
+    NavBarContainer
+  },
+  props: {
+      navBar: Object as PropType<NavBar>,
+  },
+  mounted() {
     window.addEventListener('resize', this.overflow)
     /** After layout and before render handle overflow */
     window.requestAnimationFrame(this.overflow)
-},
-data() {
+  },
+  setup() {
+    const root = ref()
+    const list = ref()
+    const groupMain = ref()
     return {
-        navBar : window._rundeck.rootStore.navBar
-
+      root,
+      list,
+      groupMain,
     }
-},
-methods: {
+  },
+  methods: {
+    getItems(ctr: string, grp: string): NavItem[] {
+      return this.navBar.containerGroupItems(ctr, grp)
+    },
     /**
      * Moves menu items into the "more" container until the navbar is no
      * longer overflowing.
      */
     overflow() {
-        const el = this.$el as HTMLElement
-        const mainGroup = this.$refs['group-main'] as HTMLElement
+      const el = this.$el as HTMLElement
+      const mainGroup = this.$refs['group-main'] as HTMLElement
 
+      /**
+       * Check for overflow. At different zoom levels this could be off by one in the positive
+       * even though no overflow is occuring. Testing indicates checking for negative difference
+       * works at all zoom levels.
+       */
+      if (el.offsetHeight - el.scrollHeight < 0) {
+        this.navBar.overflowOne()
         /**
-         * Check for overflow. At different zoom levels this could be off by one in the positive
-         * even though no overflow is occuring. Testing indicates checking for negative difference
-         * works at all zoom levels.
-         */
-        if (el.offsetHeight - el.scrollHeight < 0) {
-            this.navBar.overflowOne()
-            /**
-             * Continue to force layout until no longer overflowing.
-             * This provides for the least amount of flicker on page load.
-             **/
-            this.$forceUpdate()
-            window.requestAnimationFrame(this.overflow)
-        } else if (mainGroup.offsetTop + mainGroup.offsetHeight + 240 < el.offsetHeight) {
-            this.navBar.showOne()
-            window.requestAnimationFrame(this.overflow)
-        }
+         * Continue to force layout until no longer overflowing.
+         * This provides for the least amount of flicker on page load.
+         **/
+        this.$forceUpdate()
+        window.requestAnimationFrame(this.overflow)
+      } else if (mainGroup.offsetTop + mainGroup.offsetHeight + 240 < el.offsetHeight) {
+        this.navBar.showOne()
+        window.requestAnimationFrame(this.overflow)
+      }
     }
-}
+  },
 })
 </script>
 

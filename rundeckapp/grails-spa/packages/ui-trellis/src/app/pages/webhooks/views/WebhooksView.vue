@@ -6,7 +6,7 @@
       </div>
       <div class="flex--grow navs">
         <div id="wh-list" class="px-3">
-          <WebhookPicker :selected="curHook ? curHook.uuid : ''" :project="projectName" @item:selected="(item) => handleSelect(item)"/>
+          <WebhookSelect :webhook-store="rootStore.webhooks" :selected="curHook ? curHook.uuid : ''" :project="projectName" @item:selected="(item) => handleSelect(item)"/>
         </div>
       </div>
       <div class="flex--none bg-grey-100">
@@ -170,9 +170,10 @@ import PluginInfo from "../../../../library/components/plugins/PluginInfo.vue"
 import CopyBox from '../../../../library/components/containers/copybox/CopyBox.vue'
 import Tabs from '../../../../library/components/containers/tabs/Tabs.vue'
 import Tab from '../../../../library/components/containers/tabs/Tab.vue'
-import WebhookPicker from '../../../../library/components/widgets/webhook-select/WebhookSelect.vue'
+import WebhookSelect from '../../../../library/components/widgets/webhook-select/WebhookSelect.vue'
 import KeyStorageSelector from '../../../../library/components/plugins/KeyStorageSelector.vue'
 
+import { getRundeckContext } from "../../../../library";
 import {getServiceProviderDescription,
   getPluginProvidersForService} from '../../../../library/modules/pluginService'
 
@@ -207,7 +208,7 @@ export default defineComponent({
     PluginInfo,
     Tabs,
     Tab,
-    WebhookPicker,
+    WebhookSelect,
     WebhookTitle,
     KeyStorageSelector
   },
@@ -240,7 +241,10 @@ export default defineComponent({
     },
     noWebhooksForProject() {
         return this.webhookStore.webhooksForProject(projectName).length === 0
-    }
+    },
+    rootStore() {
+        return getRundeckContext().rootStore
+    },
   },
   methods: {
     confirmAuthToggle() {

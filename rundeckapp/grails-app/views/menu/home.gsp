@@ -51,6 +51,7 @@
     ]}" id="homeDataPagingParams"/>
 
     <!-- VUE JS REQUIREMENTS -->
+    <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/ko-paginator/main.ts" />
     <asset:javascript src="static/components/ko-paginator.js"/>
     <!-- /VUE JS REQUIREMENTS -->
 
@@ -59,6 +60,7 @@
     <!-- VUE CSS MODULES -->
     <asset:stylesheet href="static/css/components/version-notification.css"/>
     <!-- /VUE CSS MODULES -->
+    <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/pages/login/main.ts" />
     <asset:javascript src="static/pages/login.js"/>
     <style type="text/css">
     .project_list_item_link{
@@ -394,8 +396,10 @@
 </div>
 </div>
 <!-- VUE JS MODULES -->
+<g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/first-run/main.ts" />
 <asset:stylesheet href="static/css/components/first-run.css"/>
 <asset:javascript src="static/components/first-run.js"/>
+<g:loadJsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/pages/community-news/main.js" defer="${true}" />
 <asset:javascript src="static/components/version-notification.js"/>
 <!-- /VUE JS MODULES -->
 </body>

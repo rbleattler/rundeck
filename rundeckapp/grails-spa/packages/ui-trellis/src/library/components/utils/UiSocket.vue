@@ -16,11 +16,9 @@ import {
     getRundeckContext,
 } from '../../rundeckService'
 import {UIItem, UIWatcher} from '../../stores/UIStore'
-import {RundeckContext} from "../../interfaces/rundeckWindow";
-import {EventBus} from "../../utilities/vueEventBus";
+import {EventBus} from "../../utilities/vueEventBus"
+import {RootStore} from "../../stores/RootStore"
 
-
-const rootStore = (getRundeckContext() as RundeckContext).rootStore
 export default defineComponent({
   name: 'UiSocket',
   props: {
@@ -40,20 +38,23 @@ export default defineComponent({
       type: Object,
       required: false,
     },
+    rootStore: {
+      type: Object as PropType<RootStore>,
+      required: true,
+    },
   },
   setup() {
     const items = ref<UIItem[]>([])
     const uiwatcher = ref<UIWatcher>()
     return {
       items,
-      uiwatcher,
-      rootStore,
+      uiwatcher
     }
   },
   computed: {
-    itemData() {
-      if (typeof this.socketData === 'string') {
-        try {
+    itemData(){
+      if(typeof this.socketData === 'string'){
+        try{
           return JSON.parse(this.socketData)
         } catch (e) {
           return this.socketData
@@ -72,14 +73,14 @@ export default defineComponent({
     this.uiwatcher.value = {
       section: this.section,
       location: this.location,
-      callback: (uiItems: UIItem[]) => {
-        this.items.value = uiItems
+      callback: (uiItems: UIItem[])=>{
+        this.items.value=uiItems
       }
     } as UIWatcher
     this.rootStore.ui.addWatcher(this.uiwatcher.value)
   },
   unmounted() {
-    if (this.uiwatcher.value) {
+    if(this.uiwatcher.value){
       this.rootStore.ui.removeWatcher(this.uiwatcher.value)
     }
   }

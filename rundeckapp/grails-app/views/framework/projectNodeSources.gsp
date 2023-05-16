@@ -51,6 +51,7 @@
         });
   </g:javascript>
   <!-- VUE JS MODULES -->
+  <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/pages/project-nodes-config/main.js" defer="${true}" />
   <asset:javascript src="static/pages/project-nodes-config.js" defer="defer" />
   <asset:stylesheet href="static/css/pages/project-nodes-config.css" />
   <!-- /VUE JS MODULES -->

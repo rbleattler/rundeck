@@ -22,6 +22,7 @@
     <meta name="tabpage" content="Webhooks"/>
     <title><g:appTitle/></title>
     <asset:javascript src="ace-bundle.js"/>
+    <g:loadStyleFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/pages/webhooks/main.css" />
     <asset:stylesheet src="static/css/pages/webhooks.css"/>
 
     <style type="text/css">
@@ -39,6 +40,7 @@
     <div style="flex-grow: 0;"><div id="tour-vue-display"></div></div>
 </div>
 
+<g:loadJsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/pages/webhooks/main.js" />
 <asset:javascript src="static/pages/webhooks.js"/>
 </body>
 </html>

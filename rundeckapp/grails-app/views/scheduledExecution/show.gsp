@@ -186,7 +186,9 @@ search
     }
 })
     </g:javascript>
+    <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/pages/project-activity/main.js" defer="${true}" />
     <asset:javascript src="static/pages/project-activity.js" defer="defer"/>
+    <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="_Copybox.js"/>
     <asset:javascript src="static/components/copybox.js"/>
 </head>
 

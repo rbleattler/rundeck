@@ -104,6 +104,7 @@
     </div>
 
   </div>
+    <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/pages/project-dashboard/main.js" />
   <asset:javascript src="static/pages/project-dashboard.js"/>
 </div>
 </div>

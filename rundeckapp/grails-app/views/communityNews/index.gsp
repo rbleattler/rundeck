@@ -29,6 +29,7 @@
 <div id="layoutBody">
   <div id="community-news-vue"></div>
   <!-- VUE JS MODULES -->
+  <g:loadJsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/pages/community-news/main.js"  />
   <asset:javascript src="static/pages/community-news.js"/>
   <!-- /VUE JS MODULES -->
 </div>

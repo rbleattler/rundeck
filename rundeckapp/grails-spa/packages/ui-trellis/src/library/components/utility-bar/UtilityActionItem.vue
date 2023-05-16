@@ -13,7 +13,10 @@ import {UtilityActionItem} from '../../stores/UtilityBar'
 
 export default defineComponent({
     props: {
-        item: Object as PropType<UtilityActionItem>
+        item: {
+            type: Object as PropType<UtilityActionItem>,
+            required: true,
+        }
     }
 })
 </script>

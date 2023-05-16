@@ -1,3 +1,4 @@
+export {}
 // import Vue from 'vue'
 // import {addons} from '@storybook/addons'
 //

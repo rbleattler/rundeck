@@ -118,7 +118,7 @@ import {computed} from 'vue'
     // creates sliding window of size pagingWindowSize
 
 
-    const totalPages1 = this.totalPages
+    const totalPages1 = props.totalPages
 
     // assume total pages >1 because we do not show paging otherwise
     // and always show last page

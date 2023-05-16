@@ -43,6 +43,8 @@
 
     %{-- Core theme styles from ui-trellis --}%
     <asset:stylesheet href="static/css/components/theme.css"/>
+    <g:loadStyleFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/theme/main.css"/>
+    <asset:stylesheet href="static/css/style.css"/>
 
     <asset:stylesheet href="ansi24.css"/>
     %{-- Vendor CSS styles--}%
@@ -73,13 +75,16 @@
     <g:render template="/common/css"/>
 
     <!-- VUE CSS MODULES -->
-    <asset:stylesheet href="static/css/components/motd.css"/>
+    %{--<asset:stylesheet href="static/css/components/motd.css"/>--}%
+    <g:loadStyleFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/motd/main.css"/>
 
     <asset:stylesheet href="static/css/components/tour.css"/>
+    <g:loadStyleFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/tour/main.css"/>
     <g:set var="communityNewsDisabled" value="${cfg.getBoolean(config: 'communityNews.disabled', default: false)}"/>
 
     <g:if test="${!communityNewsDisabled}">
-      <asset:stylesheet href="static/css/components/community-news-notification.css"/>
+      %{--<asset:stylesheet href="static/css/components/community-news-notification.css"/>--}%
+      <g:loadStyleFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/community-news-notification/main.css"/>
     </g:if>
     <!-- /VUE CSS MODULES -->
 
@@ -155,16 +160,21 @@
     </script>
 
     <g:jsonToken id="ui_token" url="${request.forwardURI}"/>
+    <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="_index.js" />
     <asset:stylesheet href="static/css/chunk-vendors.css"/>
     <asset:stylesheet href="static/css/chunk-common.css"/>
     <asset:javascript src="static/js/chunk-common.js"/>
     <asset:javascript src="static/js/chunk-vendors.js"/>
     %{-- Central should be loaded as soon as before any other Vue project code --}%
+    <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/central/main.ts" />
     <asset:javascript src="static/components/central.js"/>
     %{--  Navigation components load early too  --}%
+    <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/navbar/main.ts" />
     <asset:stylesheet href="static/css/components/navbar.css"/>
     <asset:javascript src="static/components/navbar.js"/>
 
+    <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/project-picker/main.ts" />
+    <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/ui/main.ts" />
     <asset:stylesheet href="static/css/components/project-picker.css"/>
     <asset:javascript src="static/components/uisockets.js"/>
     <asset:javascript src="static/components/project-picker.js"/>
@@ -294,13 +304,18 @@
 </script>
 
 <!-- VUE JS MODULES -->
+<g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/motd/main.js" />
 <asset:stylesheet href="static/css/components/motd.css"/>
 <asset:javascript src="static/components/motd.js"/>
+<g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/version/main.js" />
 <asset:stylesheet href="static/css/components/version.css"/>
 <asset:javascript src="static/components/version.js"/>
+<g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/server-identity/serverIdentity.js" />
 <asset:javascript src="static/components/server-identity.js"/>
+<g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/tour/main.js" />
 <asset:javascript src="static/components/tour.js"/>
 <g:if test="${!communityNewsDisabled}">
+    <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/community-news-notification/main.js" />
     <asset:javascript src="static/components/community-news-notification.js"/>
 </g:if>
 <asset:deferredScripts/>

@@ -6,8 +6,8 @@
                     <img :src="article.imageUrl"/>
                 </div>
                 <div class="news-article__details">
-                  <p class="news-article__date">{{article.date.toUTCString()}}</p><!--'MMMM Do YYYY hh:mm'-->
-                  <p class="news-article__description"><a :href="article.url" target="_blank">{{article.title}}</a></p>
+                    <p class="news-article__date">{{article.date.toUTCString()}}</p><!--'MMMM Do YYYY hh:mm'-->
+                    <p class="news-article__description"><a :href="article.url" target="_blank">{{article.title}}</a></p>
                 </div>
             </div>
         </Skeleton>
@@ -19,8 +19,11 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue'
+import type {PropType} from 'vue'
+
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import Skeleton from '../../skeleton/Skeleton.vue'
+import {NewsStore} from "../../../stores/News";
 
 export default defineComponent({
     name:"News",
@@ -28,10 +31,8 @@ export default defineComponent({
         Skeleton
     },
     emits:['news:select-all'],
-    data() {
-        return {
-            newsStore: window._rundeck.rootStore.news
-        }
+    props: {
+        newsStore: Object as PropType<NewsStore>
     },
     mounted() {
         this.newsStore.load()

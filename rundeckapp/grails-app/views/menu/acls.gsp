@@ -69,6 +69,7 @@
     <title><g:message code="gui.menu.AccessControl"/></title>
 
     <!-- VUE JS REQUIREMENTS -->
+    <g:loadJsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/ko-paginator/main.ts" />
     <asset:javascript src="static/components/ko-paginator.js"/>
     <!-- /VUE JS REQUIREMENTS -->
 

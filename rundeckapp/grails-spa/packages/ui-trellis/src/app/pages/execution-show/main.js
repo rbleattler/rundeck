@@ -77,6 +77,7 @@ function mount(e) {
     executionId="${e.dataset.executionId}"
     :jumpToLine="${jumpToLine || null}"
     ref="viewer"
+    :root-store="rootStore"
     ${e.dataset.trimOutput ? `trimOutput="${e.dataset.trimOutput}"` : ""}
   />
   `

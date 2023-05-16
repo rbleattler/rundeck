@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import {DefineComponent, defineComponent} from 'vue'
 import {addons} from '@storybook/addons'
 
 import CopyBox from './CopyBox.vue'
@@ -7,7 +7,7 @@ export default {
     title: 'Containers'
 }
 
-function setupStory(vue: Vue) {
+function setupStory(vue: DefineComponent) {
     const el = vue.$el as any
     el.parentNode.style.height = '100vh'
     el.parentNode.style.overflow = 'hidden'
@@ -18,7 +18,7 @@ function setupStory(vue: Vue) {
 
 export const copyBox = () => {
 
-    return Vue.extend({
+    return defineComponent({
         template: `
         <CopyBox v-bind="$props"/>`,
         components: {CopyBox},
@@ -36,7 +36,7 @@ export const copyBox = () => {
 
 export const copyBoxLongContent = () => {
 
-    return Vue.extend({
+    return defineComponent({
         template: `
         <CopyBox v-bind="$props"/>`,
         components: {CopyBox},

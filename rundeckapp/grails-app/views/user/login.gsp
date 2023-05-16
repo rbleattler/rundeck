@@ -31,27 +31,31 @@
     <link rel="shortcut icon" href="${g.resource(dir: 'images', file: g.appFavicon())}"/>
     <link rel="apple-touch-icon-precomposed" href="${g.resource(dir: 'images', file: 'favicon-152.png')}"/>
     %{-- Core theme styles from ui-trellis --}%
-    <asset:stylesheet href="static/css/components/theme.css"/>
+    %{-- <asset:stylesheet href="static/css/components/theme.css"/> --}%
+    <g:loadStyleFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/theme/main.css"/>
   
 
     <g:if test="${Environment.isDevelopmentEnvironmentAvailable()}">
-        <asset:javascript src="vendor/vue.global.js.js"/>
+        <asset:javascript src="vendor/vue.global.js"/>
+        <asset:javascript src="vendor/@vite/client"/>
     </g:if>
     <g:else>
         <asset:javascript src="vendor/vue.global.prod.js"/>
     </g:else>
-    <asset:javascript src="static/components/server-identity.js" asset-defer="true" />
+    %{-- <asset:javascript src="static/components/server-identity.js" asset-defer="true" /> --}%
+    <g:loadJsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/server-identity/serverIdentity.js" defer="${true}" />
 
     <asset:javascript src="static/js/chunk-common.js"/>
     <asset:javascript src="static/js/chunk-vendors.js"/>
-    <asset:javascript src="static/pages/login.js"/>
+    %{-- <asset:javascript src="static/pages/login.js"/> --}%
+    <g:loadJsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/pages/login/main.ts" />
 
     <!--[if lt IE 9]>
     <asset:javascript src="respond.min.js"/>
     <![endif]-->
     <asset:javascript src="vendor/jquery.js"/>
     <g:render template="/common/css"/>
-    <script language="javascript">
+    <script type="application/javascript">
         //<!--
         jQuery(function() {jQuery('#login').trigger('focus');});
         if (typeof(oopsEmbeddedLogin) == 'function') {

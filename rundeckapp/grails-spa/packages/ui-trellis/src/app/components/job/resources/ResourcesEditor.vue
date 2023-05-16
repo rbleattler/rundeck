@@ -3,11 +3,11 @@
     <div class="form-group">
         <div class="col-sm-2 " style="text-align: right">
             <label class="control-label">
-                <ui-socket section="resources-editor" location="section-title">
+                <ui-socket section="resources-editor" location="section-title" :root-store="rootStore">
                 {{ $t('resourcesEditor.Nodes') }}
                 </ui-socket>
             </label>
-            <ui-socket section="resources-editor" location="section-title-help"/>
+            <ui-socket section="resources-editor" location="section-title-help" :root-store="rootStore"/>
         </div>
 
       <div class="col-sm-10 ">
@@ -19,7 +19,7 @@
                  v-model="modelData.doNodedispatch"
                  id="doNodedispatchTrue"/>
           <label for="doNodedispatchTrue">
-              <ui-socket section="resources-editor" location="node-dispatch-true-label">
+              <ui-socket section="resources-editor" location="node-dispatch-true-label" :root-store="rootStore">
               {{ $t('resourcesEditor.Dispatch to Nodes') }}
               </ui-socket>
           </label>
@@ -32,7 +32,7 @@
                  v-model="modelData.doNodedispatch"
                  class="xnode_dispatch_radio"/>
           <label for="doNodedispatchFalse">
-              <ui-socket section="resources-editor" location="node-dispatch-false-label">
+              <ui-socket section="resources-editor" location="node-dispatch-false-label" :root-store="rootStore">
               {{ $t('execute.locally') }}
               </ui-socket>
           </label>
@@ -382,7 +382,10 @@ export default defineComponent({
     },
     fieldColSize() {
       return 'col-sm-10'
-    }
+    },
+    rootStore() {
+      return getRundeckContext().rootStore
+    },
   },
   setup() {
     const modelData = ref<any>({doNodedispatch: false, orchestrator: {type: null, config: {}}})

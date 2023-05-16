@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import {DefineComponent, defineComponent} from 'vue'
 import {addons} from '@storybook/addons'
 
 import '../../../stories/setup'
@@ -9,7 +9,7 @@ export default {
     title: 'Containers/Drawer'
 }
 
-function setupStory(vue: Vue) {
+function setupStory(vue: DefineComponent) {
     const el = vue.$el as any
     el.parentNode.style.height = '100vh'
     el.parentNode.style.overflow = 'hidden'
@@ -21,7 +21,7 @@ function setupStory(vue: Vue) {
 export const drawer = () => {
     const chan = addons.getChannel()
 
-    return Vue.extend({
+    return defineComponent({
         template: `
         <div style="height: 100%;width: 100%;background-color: beige;position: relative;overflow: hidden;">
             <Drawer v-bind="$props" @close="close">Foo</Drawer>
@@ -46,7 +46,7 @@ export const drawer = () => {
 export const autoSize = () => {
     const chan = addons.getChannel()
 
-    return Vue.extend({
+    return defineComponent({
         template: `
         <div style="height: 100%;width: 100%;background-color: beige;position: relative;overflow: hidden;">
             <Drawer v-bind="$props" @close="close">Foo</Drawer>

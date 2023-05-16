@@ -36,6 +36,7 @@
   <g:else>
     <asset:javascript src="vendor/vue.min.js"/>
   </g:else>
+  <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/server-identity/serverIdentity.js" defer="${true}" />
   <asset:javascript src="static/js/chunk-common.js"/>
   <asset:javascript src="static/js/chunk-vendors.js"/>
   <asset:javascript src="static/components/server-identity.js" asset-defer="true" />

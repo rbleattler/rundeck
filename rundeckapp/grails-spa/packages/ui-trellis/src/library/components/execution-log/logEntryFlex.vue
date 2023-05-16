@@ -18,7 +18,7 @@
                 'execution-log__content--html': logEntry.logHtml
             }]"
         >
-            <ui-socket section="execution-log-line" location="badges" :event-bus="eventBus" :socket-data="{
+            <ui-socket section="execution-log-line" location="badges" :event-bus="eventBus" :root-store="rootStore" :socket-data="{
               prevEntry: this.prevEntry,
               logEntry: this.logEntry
             }"/>
@@ -36,6 +36,7 @@ import {IBuilderOpts} from "./logBuilder"
 import { EventBus } from '../../utilities/vueEventBus';
 import type {PropType} from "vue";
 import {logviewerui} from "../../stores/ExecutionOutput";
+import {getRundeckContext} from "../../rundeckService";
 
 export default defineComponent({
     name:"EntryFlex",
@@ -90,6 +91,9 @@ export default defineComponent({
         },
         displayGutter() {
             return this.cfg.gutter?.visible && (this.cfg.time?.visible || this.cfg.command?.visible)
+        },
+        rootStore() {
+            return getRundeckContext().rootStore
         }
     },
     methods: {

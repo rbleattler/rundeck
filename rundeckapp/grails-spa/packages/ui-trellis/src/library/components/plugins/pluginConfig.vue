@@ -79,7 +79,7 @@
                                         :rkey="'g_'+gindex+'_'+rkey"
                                         :readOnly="readOnly"
                                         :pindex="pindex"
-                                        :selector.data="propsComputedSelectorData"
+                                        :selector-data="propsComputedSelectorData"
                                         :autocompleteCallback="autocompleteCallback"/>
                   </div>
 
@@ -113,7 +113,7 @@
                                         :readOnly="readOnly"
                                         :rkey="'g_'+gindex+'_'+rkey"
                                         :pindex="pindex"
-                                        :selector.data="propsComputedSelectorData"
+                                        :selector-data="propsComputedSelectorData"
                                         :autocompleteCallback="autocompleteCallback"/>
                   </div>
               </div>
@@ -207,6 +207,10 @@ export default defineComponent({
     },
     prepareInputs () {
       if (!this.isShowConfigForm) {
+          console.log("not showing config form")
+          console.log("mode: " + this.mode)
+          console.log("isEdit: " + this.isEditMode)
+          console.log("isCreate: " + this.isCreateMode)
         return
       }
       this.inputLoaded=false
@@ -483,6 +487,7 @@ export default defineComponent({
     }
   },
   beforeMount () {
+      console.log("running before mount")
     this.loadForMode()
   }
 })

@@ -19,7 +19,7 @@ function init() {
         name:"ProjectPickerApp",
         components: {ProjectPicker},
         provide: {rootStore},
-        template: `<ProjectPicker projectLabel="${el.dataset.projectLabel}"/>`
+        template: `<ProjectPicker :project-store="rootStore.projects" projectLabel="${el.dataset.projectLabel}"/>`
 
     })
     component.mount(el)

@@ -28,6 +28,7 @@ Time: 12:54 PM
   <meta name="layout" content="base"/>
   <meta name="tabpage" content="home"/>
   <title><g:appTitle/><g:message code="page.welcome.title.suffix"/></title>
+  <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/pages/login/main.ts" />
   <asset:javascript src="static/pages/login.js"/>
   <style media="screen">
     .card-footer .table{

@@ -210,7 +210,7 @@
       </div>
     </template>
     </div>
-    <ui-socket section="job-edit-schedules-editor" location="scheduledExecutionEditTZ:after" :event-bus="eventBus"/>
+    <ui-socket section="job-edit-schedules-editor" location="scheduledExecutionEditTZ:after" :event-bus="eventBus" :root-store="rootStore"/>
     <div class="form-group">
         <div class="col-sm-2 control-label text-form-label">
           {{ $t('scheduledExecution.property.scheduleEnabled.label') }}
@@ -290,7 +290,7 @@ import {
   getMonths,
   getSimpleDecomposition,
 } from "./services/scheduleDefinition"
-import {EventBus} from "../../../../library/utilities/vueEventBus";
+import { EventBus } from '../../../../library';
 
 const props = withDefaults(defineProps<{
     modelValue: any
@@ -401,6 +401,10 @@ const props = withDefaults(defineProps<{
     return modelData.value.useCrontabString ?
       getHintText(crontabpos.value, modelData.value.crontabString)
       : ''
+  })
+
+  const rootStore = computed(() =>{
+    return window._rundeck.rootStore
   })
 
   /**

@@ -21,6 +21,7 @@
     <meta name="layout" content="base"/>
     <meta name="tabpage" content="projectHome"/>
     <title><g:appTitle/></title>
+    <g:loadStyleFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/pages/job/editor/main.js" defer="${true}" />
     <asset:stylesheet src="static/css/pages/repository.css"/>
 </head>
 
@@ -51,6 +52,7 @@
 <div class="container-fluid">
   <div id=repository-vue></div>
 </div>
+<g:loadJsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/pages/repository/main.js" />
 <asset:javascript src="static/pages/repository.js"/>
 </div>
 </div>

@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import {DefineComponent, defineComponent} from 'vue'
 import {addons} from '@storybook/addons'
 
 import '../../stories/setup'
@@ -9,7 +9,7 @@ export default {
     title: 'Inputs/Switch'
 }
 
-function setupStory(vue: Vue) {
+function setupStory(vue: DefineComponent) {
     const el = vue.$el as any
     el.parentNode.style.height = '100vh'
     el.parentNode.style.overflow = 'hidden'
@@ -21,7 +21,7 @@ function setupStory(vue: Vue) {
 export const inputSwitch = () => {
     const chan = addons.getChannel()
 
-    return Vue.extend({
+    return defineComponent({
         template: `<InputSwitch @input="handleChecked" :value="checked"/>`,
         components: {InputSwitch},
         props: {
@@ -40,7 +40,7 @@ export const inputSwitch = () => {
 }
 
 export const inputSwitchOn = () => {
-    return Vue.extend({
+    return defineComponent({
         template: `<InputSwitch v-bind="$props"/>`,
         components: {InputSwitch},
         props: {
@@ -53,7 +53,7 @@ export const inputSwitchOn = () => {
 }
 
 export const inputSwitchDisabled = () => {
-    return Vue.extend({
+    return defineComponent({
         template: `<div><InputSwitch :disabled="true"/><InputSwitch :disabled="true" :value="true"/></div>`,
         components: {InputSwitch},
         mounted() {
@@ -65,7 +65,7 @@ export const inputSwitchDisabled = () => {
 export const inputSwitchContrast = () => {
     const chan = addons.getChannel()
 
-    return Vue.extend({
+    return defineComponent({
         template: `
         <div style="background-color: var(--background-color-accent-lvl2);height: 100%;width: 100%">
         <InputSwitch @input="handleChecked" :value="checked" contrast/>

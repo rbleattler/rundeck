@@ -411,6 +411,7 @@ search
       </g:javascript>
     <g:set var="wasfiltered" value="${paginateParams?.keySet().grep(~/(?!proj).*Filter|groupPath|customFilters|idlist$/)}"/>
     <g:embedJSON data="${paginateParams?.subMap(wasfiltered)?:[:]}" id="filterParams"/>
+    <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/pages/project-activity/main.js" defer="${true}" />
       <asset:javascript src="static/pages/project-activity.js" defer="defer"/>
 </head>
 <body>

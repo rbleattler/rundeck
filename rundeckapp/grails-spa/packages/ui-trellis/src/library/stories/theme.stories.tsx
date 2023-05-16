@@ -1,11 +1,11 @@
-import Vue from 'vue'
+import Vue, {defineComponent} from 'vue'
 
 export default {
     title: 'Class Components'
 }
 
-export const typography = () => (Vue.extend({
-    render(h) {
+export const typography = () => (defineComponent({
+    render() {
         return (
             <div>
                 <h1 class="text-info">Headings</h1>
@@ -29,7 +29,7 @@ export const typography = () => (Vue.extend({
 
                 <h1 class="text-info">Text</h1>
                 <div>Just some text</div>
-                <div><strong domPropsInnerHTML="&lt;strong&gt;Text is bold.&lt;/strong&gt;"></strong></div>
+                <div><strong>Text is bold</strong></div>
                 <div class="text-strong">.text-strong Text is bold.</div>
                 <div class="text-primary">Text primary</div>
                 <div class="text-muted">.text-muted is ??</div>
@@ -57,8 +57,8 @@ export const typography = () => (Vue.extend({
         )
     }
 }))
-export const labels = () => (Vue.extend({
-  render(h) {
+export const labels = () => (defineComponent({
+  render() {
     return (
       <div>
         <h3>H3 Text <span class="label label-default">default</span></h3>
@@ -73,8 +73,8 @@ export const labels = () => (Vue.extend({
     )
   }
 }))
-export const buttons = () => (Vue.extend({
-    render(h) {
+export const buttons = () => (defineComponent({
+    render() {
         return (
             <div style="max-width: 800px; margin-top: 10px;background-color: pink;">
                 <div style="display:flex;justify-content: space-evenly;">
@@ -158,7 +158,7 @@ export const buttons = () => (Vue.extend({
         )
     }
 }))
-export const table = () => (Vue.extend({
+export const table = () => (defineComponent({
   props: {
     rowStyle: {
       default:  'table-bordered'
@@ -279,7 +279,7 @@ export const table = () => (Vue.extend({
 }))
 
 
-export const pagination = () => (Vue.extend({
+export const pagination = () => (defineComponent({
     render(h) {
         return (
             <ul data-v-06f48450="" class="pagination pagination-sm">
@@ -295,7 +295,7 @@ export const pagination = () => (Vue.extend({
     }
 }))
 
-export const cards = () => (Vue.extend({
+export const cards = () => (defineComponent({
     render(h) {
         return (
             <div style="padding: 20px; max-width: 500px" class="content">
@@ -322,8 +322,8 @@ export const cards = () => (Vue.extend({
     }
 }))
 
-export const tabs = () => (Vue.extend({
-    render(h) {
+export const tabs = () => (defineComponent({
+    render() {
         return (
             <div class="vue-tabs">
                 <div class="nav-tabs-navigation">
@@ -341,13 +341,13 @@ export const tabs = () => (Vue.extend({
 }))
 
 
-export const inputs = () => (Vue.extend({
-    render(h) {
+export const inputs = () => (defineComponent({
+    render() {
         return (
             <div>
                 <div class="card" style="padding: 20px;">
                     <div class="checkbox">
-                        <input type="hidden" name="_exportExecutions"/><input type="checkbox" name="exportExecutions" checked="checked" value="true" id="exportExecutions"/>
+                        <input type="hidden" name="_exportExecutions"/><input type="checkbox" name="exportExecutions" checked value="true" id="exportExecutions"/>
                         <label for="exportExecutions">Executions</label>
                     </div>
                     <div class="checkbox">
@@ -355,7 +355,7 @@ export const inputs = () => (Vue.extend({
                         <label for="exportExecutions">Executions</label>
                     </div>
                     <div class="radio">
-                        <input type="radio" name="stripJobRef" checked="checked" value="no" id="dontStrip"/>
+                        <input type="radio" name="stripJobRef" checked value="no" id="dontStrip"/>
                         <label for="dontStrip">
                         Do not modify referenced jobs at export.
                         </label>
@@ -380,7 +380,7 @@ export const inputs = () => (Vue.extend({
 
                 <div class="card card-accent" style="padding: 20px;">
                     <div class="checkbox">
-                        <input type="hidden" name="_exportExecutions"/><input type="checkbox" name="exportExecutions" checked="checked" value="true" id="exportExecutions"/>
+                        <input type="hidden" name="_exportExecutions"/><input type="checkbox" name="exportExecutions" checked value="true" id="exportExecutions"/>
                         <label for="exportExecutions">Executions</label>
                     </div>
                     <div class="checkbox">
@@ -388,7 +388,7 @@ export const inputs = () => (Vue.extend({
                         <label for="exportExecutions">Executions</label>
                     </div>
                     <div class="radio">
-                        <input type="radio" name="stripJobRef" checked="checked" value="no" id="dontStrip"/>
+                        <input type="radio" name="stripJobRef" checked value="no" id="dontStrip"/>
                         <label for="dontStrip">
                         Do not modify referenced jobs at export.
                         </label>
@@ -408,8 +408,8 @@ export const inputs = () => (Vue.extend({
 }))
 
 
-export const panels = () => (Vue.extend({
-    render(h) {
+export const panels = () => (defineComponent({
+    render() {
         return (
             <div class="content">
                 <div class="panel panel-default" style="width: 500px; height: 100px;">
@@ -454,8 +454,8 @@ export const panels = () => (Vue.extend({
 
 }))
 
-export const layouts = () => (Vue.extend({
-    render(h) {
+export const layouts = () => (defineComponent({
+    render() {
         return (
             <section class="layout-base">
                 <div class="layout-base--header">

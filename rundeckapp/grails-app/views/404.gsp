@@ -38,6 +38,7 @@
   </g:else>
   <asset:javascript src="static/js/chunk-common.js"/>
   <asset:javascript src="static/js/chunk-vendors.js"/>
+  <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/server-identity/serverIdentity.js" defer="${true}" />
   <asset:javascript src="static/components/server-identity.js" asset-defer="true" />
   <!--[if lt IE 9]>
     <asset:javascript src="respond.min.js"/>

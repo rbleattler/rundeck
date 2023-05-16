@@ -1,4 +1,4 @@
-import Vue, {VueConstructor, PropType} from 'vue'
+import Vue, {defineComponent, PropType} from 'vue'
 import * as uiv from 'uiv'
 
 import {RundeckVcr, Cassette} from '@rundeck/client/dist/util/RundeckVcr'
@@ -28,7 +28,7 @@ function playback<T>(component: T, fixture: string): () => Promise<T> {
     }
 }
 
-export const darkTheme = () => (Vue.extend({
+export const darkTheme = () => (defineComponent({
     components: { LogViewer: playback(LogViewer, '/fixtures/ExecAnsiColorOutput.json') },
     template: '<LogViewer :useUserSettings="false" :config="settings" executionId="912" style="height: 100%;" />',
     mounted: function() {

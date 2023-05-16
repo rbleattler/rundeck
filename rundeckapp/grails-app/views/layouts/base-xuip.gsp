@@ -160,9 +160,12 @@
     <asset:javascript src="static/js/chunk-common.js"/>
     <asset:javascript src="static/js/chunk-vendors.js"/>
     %{-- Central should be loaded as soon as before any other Vue project code --}%
+    <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/central/main.ts" />
     <asset:javascript src="static/components/central.js"/>
     %{--  Navigation components load early too  --}%
+    <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/navbar/main.ts" />
     <asset:javascript src="static/components/navbar.js"/>
+    <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/project-picker/main.ts" />
     <asset:javascript src="static/components/project-picker.js"/>
 
 %{--    <g:if test="${uiplugins && uipluginsPath && params.uiplugins!='false'}">--}%

@@ -226,9 +226,9 @@
         });
       },
       openImageModal(event: any) {
-        this.modal.image = event.target.src;
-        this.modal.alt = event.target.alt;
-        this.modal.show = true;
+        this.modalData.image = event.target.src;
+        this.modalData.alt = event.target.alt;
+        this.modalData.show = true;
       },
       resume(){
         const step = this.tour.steps[this.stepIndex];

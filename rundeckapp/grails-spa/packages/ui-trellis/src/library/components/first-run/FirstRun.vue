@@ -6,7 +6,7 @@
             <RundeckVersion :title="system.appInfo.title" :number="system.versionInfo.number" :tag="system.versionInfo.tag" :logocss="system.appInfo.logocss"/>
           </div>
           <div class="splash-screen--linkitems">
-            <div v-if="system.appInfo.title !== 'Rundeck' ">
+            <div v-if="system.appInfo.title !== 'Rundeck'">
               <a href="https://support.rundeck.com/" target="_blank" class="item"><i class="fas fa-first-aid"></i> Support</a>  
             </div>
             <div v-else>

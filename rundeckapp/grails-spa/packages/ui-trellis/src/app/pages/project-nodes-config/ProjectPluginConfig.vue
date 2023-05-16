@@ -297,7 +297,7 @@ export default defineComponent({
     setFocus(focus: number) {
       this.editFocus = focus;
     },
-    async savePlugin(plugin: ProjectPluginConfigEntry, index: string) {
+    async savePlugin(plugin: ProjectPluginConfigEntry, index: number) {
       //validate
       const validation: PluginValidation = await pluginService.validatePluginConfig(
         this.serviceName,
@@ -314,7 +314,7 @@ export default defineComponent({
       this.setPluginConfigsModified();
       this.setFocus(-1);
     },
-    removePlugin(plugin: ProjectPluginConfigEntry, index: string) {
+    removePlugin(plugin: ProjectPluginConfigEntry, index: number) {
       const found = this.pluginConfigs.indexOf(plugin);
       this.pluginConfigs.splice(found, 1);
       if (!plugin.create) {

@@ -42,6 +42,7 @@
 
 <script lang="ts">
 import { ref, nextTick, defineComponent} from 'vue'
+import type { PropType } from 'vue'
 import PerfectScrollbar from 'perfect-scrollbar'
 import { RecycleScroller } from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
@@ -49,6 +50,9 @@ import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import {getAppLinks} from '../../../rundeckService'
 import Skeleton from '../../skeleton/Skeleton.vue'
 import {url} from '../../../rundeckService'
+import {Project, ProjectStore} from "../../../stores/Projects";
+
+const scroller = ref()
 
 const ps = ref<PerfectScrollbar>()
 RecycleScroller.updated = function() {
@@ -75,9 +79,14 @@ export default defineComponent({
     Skeleton,
     RecycleScroller
   },
+  props: {
+    projectStore: {
+      type: Object as PropType<ProjectStore>,
+      required: true,
+    },
+  },
   data() {
       return {
-          projectStore : window._rundeck.rootStore.projects,
           searchTerm : ''
       }
   },
@@ -90,7 +99,7 @@ export default defineComponent({
       }
   },
   methods: {
-      itemHref(project:any){
+      itemHref(project: Project){
           return url(`?project=${project.name}`).href
       }
   },

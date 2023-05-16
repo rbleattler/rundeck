@@ -172,9 +172,11 @@ search
     }
 })
       </g:javascript>
+      <g:loadJsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/pages/project-activity/main.js" defer="${true}" />
       <asset:javascript src="static/pages/project-activity.js" defer="defer"/>
 
       <asset:stylesheet href="static/css/chunk-vendors.css"/>
+      <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/pages/execution-show/main.js" defer="${true}" />
       <asset:stylesheet href="static/css/pages/execution-show.css"/>
       <asset:javascript src="static/pages/execution-show.js" defer="defer"/>
   </head>

@@ -16,6 +16,7 @@ eventBus.on('ko-adhoc-running', (data: any) => {
         executionId="${data.id}"
         :showSettings="showSettings"
         :config="config"
+        :root-store="rootStore"
         ref="viewer"
     />
     `

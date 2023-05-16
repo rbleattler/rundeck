@@ -67,6 +67,7 @@
     <title><g:message code="page.title.project.access.control.0" args="${[projectLabel]}"/></title>
 
     <!-- VUE JS REQUIREMENTS -->
+    <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/components/ko-paginator/main.ts" />
     <asset:javascript src="static/components/ko-paginator.js"/>
     <!-- /VUE JS REQUIREMENTS -->
 

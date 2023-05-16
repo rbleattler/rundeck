@@ -15,6 +15,7 @@
   --}%
 
 <%@ page import="com.dtolabs.rundeck.core.plugins.configuration.PropertyScope; rundeck.PluginStep; rundeck.CommandExec; rundeck.JobExec" %>
+<g:loadJsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/pages/dynamic-form/main.js" defer="${true}" />
 <asset:javascript src="static/pages/dynamic-form.js" defer="defer"/>
 
 <%--

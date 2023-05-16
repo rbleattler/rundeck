@@ -34,6 +34,7 @@
           kind: AuthConstants.TYPE_EVENT
   )}"/>
 
+    <g:loadAssetsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/pages/command/main.ts"  />
     <asset:javascript src="static/css/pages/command.css"/>
     <asset:javascript src="static/pages/command.js"/>
     <asset:javascript src="executionState.js"/>
@@ -110,6 +111,7 @@ search
 }
 })
   </g:javascript>
+  <g:loadJsFile manifest="${assetPath(src: 'static/manifest.json')}" file="src/app/pages/project-activity/main.js" defer="${true}" />
   <asset:javascript src="static/pages/project-activity.js" defer="defer"/>
 </head>
 <body>

@@ -33,7 +33,7 @@ rootStore.utilityBar.addItems([
       app:"NewsApp",
       components: {News},
       provide: {rootStore},
-      template: `<News @news:select-all="moreNews"/>`,
+      template: `<News :news-store="rootStore.news" @news:select-all="moreNews"/>`,
       methods: {
         moreNews() {
           window.open(links.communityNews, '_blank')
