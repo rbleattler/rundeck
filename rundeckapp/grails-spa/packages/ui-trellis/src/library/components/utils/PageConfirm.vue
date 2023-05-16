@@ -30,22 +30,22 @@ export default defineComponent({
   },
   computed: {
     needsConfirm() {
-      return this.confirmData.value.length > 0
+      return this.confirmData.length > 0
     },
   },
   methods: {
     setConfirm(name: string) {
-      const loc = this.confirmData.value.indexOf(name)
+      const loc = this.confirmData.indexOf(name)
       if (loc < 0) {
-        this.confirmData.value.push(name)
+        this.confirmData.push(name)
       }
     },
     resetConfirm(name: string) {
-      const loc = this.confirmData.value.indexOf(name)
+      const loc = this.confirmData.indexOf(name)
       if (loc >= 0) {
-        this.confirmData.value.splice(loc, 1)
+        this.confirmData.splice(loc, 1)
       } else if (name === '*') {
-        this.confirmData.value.splice(0, this.confirmData.value.length)
+        this.confirmData.splice(0, this.confirmData.length)
       }
     }
   },

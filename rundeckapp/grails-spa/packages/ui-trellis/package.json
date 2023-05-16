@@ -33,7 +33,7 @@
     "@iconfu/svg-inject": "^1.2.3",
     "@popperjs/core": "^2.8.4",
     "@rundeck/client": "^0.2.5",
-    "@vue/compat": "^3.2.47",
+    "@vue/compat": "^3.3.2",
     "ace-builds": "^1.4.12",
     "axios": "^0.21.3",
     "core-js": "^3.6.5",
@@ -46,8 +46,8 @@
     "npm": "^8.3.1",
     "perfect-scrollbar": "^1.5.0",
     "prex": "^0.4.7",
-    "uiv": "^2.0.5",
-    "vue": "^3.2.47",
+    "uiv": "^2.0.6",
+    "vue": "^3.3.2",
     "vue-cookies": "^1.5.6",
     "vue-good-table": "^2.21.11",
     "vue-i18n": "^9.2.2",
@@ -98,7 +98,7 @@
     "mobx-utils": "^5.6.1",
     "moment": "^2.29.4",
     "prex": "^0.4.7",
-    "vue": "^3.2.47"
+    "vue": "^3.3.2"
   },
   "publishConfig": {
     "access": "public"

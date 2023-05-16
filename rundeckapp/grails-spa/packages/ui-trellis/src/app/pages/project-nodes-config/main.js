@@ -19,7 +19,7 @@ const context = getRundeckContext()
 // Create VueI18n instance with options
 const els = document.body.getElementsByClassName('project-plugin-config-vue')
 
-for (var i = 0; i < els.length; i++) {
+for (let i = 0; i < els.length; i++) {
   const e = els[i]
   const i18n = initI18n()
 

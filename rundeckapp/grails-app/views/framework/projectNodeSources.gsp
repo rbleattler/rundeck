@@ -120,30 +120,31 @@
 
 
               %{--Shared page-confirm handler--}%
-              <page-confirm :event-bus="EventBus" class="project-plugin-config-vue pull-right"
+              <div class="project-plugin-config-vue">
+              <page-confirm :event-bus="EventBus" class="pull-right"
                 message="${enc(attr:message(code:'page.unsaved.changes'))}" :display="true"
                 style="display: inline-block">
-              %{--//TODO: VUE3-MIGRATION FIX THIS --}%
-%{--                <template v-slot="{ confirm }">--}%
-%{--                  <div class="well well-sm">--}%
-%{--                    <span class="text-warning">--}%
-%{--                      <g:message code="page.unsaved.changes" />:--}%
-%{--                    </span>--}%
-%{--                    <span v-if="confirm.indexOf('Node Sources')>=0">--}%
-%{--                      <a href="#node_sources" onclick="jQuery('#tab_link_sources').tab('show')">--}%
-%{--                        <i class="fas fa-hdd fa-edit"></i>--}%
-%{--                        <g:message code="project.node.sources.title.short" />--}%
-%{--                      </a>--}%
-%{--                    </span>--}%
-%{--                    <span v-if="confirm.indexOf('Node Enhancers')>=0">--}%
-%{--                      <a href="#plugins" >--}%
-%{--                        <i class="fas fa-puzzle-piece"></i>--}%
-%{--                        <g:message code="framework.service.NodeEnhancer.label.short.plural" />--}%
-%{--                      </a>--}%
-%{--                    </span>--}%
-%{--                  </div>--}%
-%{--                </template>--}%
+                <template v-slot="{ confirm }">
+                  <div class="well well-sm">
+                    <span class="text-warning">
+                      <g:message code="page.unsaved.changes" />:
+                    </span>
+                    <span v-if="confirm.indexOf('Node Sources')>=0">
+                      <a href="#node_sources" onclick="jQuery('#tab_link_sources').tab('show')">
+                        <i class="fas fa-hdd fa-edit"></i>
+                        <g:message code="project.node.sources.title.short" />
+                      </a>
+                    </span>
+                    <span v-if="confirm.indexOf('Node Enhancers')>=0">
+                      <a href="#plugins" >
+                        <i class="fas fa-puzzle-piece"></i>
+                        <g:message code="framework.service.NodeEnhancer.label.short.plural" />
+                      </a>
+                    </span>
+                  </div>
+                </template>
               </page-confirm>
+              </div>
               <div class="tab-content">
                       <div class="tab-pane" id="node_settings">
 

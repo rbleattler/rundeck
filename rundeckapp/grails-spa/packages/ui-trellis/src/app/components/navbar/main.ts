@@ -1,4 +1,4 @@
-import {createApp} from 'vue'
+import {createApp, markRaw} from 'vue'
 
 import NavigationBar from '../../../library/components/navbar/NavBar.vue'
 import UtilityBar from '../../../library/components/utility-bar/UtilityBar.vue'
@@ -24,13 +24,14 @@ rootStore.utilityBar.addItems([
       "class": rootStore.system.appInfo.logocss+" app-logo",
       "label": rootStore.system.appInfo.title.toUpperCase(),
       "visible": true,
-      widget: {
+      widget: markRaw({
+        name: 'RundeckInfoWidgetItem',
         components: {RundeckInfoWidget},
         template: `<RundeckInfoWidget/>`,
         provide: {
           rootStore
         }
-      }
+      })
   },
   {
       "type": "widget",
@@ -40,13 +41,14 @@ rootStore.utilityBar.addItems([
       "class": "fas fa-sun fas-xs",
       // "label": "Theme",
       "visible": true,
-      widget: {
+      widget: markRaw({
+        name: 'ThemeSelectWidgetItem',
         components: {ThemeSelectWidget},
         template: `<ThemeSelectWidget/>`,
         provide: {
           rootStore
         }
-      }
+      })
   },
   {
       "type": "action",

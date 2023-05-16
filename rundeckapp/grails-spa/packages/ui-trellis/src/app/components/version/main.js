@@ -25,7 +25,7 @@ let messages =
 
 const els = document.body.getElementsByClassName('vue-app-version-display')
 
-for (var i = 0; i < els.length; i++) {
+for (let i = 0; i < els.length; i++) {
     const e = els[i]
 
     // Create VueI18n instance with options

@@ -2,7 +2,7 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 
 // Dependencies
-import {defineComponent} from 'vue'
+import {defineComponent, markRaw} from 'vue'
 import * as uiv from 'uiv'
 import international from './i18n'
 import { getRundeckContext, getAppLinks, url } from '../../../library'
@@ -29,7 +29,7 @@ rootStore.utilityBar.addItems([
     class: "fas fa-newspaper",
     group: 'left',
     label: 'News',
-    widget: defineComponent({
+    widget: markRaw(defineComponent({
       app:"NewsApp",
       components: {News},
       provide: {rootStore},
@@ -39,7 +39,7 @@ rootStore.utilityBar.addItems([
           window.open(links.communityNews, '_blank')
         }
       }
-    })
+    }))
   }
 ])
 

@@ -44,17 +44,17 @@
           <i class="glyphicon glyphicon-arrow-up"></i>
           <span>{{showUpPath()}}</span>
         </button>
-        <button @click="actionUpload()" class="btn btn-sm btn-cta" v-if="this.allowUpload===true">
+        <button @click="actionUpload()" class="btn btn-sm btn-cta" v-if="allowUpload===true">
           <i class="glyphicon glyphicon-plus"></i>
           Add or Upload a Key
         </button>
 
         <button @click="actionUploadModify()" class="btn btn-sm btn-warning"
-                v-if="this.allowUpload===true && this.isSelectedKey===true">
+                v-if="allowUpload===true && isSelectedKey===true">
           <i class="glyphicon glyphicon-pencil"></i>
           Overwrite Key
         </button>
-        <button class="btn btn-sm btn-danger" @click="deleteKey" v-if="this.selectedKey && this.selectedKey.path && isSelectedKey">
+        <button class="btn btn-sm btn-danger" @click="deleteKey" v-if="selectedKey && selectedKey.path && isSelectedKey">
                 <i class="glyphicon glyphicon-trash"></i>
                 {{"Delete"}}</button>
       </div>
@@ -138,7 +138,7 @@
       <p>{{"Really delete the selected key at this path?"}} </p>
 
       <p>
-        <strong class="text-info"> {{this.selectedKey.path}}</strong>
+        <strong class="text-info"> {{selectedKey.path}}</strong>
       </p>
     </div>
     <div class="modal-footer">
@@ -183,7 +183,7 @@
                               </span>
           </div>
         </div>
-        <div v-if="this.selectedKey && isPublicKey(this.selectedKey)" class="pull-right">
+        <div v-if="selectedKey && isPublicKey(selectedKey)" class="pull-right">
           <span>
             <a :href="downloadUrl()">
                   <i class="glyphicon glyphicon-download"></i>
@@ -197,7 +197,7 @@
     <div class="card-footer">
       <hr>
       <span class="text-info">
-          {{ t('Key Storage provides a global directory-like structure to save Public and Private Keys and Passwords, for use with Node Execution authentication.') }}
+          {{ $t('Key Storage provides a global directory-like structure to save Public and Private Keys and Passwords, for use with Node Execution authentication.') }}
       </span>
     </div>
   </div>
@@ -208,7 +208,6 @@
 import moment from 'moment'
 import {getRundeckContext} from "../../index"
 import {defineComponent, ref} from "vue"
-import { useI18n } from "vue-i18n"
 import KeyType from "../../types/KeyType";
 import InputType from "../../types/InputType";
 import * as DateTimeFormatters from "../../../app/utilities/DateTimeFormatters";
@@ -225,60 +224,30 @@ export default defineComponent({
   } ,
   emits: ['input','openEditor'],
   data() {
-    const errorMsg = ref('')
-    const isDropdownOpen = ref(false)
-    const modalOpen = ref(false)
-    const invalid = ref(false)
-    const project = ref('')
-    const staticRoot = ref(true)
-    const inputPath = ref('')
-    const upPath = ref('')
-    const rootPath = ref('')
-    const path = ref('')
-    const isConfirmingDeletion = ref(false)
-    const modalEdit = ref(false)
-    const upload = ref<any>({})
-    const selectedKey = ref<any>({})
-    const isSelectedKey = ref(false)
-    const files = ref<any[]>([])
-    const selectedClass = ref('success')
-    const directories = ref<any[]>([])
-    const uploadErrors = ref<any>({})
-    const selectedIsDownloadable = ref(true)
-    const loading = ref(true)
-    const linksTitle = ref('')
-    const projectList = ref([])
-    const jumpLinks = ref<Array<{ name: string | undefined; path: string }>>([])
-    const {t, locale} = useI18n({
-      useScope: 'global',
-    })
     return {
-      errorMsg,
-      isDropdownOpen,
-      modalOpen,
-      invalid,
-      project,
-      staticRoot,
-      inputPath,
-      upPath,
-      rootPath,
-      path,
-      isConfirmingDeletion,
-      modalEdit,
-      upload,
-      selectedKey,
-      isSelectedKey,
-      files,
-      selectedClass,
-      directories,
-      uploadErrors,
-      selectedIsDownloadable,
-      loading,
-      linksTitle,
-      projectList,
-      jumpLinks,
-      t,
-      locale,
+      errorMsg: '',
+      isDropdownOpen: false,
+      modalOpen: false,
+      invalid: false,
+      project: '',
+      staticRoot: true,
+      inputPath: '',
+      upPath: '',
+      path: '',
+      isConfirmingDeletion: false,
+      modalEdit: false,
+      upload: {} as any,
+      selectedKey: {} as any,
+      isSelectedKey: false,
+      files: [] as any,
+      selectedClass: 'success',
+      directories: [] as any,
+      uploadErrors: {} as any,
+      selectedIsDownloadable: true,
+      loading: true,
+      linksTitle: '',
+      projectList: [],
+      jumpLinks: [] as Array<{ name: string | undefined; path: string }>,
     }
   },
   mounted() {

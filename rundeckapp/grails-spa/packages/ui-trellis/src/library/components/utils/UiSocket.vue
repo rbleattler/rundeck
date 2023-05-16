@@ -64,23 +64,23 @@ export default defineComponent({
   },
   methods: {
     loadItems() {
-      this.items.value = this.rootStore.ui.itemsForLocation(this.section, this.location).filter((a) => a.visible)
+      this.items = this.rootStore.ui.itemsForLocation(this.section, this.location).filter((a) => a.visible)
     },
   },
   mounted() {
     this.loadItems()
-    this.uiwatcher.value = {
+    this.uiwatcher = {
       section: this.section,
       location: this.location,
       callback: (uiItems: UIItem[]) => {
-        this.items.value = uiItems
+        this.items = uiItems
       }
     } as UIWatcher
-    this.rootStore.ui.addWatcher(this.uiwatcher.value)
+    this.rootStore.ui.addWatcher(this.uiwatcher)
   },
   unmounted() {
-    if (this.uiwatcher.value) {
-      this.rootStore.ui.removeWatcher(this.uiwatcher.value)
+    if (this.uiwatcher) {
+      this.rootStore.ui.removeWatcher(this.uiwatcher)
     }
   }
 })

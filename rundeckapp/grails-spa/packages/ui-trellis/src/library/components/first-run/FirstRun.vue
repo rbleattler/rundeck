@@ -1,12 +1,12 @@
 <template>
   <div class="card splash-screen">
-    <div class="row">
+    <div class="row" v-if="loaded">
       <div class="col-md-9 mb-6">
           <div v-if="system.loaded" class="splash-screen--title">
             <RundeckVersion :title="system.appInfo.title" :number="system.versionInfo.number" :tag="system.versionInfo.tag" :logocss="system.appInfo.logocss"/>
           </div>
           <div class="splash-screen--linkitems">
-            <div v-if="system.appInfo.title !== 'Rundeck' ">
+            <div v-if="system.appInfo.title !== 'Rundeck'">
               <a href="https://support.rundeck.com/" target="_blank" class="item"><i class="fas fa-first-aid"></i> Support</a>  
             </div>
             <div v-else>
@@ -43,12 +43,11 @@
 <script lang="ts">
 import {defineComponent, ref} from 'vue'
 
-import { ServerInfo, SystemStore } from '../../stores/System'
+import { SystemStore } from '../../stores/System'
 import {getAppLinks, getRundeckContext} from '../../rundeckService'
 import { AppLinks } from  '../../interfaces/AppLinks'
 
 import RundeckVersion from  '../version/RundeckVersionDisplay.vue'
-import {RundeckContext} from "../../interfaces/rundeckWindow";
 
 export default defineComponent({
   name: 'FirstRun',
@@ -67,10 +66,10 @@ export default defineComponent({
       system,
     }
   },
-  async beforeMount() {
+  async mounted() {
     const rootStore = getRundeckContext().rootStore
-    this.system.value = rootStore.system
-    this.links.value = getAppLinks()
+    this.system = rootStore.system
+    this.links = getAppLinks()
 
     try {
       await Promise.all([
@@ -78,7 +77,7 @@ export default defineComponent({
         rootStore.releases.load()
       ])
     } catch(e) {}
-    this.loaded.value = true
+    this.loaded = true
   }
 })
  

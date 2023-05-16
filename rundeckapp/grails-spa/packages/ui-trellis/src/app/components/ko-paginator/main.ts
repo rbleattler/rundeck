@@ -3,7 +3,7 @@ import Pagination from '../../../library/components/utils/Pagination.vue'
 
 const template = `
     <Pagination 
-        :value="activePage"
+        v-model="activePage"
         :totalPages="totalPages"
         @change="handlePageChange"
     />
@@ -49,10 +49,7 @@ window._rundeck.eventBus.on('ko-pagination', (event: any) => {
 
         for (const elm of elements) {
             const app = createApp(KoPaginator,{
-                el: elm,
-                propsData: {
-                    pager
-                }
+                pager
             })
             app.mount(elm)
         }
