@@ -1449,7 +1449,8 @@ class ScheduledExecutionService implements ApplicationContextAware, Initializing
                         [
                             'isTempExecution': 'true',
                             'executionId': e.id.toString(),
-                            'authContext': authContext
+                            'authContext': authContext,
+                            'project': e.project    
                         ]
                     )
                 )
@@ -1476,6 +1477,7 @@ class ScheduledExecutionService implements ApplicationContextAware, Initializing
     @NotTransactional
     Map createJobDetailMap(ScheduledExecution se) {
         Map data = [:]
+        data.put("project", se.project)
         data.put("scheduledExecutionId", se.uuid)
         data.put("rdeck.base", frameworkService.getRundeckBase())
 
