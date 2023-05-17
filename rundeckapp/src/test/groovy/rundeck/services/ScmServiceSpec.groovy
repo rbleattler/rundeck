@@ -1308,4 +1308,50 @@ class ScmServiceSpec extends Specification implements ServiceUnitTest<ScmService
         null       | 'keys/${user.login}/key.key' | 'keys/${user.login}/key.key'
     }
 
+    def "User has access or not to SCM configured key or password in plugin"(){
+        setup:
+        def project = 'test'
+        def authContext = Mock(UserAndRolesAuthContext){
+            it.username >> "testUser"
+        }
+        def configData = [sshPrivateKeyPath: userSshKey, gitPasswordPath: userPassword]
+        def config = Mock(ScmPluginConfigData){
+            getConfig() >> configData
+        }
+        service.pluginConfigService = Mock(PluginConfigService){
+            loadScmConfig(_,_,_) >> config
+        }
+        service.frameworkService = Mock(FrameworkService) {
+            isClusterModeEnabled() >> true
+        }
+        service.storageService = Mock(StorageService){
+            it.hasPath(_, validPath) >> true
+        }
+        service.pluginService = Mock(PluginService)
+        service.jobEventsService = Mock(JobEventsService)
+
+        when:
+        def result = service.userHasAccessToScmKeyOrPasswordPathInProjectForIntegration(
+                authContext,
+                project,
+                'import'
+        )
+
+        then:
+        result.hasAccess == userAccess
+        result.message == message
+
+        where:
+        integration | validPath                     | userSshKey                   | userPassword                        | userAccess | message
+        'import'    | 'keys/testUser/key.key'       | 'keys/${user.login}/key.key' | null                                | true       | ScmService.ScmAuthMessages.HAS_ACCESS.getMessage()
+        'import'    | 'keys/testUser/password.pwd'  | null                         | 'keys/${user.login}/password.pwd'   | true       | ScmService.ScmAuthMessages.HAS_ACCESS.getMessage()
+        'import'    | 'keys/otherPath/key.key'      | 'keys/${user.login}/key.key' | null                                | false      | ScmService.ScmAuthMessages.NO_ACCESS.getMessage()
+        'import'    | 'keys/otherPath/password.pwd' | null                         | 'keys/${user.login}/password.pwd'   | false      | ScmService.ScmAuthMessages.NO_ACCESS.getMessage()
+        'export'    | 'keys/testUser/key.key'       | 'keys/${user.login}/key.key' | null                                | true       | ScmService.ScmAuthMessages.HAS_ACCESS.getMessage()
+        'export'    | 'keys/testUser/password.pwd'  | null                         | 'keys/${user.login}/password.pwd'   | true       | ScmService.ScmAuthMessages.HAS_ACCESS.getMessage()
+        'export'    | 'keys/otherPath/key.key'      | 'keys/${user.login}/key.key' | null                                | false      | ScmService.ScmAuthMessages.NO_ACCESS.getMessage()
+        'export'    | 'keys/otherPath/password.pwd' | null                         | 'keys/${user.login}/password.pwd'   | false      | ScmService.ScmAuthMessages.NO_ACCESS.getMessage()
+
+    }
+
 }

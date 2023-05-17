@@ -1489,10 +1489,14 @@ class MenuControllerSpec extends RundeckHibernateSpec implements ControllerUnitT
             controller.rundeckAuthContextProcessor=Mock(AppAuthContextProcessor)
                     controller.aclFileManagerService = Mock(AclFileManagerService)
         controller.scheduledExecutionService = Mock(ScheduledExecutionService)
-        controller.scmService = Mock(ScmService)
         def project = 'test'
         def scmConfig = Mock(ScmPluginConfigData){
             getEnabled() >> true
+        }
+        def mockedValidation = [hasAccess: true, message: "test message"]
+        controller.scmService = Mock(ScmService){
+            it.userHasAccessToScmKeyOrPasswordPathInProjectForIntegration(_,_,_) >> mockedValidation
+            it.loadScmConfig(_,_) >> scmConfig
         }
 
         when:
@@ -1516,7 +1520,6 @@ class MenuControllerSpec extends RundeckHibernateSpec implements ControllerUnitT
                                                                                AuthConstants.ACTION_SCM_IMPORT]) >> true
         1 * controller.scmService.projectHasConfiguredExportPlugin(project) >> true
         1 * controller.scmService.projectHasConfiguredImportPlugin(project) >> false
-        1 * controller.scmService.loadScmConfig(project,'export') >> scmConfig
 
         response.json
         response.json.scmExportEnabled
@@ -1532,7 +1535,10 @@ class MenuControllerSpec extends RundeckHibernateSpec implements ControllerUnitT
         controller.rundeckAuthContextProcessor=Mock(AppAuthContextProcessor)
         controller.aclFileManagerService = Mock(AclFileManagerService)
         controller.scheduledExecutionService = Mock(ScheduledExecutionService)
-        controller.scmService = Mock(ScmService)
+        def mockedValidation = [hasAccess: true, message: "test message"]
+        controller.scmService = Mock(ScmService){
+            it.userHasAccessToScmKeyOrPasswordPathInProjectForIntegration(_,_,_) >> mockedValidation
+        }
         def project = 'test'
         def scmConfig = Mock(ScmPluginConfigData)
 
@@ -1584,7 +1590,10 @@ class MenuControllerSpec extends RundeckHibernateSpec implements ControllerUnitT
         controller.rundeckAuthContextProcessor=Mock(AppAuthContextProcessor)
         controller.aclFileManagerService = Mock(AclFileManagerService)
         controller.scheduledExecutionService = Mock(ScheduledExecutionService)
-        controller.scmService = Mock(ScmService)
+        def mockedValidation = [hasAccess: true, message: "test message"]
+        controller.scmService = Mock(ScmService){
+            it.userHasAccessToScmKeyOrPasswordPathInProjectForIntegration(_,_,_) >> mockedValidation
+        }
         controller.storageService = Mock(StorageService)
         def project = 'test'
         def scmConfig = Mock(ScmPluginConfigData)
@@ -1615,9 +1624,8 @@ class MenuControllerSpec extends RundeckHibernateSpec implements ControllerUnitT
         1 * controller.rundeckAuthContextProcessor.getAuthContextForSubject(_) >> userAndRolesAuthContext
         1 * controller.scmService.projectHasConfiguredExportPlugin(project) >> false
         1 * controller.scmService.projectHasConfiguredImportPlugin(project) >> true
-        2 * controller.scmService.loadScmConfig(project,'import') >> scmConfig
+        1 * controller.scmService.loadScmConfig(project,'import') >> scmConfig
         1 * scmConfig.getEnabled() >> enabled
-        1 * controller.storageService.hasPath(_,_) >> true
         (count) * controller.scmService.getJobsPluginMeta(project, false)
         (count) * controller.scmService.importStatusForJobs(project,_, _, _, _)
         (count) * controller.scmService.importPluginStatus(_,project)
@@ -1643,7 +1651,10 @@ class MenuControllerSpec extends RundeckHibernateSpec implements ControllerUnitT
         controller.rundeckAuthContextProcessor=Mock(AppAuthContextProcessor)
         controller.aclFileManagerService = Mock(AclFileManagerService)
         controller.scheduledExecutionService = Mock(ScheduledExecutionService)
-        controller.scmService = Mock(ScmService)
+        def mockedValidation = [hasAccess: false, message: "test message"]
+        controller.scmService = Mock(ScmService){
+            it.userHasAccessToScmKeyOrPasswordPathInProjectForIntegration(_,_,_) >> mockedValidation
+        }
         controller.storageService = Mock(StorageService) {
             it.hasPath() >> false
         }
@@ -1676,73 +1687,11 @@ class MenuControllerSpec extends RundeckHibernateSpec implements ControllerUnitT
         1 * controller.rundeckAuthContextProcessor.getAuthContextForSubject(_) >> userAndRolesAuthContext
         1 * controller.scmService.projectHasConfiguredExportPlugin(project) >> false
         1 * controller.scmService.projectHasConfiguredImportPlugin(project) >> true
-        1 * controller.scmService.loadScmConfig(project,'import') >> scmConfig
-        1 * controller.storageService.hasPath(_,_) >> false
         0 * controller.scmService.initProject(project,'export')
         0 * controller.scmService.initProject(project,'import')
 
         0 * controller.scmService.disablePlugin(_,_,_)
         response.json.warning !== null
-
-    }
-    
-
-    def "Expanded path variable in SCM ssh key"(){
-        setup:
-        def project = 'test'
-        controller.frameworkService = Mock(FrameworkService){
-            isClusterModeEnabled() >> true
-        }
-        controller.rundeckAuthContextProcessor=Mock(AppAuthContextProcessor){
-            it.authorizeApplicationResourceAny(_, _, [AuthConstants.ACTION_ADMIN, AuthConstants.ACTION_APP_ADMIN,
-                                                                                              AuthConstants.ACTION_EXPORT,
-                                                                                              AuthConstants.ACTION_SCM_EXPORT]) >> true
-            it.authorizeApplicationResourceAny(_, _, [AuthConstants.ACTION_ADMIN, AuthConstants.ACTION_APP_ADMIN,
-                                                                                              AuthConstants.ACTION_IMPORT,
-                                                                                              AuthConstants.ACTION_SCM_IMPORT]) >> true
-            it.getAuthContextForSubject(_) >> Mock(UserAndRolesAuthContext){
-                it.getRoles() >> new HashSet<String>(Arrays.asList("role1", "role2"))
-                it.username >> 'test'
-            }
-        }
-        controller.aclFileManagerService = Mock(AclFileManagerService)
-        controller.scheduledExecutionService = Mock(ScheduledExecutionService){
-            it.listWorkflows(_,_) >> [schedlist : []]
-            it.finishquery(_,_,_) >> [max: 20,
-                                      offset:0,
-                                      paginateParams:[:],
-                                      displayParams:[:]]
-        }
-        controller.storageService = Mock(StorageService){
-            it.hasPath(_,'keys/test/testKey.key') >> true
-        }
-        def scmConfig = Mock(ScmPluginConfigData) {
-            it.getConfig() >> [sshPrivateKeyPath: 'keys/${user.login}/testKey.key']
-        }
-        def scmUserInfo = Mock(ScmUserInfo){
-            it.getUserName() >> 'test'
-        }
-        def scmOperationContext = Mock(ScmOperationContext){
-            it.getUserInfo() >> scmUserInfo
-        }
-        def scmService = Mock(ScmService){
-            it.scmOperationContext(_,_,project) >> scmOperationContext
-            it.projectHasConfiguredExportPlugin(project) >> false
-            it.projectHasConfiguredImportPlugin(project) >> true
-            it.loadScmConfig(_,_) >> scmConfig
-            it.expandVariablesInScmConfiguredPath(_,_) >> 'keys/test/testKey.key'
-        }
-        controller.scmService = scmService
-
-        when:
-        request.method = 'POST'
-        request.JSON = []
-        request.format = 'json'
-        params.project = project
-        controller.listExport()
-
-        then:
-        1 * controller.scmService.expandVariablesInScmConfiguredPath(_,_)
 
     }
 

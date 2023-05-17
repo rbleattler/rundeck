@@ -85,6 +85,17 @@ class ScmService {
     public static final Map<String, String> STORAGE_NAMES = [export: STORAGE_NAME_EXPORT, import: STORAGE_NAME_IMPORT]
     public static final ArrayList<String> INTEGRATIONS = [EXPORT, IMPORT]
 
+    enum ScmAuthMessages {
+        NO_ACCESS("[SCM] User don't have access to the configured ssh key or password yet."),
+        HAS_ACCESS("[SCM] User has access to the configured ssh key or password.");
+        private String message;
+        ScmAuthMessages(String message){
+            this.message = message;
+        }
+        String getMessage(){
+            return message;
+        }
+    }
 
     def JobEventsService jobEventsService
     def ContextJobImporter scmJobImporter
@@ -1621,6 +1632,32 @@ class ScmService {
             return path
         }
         expand(expand(path, context.userInfo), [project: context.frameworkProject])
+    }
+
+    /**
+     * Validates if the user in Auth Context has rights to use the SSH's configured key or password
+     * @param authContext : UserAndRolesAuthContext object from controller.
+     * @param project : project's name form controller's params.
+     * @param integration: integration identifier (must be import/export)
+     * @return response object with [boolean,message]
+     */
+    def userHasAccessToScmKeyOrPasswordPathInProjectForIntegration(
+            UserAndRolesAuthContext authContext,
+            String project,
+            String integration
+    ){
+        def responseObj = [hasAccess: false, message: ScmAuthMessages.NO_ACCESS.getMessage()]
+        def scmOperationContext = scmOperationContext(authContext, project)
+        def keyOrPassword = loadScmConfig(project, integration)?.config?.sshPrivateKeyPath ?: loadScmConfig(project, integration)?.config?.gitPasswordPath
+        def userAuthentication = keyOrPassword
+        def userExpandedSshKeyPath = expandVariablesInScmConfiguredPath(scmOperationContext, userAuthentication)
+        def userHasPathAccessToSshKey = storageService.hasPath(authContext, userExpandedSshKeyPath)
+        if( !userHasPathAccessToSshKey ){
+            log.error(ScmAuthMessages.NO_ACCESS.getMessage())
+            return responseObj
+        }
+        log.debug(ScmAuthMessages.HAS_ACCESS.getMessage())
+        return [hasAccess: true, message: ScmAuthMessages.HAS_ACCESS.getMessage()]
     }
 
 }
