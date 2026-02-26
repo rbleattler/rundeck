@@ -86,15 +86,7 @@ const jobSections = [
     component: { WorkflowEditorSection },
     elementClass: "job-editor-workflow-vue",
     addUiMessages: true,
-    visible: uiType === "next",
-  },
-  {
-    name: "JobEditOptionsApp",
-    component: { OptionsEditorSection },
-    elementClass: "job-editor-options-vue",
-    addUiMessages: true,
-    addEventBus: true,
-    visible: uiType === "next",
+    visible: true,
   }
 ];
 
