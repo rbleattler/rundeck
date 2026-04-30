@@ -313,6 +313,13 @@ class JobShowPage extends BasePage implements ActivityListTrait {
      * Waits for the "change target nodes" checkbox; the nodes block can lag the Run button on slow stacks.
      */
     void waitForNodeFilterReplaceCheckboxClickable(Duration timeout = Duration.ofSeconds(90)) {
+        new WebDriverWait(driver, Duration.ofSeconds(30))
+                .ignoring(StaleElementReferenceException.class)
+                .until(ExpectedConditions.presenceOfElementLocated(nodeFilterInputBy))
+        def els = driver.findElements(nodeFilterInputBy)
+        if (!els.isEmpty()) {
+            executeScript("arguments[0].scrollIntoView({block: 'center'});", els.get(0))
+        }
         waitIgnoringForElementToBeClickable(nodeFilterInputBy, timeout)
     }
 

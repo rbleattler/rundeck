@@ -3,7 +3,6 @@ package org.rundeck.util.gui.pages.jobs
 import groovy.transform.CompileStatic
 import org.openqa.selenium.By
 import org.openqa.selenium.JavascriptExecutor
-import org.openqa.selenium.StaleElementReferenceException
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.interactions.Actions
 import org.openqa.selenium.support.ui.ExpectedConditions
@@ -896,22 +895,19 @@ class JobCreatePage extends BasePage {
     }
 
     WebElement getJobOptionAllowedValuesRemoteUrlInput(){
-        // Next UI: only the open editor mounts <option-edit> (list rows use OptionItem). Target that host so we
-        // do not depend on id fallthrough to #optitem_new (CircleCI screenshots show List default before URL click;
-        // failures were elementToBeClickable timeouts — re-find By each poll, scroll host + control).
+        // Next UI: Vue mounts OptionEdit as a plain root <div>; the tag <option-edit> is not in the DOM.
+        // Prefer the new-option host (#optitem_new) and fall back to the stable data-test wrapper from OptionEdit.vue.
+        // Legacy: jobedit.js creates ids optvis_0, optvis_1, … while saved rows use optvis_<name>; [last()] XPath
+        // could target the wrong row. Scope to the open editor on the last option row.
         By by = legacyUi
-                ? By.xpath("(//div[starts-with(@id,'optvis_')]//div[contains(@class,'optEditForm')]//input[@name='valuesType' and @value='url'])[last()]")
-                : By.cssSelector("#optionsContent option-edit input[name='valuesType'][value='url']")
+                ? By.cssSelector(
+                "#optionsContent ul li:last-child div.optEditForm input[name='valuesType'][value='url']")
+                : By.cssSelector(
+                "#optionsContent #optitem_new input[name='valuesType'][value='url'], " +
+                        "#optionsContent [data-test='option.valuesType'] input[name='valuesType'][value='url']")
         def optionsSectionBy = By.id("optionsContent")
         waitForElementVisible(optionsSectionBy)
         executeScript("arguments[0].scrollIntoView({block: 'center'});", el(optionsSectionBy))
-        if (!legacyUi) {
-            def host = By.cssSelector("#optionsContent option-edit")
-            new WebDriverWait(driver, Duration.ofSeconds(30))
-                    .ignoring(StaleElementReferenceException.class)
-                    .until(ExpectedConditions.presenceOfElementLocated(host))
-            executeScript("arguments[0].scrollIntoView({block: 'center'});", el(host))
-        }
         waitIgnoringForElementToBeClickable(by, Duration.ofSeconds(60))
         el(by)
     }
