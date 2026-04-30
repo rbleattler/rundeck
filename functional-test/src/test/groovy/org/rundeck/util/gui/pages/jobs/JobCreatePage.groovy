@@ -3,6 +3,7 @@ package org.rundeck.util.gui.pages.jobs
 import groovy.transform.CompileStatic
 import org.openqa.selenium.By
 import org.openqa.selenium.JavascriptExecutor
+import org.openqa.selenium.StaleElementReferenceException
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.interactions.Actions
 import org.openqa.selenium.support.ui.ExpectedConditions
@@ -895,15 +896,24 @@ class JobCreatePage extends BasePage {
     }
 
     WebElement getJobOptionAllowedValuesRemoteUrlInput(){
-        def by = (legacyUi ? jobOptionAllowedValuesRemoteUrlBy : jobOptionAllowedValuesRemoteUrlByNextUi)
+        // Next UI: only the open editor mounts <option-edit> (list rows use OptionItem). Target that host so we
+        // do not depend on id fallthrough to #optitem_new (CircleCI screenshots show List default before URL click;
+        // failures were elementToBeClickable timeouts — re-find By each poll, scroll host + control).
+        By by = legacyUi
+                ? By.xpath("(//div[starts-with(@id,'optvis_')]//div[contains(@class,'optEditForm')]//input[@name='valuesType' and @value='url'])[last()]")
+                : By.cssSelector("#optionsContent option-edit input[name='valuesType'][value='url']")
         def optionsSectionBy = By.id("optionsContent")
         waitForElementVisible(optionsSectionBy)
         executeScript("arguments[0].scrollIntoView({block: 'center'});", el(optionsSectionBy))
-        def element = new WebDriverWait(driver, Duration.ofSeconds(30))
-                .until(ExpectedConditions.presenceOfElementLocated(by))
-        executeScript("arguments[0].scrollIntoView({block: 'center'});", element)
-        waitForElementToBeClickable(element)
-        element
+        if (!legacyUi) {
+            def host = By.cssSelector("#optionsContent option-edit")
+            new WebDriverWait(driver, Duration.ofSeconds(30))
+                    .ignoring(StaleElementReferenceException.class)
+                    .until(ExpectedConditions.presenceOfElementLocated(host))
+            executeScript("arguments[0].scrollIntoView({block: 'center'});", el(host))
+        }
+        waitIgnoringForElementToBeClickable(by, Duration.ofSeconds(60))
+        el(by)
     }
 
     void scrollToElement(WebElement el){

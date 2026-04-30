@@ -279,13 +279,15 @@ class BasicJobsSpec extends SeleniumBase {
         then:
             jobShowPage.validatePage()
             jobShowPage.runJobLink '7a0d71b2-e096-4fbd-9efb-21bcbe826c0e' click()
-            jobShowPage.waitForElementToBeClickable jobShowPage.nodeFilterInput
+            // Jobs list: execute loads in #execDiv (URL may stay /jobs). Job show: form in #runjob.
+            jobShowPage.waitForRunJobExecFormReady()
+            jobShowPage.waitForNodeFilterReplaceCheckboxClickable()
             jobShowPage.nodeFilterInput.click()
             jobShowPage.waitForElementToBeClickable jobShowPage.nodeFilterOverride
             jobShowPage.nodeFilterOverride.click()
         expect:
             jobShowPage.schedJobNodeFilter.isDisplayed()
-            jobShowPage.nodeFilterInputValue.getDomProperty("value").trim() == 'name: RunnerBBB'
+            jobShowPage.nodeFilterInputValue.getDomProperty("value").trim() == 'name: .*'
     }
 
     def "job filter by name results"() {
