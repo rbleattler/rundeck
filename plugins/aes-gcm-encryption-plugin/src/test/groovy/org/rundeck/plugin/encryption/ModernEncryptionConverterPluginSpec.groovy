@@ -79,12 +79,12 @@ class ModernEncryptionConverterPluginSpec extends Specification {
 
         then:
         result != null
-        meta.getResourceMeta()["modern-encryption:encrypted"] == "true"
+        meta.getResourceMeta()["aes-gcm-encryption:encrypted"] == "true"
 
         and: "encrypted data is different from plaintext"
         def encrypted = readAllBytes(result)
         encrypted != plaintext
-        encrypted[0] == ModernEncryptor.FORMAT_VERSION
+        encrypted[0] == AesEncryptor.FORMAT_VERSION
     }
 
     def "createResource output can be decrypted by readResource"() {
@@ -122,12 +122,12 @@ class ModernEncryptionConverterPluginSpec extends Specification {
 
         then:
         result != null
-        meta.getResourceMeta()["modern-encryption:encrypted"] == "true"
+        meta.getResourceMeta()["aes-gcm-encryption:encrypted"] == "true"
         meta.getResourceMeta()["jasypt-encryption:encrypted"] == "false"
 
         and: "output is AES-256-GCM format"
         def encrypted = readAllBytes(result)
-        encrypted[0] == ModernEncryptor.FORMAT_VERSION
+        encrypted[0] == AesEncryptor.FORMAT_VERSION
     }
 
     // --- readResource tests ---
@@ -152,11 +152,11 @@ class ModernEncryptionConverterPluginSpec extends Specification {
         def path = Mock(Path)
 
         and: "encrypt first"
-        def encryptor = new ModernEncryptor()
+        def encryptor = new AesEncryptor()
         def encrypted = encryptor.encrypt(TEST_PASSWORD, plaintext)
 
         and:
-        def meta = metaWith(["modern-encryption:encrypted": "true"])
+        def meta = metaWith(["aes-gcm-encryption:encrypted": "true"])
 
         when:
         def result = plugin.readResource(path, meta, mockHasInputStream(encrypted))
@@ -232,7 +232,7 @@ class ModernEncryptionConverterPluginSpec extends Specification {
         def modernEncryptedBytes = readAllBytes(modernEncrypted)
 
         then: "metadata migrated"
-        updateMeta.getResourceMeta()["modern-encryption:encrypted"] == "true"
+        updateMeta.getResourceMeta()["aes-gcm-encryption:encrypted"] == "true"
         updateMeta.getResourceMeta()["jasypt-encryption:encrypted"] == "false"
 
         when: "read the modern-encrypted data"
@@ -372,11 +372,11 @@ class ModernEncryptionConverterPluginSpec extends Specification {
     def "readResource with wrong password throws exception"() {
         given:
         def plugin = createPlugin("wrong-password")
-        def encryptor = new ModernEncryptor()
+        def encryptor = new AesEncryptor()
         def encrypted = encryptor.encrypt(TEST_PASSWORD, "secret".bytes)
         def path = Mock(Path)
 
-        def meta = metaWith(["modern-encryption:encrypted": "true"])
+        def meta = metaWith(["aes-gcm-encryption:encrypted": "true"])
 
         when:
         def result = plugin.readResource(path, meta, mockHasInputStream(encrypted))

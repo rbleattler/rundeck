@@ -9,7 +9,7 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -30,7 +30,7 @@ import java.security.SecureRandom;
 import java.security.Security;
 
 /**
- * Encrypts and decrypts data using AES-256-GCM with PBKDF2 key derivation.
+ * AES-256-GCM encryptor with PBKDF2-SHA256 key derivation (authenticated encryption).
  *
  * <p>Wire format (version 1):
  * <pre>
@@ -44,7 +44,7 @@ import java.security.Security;
  *   <li>GCM provides authenticated encryption — tampered data is rejected.</li>
  * </ul>
  */
-public class ModernEncryptor {
+public class AesEncryptor {
 
     static {
         if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
@@ -65,7 +65,7 @@ public class ModernEncryptor {
 
     private final SecureRandom random;
 
-    public ModernEncryptor() {
+    public AesEncryptor() {
         this.random = new SecureRandom();
     }
 
@@ -165,9 +165,9 @@ public class ModernEncryptor {
     }
 
     /**
-     * Check if the given bytes appear to be in modern encryption format.
+     * Returns true when {@code data} matches the versioned wire format produced by this class (AES-GCM payload).
      */
-    public static boolean isModernFormat(byte[] data) {
+    public static boolean isAesFormat(byte[] data) {
         return data != null && data.length > HEADER_SIZE && data[0] == FORMAT_VERSION;
     }
 

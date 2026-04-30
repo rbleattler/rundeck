@@ -34,9 +34,9 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 
 /**
- * Modern encryption plugin using AES-256-GCM with PBKDF2 key derivation.
+ * AES-GCM storage encryption plugin using AES-256-GCM with PBKDF2 key derivation.
  *
- * <p>Provides dual-read capability: can decrypt both modern (AES-256-GCM) and
+ * <p>Provides dual-read capability: can decrypt both AES-GCM and
  * legacy Jasypt-encrypted data. New writes always use AES-256-GCM. This enables
  * transparent lazy migration — existing Jasypt-encrypted items are re-encrypted
  * with AES-256-GCM on their next update.
@@ -46,16 +46,16 @@ import java.io.*;
  */
 @Plugin(name = ModernEncryptionConverterPlugin.PROVIDER_NAME, service = ServiceNameConstants.StorageConverter)
 @PluginDescription(
-        title = "Modern Encryption (AES-256-GCM)",
+        title = "AES-GCM Storage Encryption",
         description = "Encrypts data in the Rundeck Storage layer using AES-256-GCM with PBKDF2 key derivation.\n\n" +
-                "This plugin replaces jasypt-encryption with modern authenticated encryption. " +
+                "This plugin replaces jasypt-encryption with authenticated encryption (AES-GCM). " +
                 "It can transparently read data encrypted by the old Jasypt plugin (dual-read), " +
                 "and all new writes use AES-256-GCM.\n\n" +
                 "Password can be specified directly, via environment variable, or via Java system property."
 )
 public class ModernEncryptionConverterPlugin implements StorageConverterPlugin {
 
-    public static final String PROVIDER_NAME = "modern-encryption";
+    public static final String PROVIDER_NAME = "aes-gcm-encryption";
     public static final String JASYPT_PROVIDER_NAME = "jasypt-encryption";
     public static final String META_ENCRYPTED = PROVIDER_NAME + ":encrypted";
     public static final String JASYPT_META_ENCRYPTED = JASYPT_PROVIDER_NAME + ":encrypted";
@@ -121,7 +121,7 @@ public class ModernEncryptionConverterPlugin implements StorageConverterPlugin {
     )
     String legacyKeyObtentionIterations;
 
-    private volatile ModernEncryptor modernEncryptor;
+    private volatile AesEncryptor aesEncryptor;
     private volatile LegacyJasyptDecryptor legacyDecryptor;
     private volatile char[] resolvedPassword;
 
@@ -129,8 +129,8 @@ public class ModernEncryptionConverterPlugin implements StorageConverterPlugin {
     public HasInputStream readResource(Path path, ResourceMetaBuilder resourceMetaBuilder,
                                        HasInputStream hasInputStream) {
         if ("true".equals(resourceMetaBuilder.getResourceMeta().get(META_ENCRYPTED))) {
-            logger.debug("readResource (modern-encrypted) {}", path);
-            return decryptModern(hasInputStream);
+            logger.debug("readResource (aes-gcm-encrypted) {}", path);
+            return decrypt(hasInputStream);
         }
         if ("true".equals(resourceMetaBuilder.getResourceMeta().get(JASYPT_META_ENCRYPTED))) {
             logger.debug("readResource (jasypt-encrypted, legacy fallback) {}", path);
@@ -145,24 +145,24 @@ public class ModernEncryptionConverterPlugin implements StorageConverterPlugin {
                                          HasInputStream hasInputStream) {
         resourceMetaBuilder.getResourceMeta().put(META_ENCRYPTED, "true");
         logger.debug("createResource {}", path);
-        return encryptModern(hasInputStream);
+        return encrypt(hasInputStream);
     }
 
     @Override
     public HasInputStream updateResource(Path path, ResourceMetaBuilder resourceMetaBuilder,
                                          HasInputStream hasInputStream) {
-        resourceMetaBuilder.getResourceMeta().put(JASYPT_META_ENCRYPTED,"false");
+        resourceMetaBuilder.getResourceMeta().put(JASYPT_META_ENCRYPTED, "false");
         resourceMetaBuilder.getResourceMeta().put(META_ENCRYPTED, "true");
         logger.debug("updateResource {}", path);
-        return encryptModern(hasInputStream);
+        return encrypt(hasInputStream);
     }
 
-    private HasInputStream encryptModern(HasInputStream input) {
+    private HasInputStream encrypt(HasInputStream input) {
         try {
             return new TransformStream(input) {
                 @Override
                 protected byte[] transform(byte[] data) {
-                    return getModernEncryptor().encrypt(getResolvedPassword(), data);
+                    return getAesEncryptor().encrypt(getResolvedPassword(), data);
                 }
             };
         } catch (Exception e) {
@@ -171,12 +171,12 @@ public class ModernEncryptionConverterPlugin implements StorageConverterPlugin {
         }
     }
 
-    private HasInputStream decryptModern(HasInputStream input) {
+    private HasInputStream decrypt(HasInputStream input) {
         try {
             return new TransformStream(input) {
                 @Override
                 protected byte[] transform(byte[] data) {
-                    return getModernEncryptor().decrypt(getResolvedPassword(), data);
+                    return getAesEncryptor().decrypt(getResolvedPassword(), data);
                 }
             };
         } catch (Exception e) {
@@ -236,16 +236,16 @@ public class ModernEncryptionConverterPlugin implements StorageConverterPlugin {
         );
     }
 
-    ModernEncryptor getModernEncryptor() {
-        if (modernEncryptor == null) {
+    AesEncryptor getAesEncryptor() {
+        if (aesEncryptor == null) {
             synchronized (this) {
-                if (modernEncryptor == null) {
-                    modernEncryptor = new ModernEncryptor();
-                    logger.debug("ModernEncryptor (AES-256-GCM) initialized");
+                if (aesEncryptor == null) {
+                    aesEncryptor = new AesEncryptor();
+                    logger.debug("AesEncryptor (AES-256-GCM) initialized");
                 }
             }
         }
-        return modernEncryptor;
+        return aesEncryptor;
     }
 
     LegacyJasyptDecryptor getLegacyDecryptor() {

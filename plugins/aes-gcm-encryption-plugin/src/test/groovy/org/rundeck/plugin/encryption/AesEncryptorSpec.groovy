@@ -2,12 +2,11 @@ package org.rundeck.plugin.encryption
 
 import spock.lang.Specification
 
-import java.nio.ByteBuffer
 import java.util.Arrays
 
-class ModernEncryptorSpec extends Specification {
+class AesEncryptorSpec extends Specification {
 
-    def encryptor = new ModernEncryptor()
+    def encryptor = new AesEncryptor()
 
     def "encrypt and decrypt round-trip"() {
         given:
@@ -27,7 +26,7 @@ class ModernEncryptorSpec extends Specification {
         def encrypted = encryptor.encrypt("password", "data".bytes)
 
         expect:
-        encrypted[0] == ModernEncryptor.FORMAT_VERSION
+        encrypted[0] == AesEncryptor.FORMAT_VERSION
     }
 
     def "encrypted output has correct structure"() {
@@ -192,35 +191,35 @@ class ModernEncryptorSpec extends Specification {
         decrypted == plaintext
     }
 
-    def "isModernFormat detects modern encrypted data"() {
+    def "isAesFormat detects AES wire-format encrypted data"() {
         given:
         def encrypted = encryptor.encrypt("password", "data".bytes)
 
         expect:
-        ModernEncryptor.isModernFormat(encrypted)
+        AesEncryptor.isAesFormat(encrypted)
     }
 
-    def "isModernFormat rejects non-modern data"() {
+    def "isAesFormat rejects non-AES-format data"() {
         expect:
-        !ModernEncryptor.isModernFormat(null)
-        !ModernEncryptor.isModernFormat(new byte[0])
-        !ModernEncryptor.isModernFormat(new byte[5])
-        !ModernEncryptor.isModernFormat([0x00, 0x01, 0x02] as byte[])
+        !AesEncryptor.isAesFormat(null)
+        !AesEncryptor.isAesFormat(new byte[0])
+        !AesEncryptor.isAesFormat(new byte[5])
+        !AesEncryptor.isAesFormat([0x00, 0x01, 0x02] as byte[])
     }
 
-    def "isModernFormat rejects data with wrong version"() {
+    def "isAesFormat rejects data with wrong version"() {
         given:
         def data = new byte[50]
         data[0] = (byte) 0x02
 
         expect:
-        !ModernEncryptor.isModernFormat(data)
+        !AesEncryptor.isAesFormat(data)
     }
 
     def "multiple encryptors produce interoperable output"() {
         given:
-        def encryptor1 = new ModernEncryptor()
-        def encryptor2 = new ModernEncryptor()
+        def encryptor1 = new AesEncryptor()
+        def encryptor2 = new AesEncryptor()
         def password = "shared-password"
         def plaintext = "interop test".bytes
 

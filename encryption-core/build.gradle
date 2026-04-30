@@ -15,7 +15,7 @@
  */
 
 /**
- * Shared encryption/decryption library used by modern-encryption-plugin,
+ * Shared encryption/decryption library used by aes-gcm-encryption-plugin,
  * encryptable-core-properties, and encrypt-datasource-password.
  *
  * Provides AES-256-GCM encryption and Jasypt-compatible PBE decryption

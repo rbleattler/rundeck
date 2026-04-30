@@ -15,13 +15,13 @@
  */
 
 /**
- * Modern Encryption plugin - AES-256-GCM via BouncyCastle.
+ * AES-GCM storage encryption plugin - AES-256-GCM via BouncyCastle.
  * Replaces jasypt-encryption-plugin with dual-read support for legacy Jasypt data.
  */
 
 ext.pluginClassNames = 'org.rundeck.plugin.encryption.ModernEncryptionConverterPlugin'
-ext.pluginName = 'Modern Encryption Plugin'
-ext.pluginDescription = 'Modern encryption using AES-256-GCM with legacy Jasypt read support'
+ext.pluginName = 'AES-GCM Encryption Plugin'
+ext.pluginDescription = 'AES-GCM storage encryption with legacy Jasypt read support'
 
 configurations {
     pluginLibs
