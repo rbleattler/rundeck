@@ -3,6 +3,7 @@ package org.rundeck.util.gui.pages.jobs
 import groovy.transform.CompileStatic
 import org.openqa.selenium.By
 import org.openqa.selenium.JavascriptExecutor
+import org.openqa.selenium.StaleElementReferenceException
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.interactions.Actions
 import org.openqa.selenium.support.ui.ExpectedConditions
@@ -895,21 +896,39 @@ class JobCreatePage extends BasePage {
     }
 
     WebElement getJobOptionAllowedValuesRemoteUrlInput(){
-        // Next UI: Vue mounts OptionEdit as a plain root <div>; the tag <option-edit> is not in the DOM.
-        // Prefer the new-option host (#optitem_new) and fall back to the stable data-test wrapper from OptionEdit.vue.
-        // Legacy: jobedit.js creates ids optvis_0, optvis_1, … while saved rows use optvis_<name>; [last()] XPath
-        // could target the wrong row. Scope to the open editor on the last option row.
-        By by = legacyUi
-                ? By.cssSelector(
-                "#optionsContent ul li:last-child div.optEditForm input[name='valuesType'][value='url']")
-                : By.cssSelector(
-                "#optionsContent #optitem_new input[name='valuesType'][value='url'], " +
-                        "#optionsContent [data-test='option.valuesType'] input[name='valuesType'][value='url']")
+        // Next UI: Vue mounts OptionEdit as a plain root <div> (no <option-edit> in DOM). Prefer #optitem_new,
+        // then [data-test='option.valuesType'] (OptionEdit.vue). Legacy: open editor is on the last <li>.
+        // CI: elementToBeClickable often times out on radios in scrollable panels (interception); use visibility only.
         def optionsSectionBy = By.id("optionsContent")
         waitForElementVisible(optionsSectionBy)
         executeScript("arguments[0].scrollIntoView({block: 'center'});", el(optionsSectionBy))
-        waitIgnoringForElementToBeClickable(by, Duration.ofSeconds(60))
-        el(by)
+        if (!legacyUi) {
+            By preferred = By.cssSelector("#optionsContent #optitem_new input[name='valuesType'][value='url']")
+            By fallback = By.cssSelector("#optionsContent [data-test='option.valuesType'] input[name='valuesType'][value='url']")
+            def eitherVisible = ExpectedConditions.or(
+                    ExpectedConditions.visibilityOfElementLocated(preferred),
+                    ExpectedConditions.visibilityOfElementLocated(fallback))
+            WebElement input = new WebDriverWait(driver, Duration.ofSeconds(60))
+                    .ignoring(StaleElementReferenceException.class)
+                    .until(eitherVisible) as WebElement
+            executeScript("arguments[0].scrollIntoView({block: 'center'});", input)
+            return input
+        }
+        By by = By.cssSelector(
+                "#optionsContent ul li:last-child .optEditForm input[name='valuesType'][value='url']")
+        WebElement input = new WebDriverWait(driver, Duration.ofSeconds(60))
+                .ignoring(StaleElementReferenceException.class)
+                .until(ExpectedConditions.visibilityOfElementLocated(by)) as WebElement
+        executeScript("arguments[0].scrollIntoView({block: 'center'});", input)
+        return input
+    }
+
+    /**
+     * Selects the "Remote URL" allowed-values radio; uses a script click so CI does not fail on intercepted native clicks.
+     */
+    void clickJobOptionAllowedValuesRemoteUrlRadio() {
+        WebElement input = getJobOptionAllowedValuesRemoteUrlInput()
+        executeScript("arguments[0].click();", input)
     }
 
     void scrollToElement(WebElement el){

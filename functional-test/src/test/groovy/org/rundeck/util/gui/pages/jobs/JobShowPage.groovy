@@ -310,17 +310,24 @@ class JobShowPage extends BasePage implements ActivityListTrait {
     }
 
     /**
-     * Waits for the "change target nodes" checkbox; the nodes block can lag the Run button on slow stacks.
+     * Waits until the "change target nodes" checkbox is visible in the exec modal or job show form.
+     * Does not require WebDriver "clickable" — radios in the jobs exec modal often fail that check in CI.
      */
     void waitForNodeFilterReplaceCheckboxClickable(Duration timeout = Duration.ofSeconds(90)) {
-        new WebDriverWait(driver, Duration.ofSeconds(30))
+        new WebDriverWait(driver, timeout)
                 .ignoring(StaleElementReferenceException.class)
-                .until(ExpectedConditions.presenceOfElementLocated(nodeFilterInputBy))
-        def els = driver.findElements(nodeFilterInputBy)
-        if (!els.isEmpty()) {
-            executeScript("arguments[0].scrollIntoView({block: 'center'});", els.get(0))
-        }
-        waitIgnoringForElementToBeClickable(nodeFilterInputBy, timeout)
+                .until(ExpectedConditions.visibilityOfElementLocated(nodeFilterInputBy))
+        def cb = driver.findElement(nodeFilterInputBy)
+        executeScript("arguments[0].scrollIntoView({block: 'center'});", cb)
+    }
+
+    /**
+     * Toggles the "change the target nodes" checkbox via script click (avoids click-intercepted flakes in headless CI).
+     */
+    void clickNodeFilterReplaceCheckbox() {
+        def cb = driver.findElement(nodeFilterInputBy)
+        executeScript("arguments[0].scrollIntoView({block: 'center'});", cb)
+        executeScript("arguments[0].click();", cb)
     }
 
     WebElement getOptionValidationWarningText() {

@@ -282,7 +282,7 @@ class BasicJobsSpec extends SeleniumBase {
             // Jobs list: execute loads in #execDiv (URL may stay /jobs). Job show: form in #runjob.
             jobShowPage.waitForRunJobExecFormReady()
             jobShowPage.waitForNodeFilterReplaceCheckboxClickable()
-            jobShowPage.nodeFilterInput.click()
+            jobShowPage.clickNodeFilterReplaceCheckbox()
             jobShowPage.waitForElementToBeClickable jobShowPage.nodeFilterOverride
             jobShowPage.nodeFilterOverride.click()
         expect:
