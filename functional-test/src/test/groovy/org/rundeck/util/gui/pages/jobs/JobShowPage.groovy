@@ -314,9 +314,12 @@ class JobShowPage extends BasePage implements ActivityListTrait {
      * Does not require WebDriver "clickable" — radios in the jobs exec modal often fail that check in CI.
      */
     void waitForNodeFilterReplaceCheckboxClickable(Duration timeout = Duration.ofSeconds(90)) {
+        // Native checkbox inputs are styled with opacity:0 and zero dimensions (Bootstrap custom checkbox).
+        // visibilityOfElementLocated requires non-zero size — always times out on styled checkboxes.
+        // Use presenceOfElementLocated: the element is in the DOM, just visually replaced by its label.
         new WebDriverWait(driver, timeout)
                 .ignoring(StaleElementReferenceException.class)
-                .until(ExpectedConditions.visibilityOfElementLocated(nodeFilterInputBy))
+                .until(ExpectedConditions.presenceOfElementLocated(nodeFilterInputBy))
         def cb = driver.findElement(nodeFilterInputBy)
         executeScript("arguments[0].scrollIntoView({block: 'center'});", cb)
     }

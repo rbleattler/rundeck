@@ -896,21 +896,24 @@ class JobCreatePage extends BasePage {
     }
 
     WebElement getJobOptionAllowedValuesRemoteUrlInput(){
-        // Next UI: Vue mounts OptionEdit as a plain root <div> (no <option-edit> in DOM). Prefer #optitem_new,
-        // then [data-test='option.valuesType'] (OptionEdit.vue). Legacy: open editor is on the last <li>.
-        // CI: elementToBeClickable often times out on radios in scrollable panels (interception); use visibility only.
+        // Native radio inputs are styled with opacity:0 and zero dimensions (standard Bootstrap custom radio
+        // styling). Selenium's visibilityOfElementLocated requires non-zero size — always times out.
+        // Use presenceOfElementLocated: the element IS in the DOM, just visually replaced by its label.
         def optionsSectionBy = By.id("optionsContent")
-        waitForElementVisible(optionsSectionBy)
+        new WebDriverWait(driver, Duration.ofSeconds(30))
+                .until(ExpectedConditions.presenceOfElementLocated(optionsSectionBy))
         executeScript("arguments[0].scrollIntoView({block: 'center'});", el(optionsSectionBy))
         if (!legacyUi) {
             By preferred = By.cssSelector("#optionsContent #optitem_new input[name='valuesType'][value='url']")
             By fallback = By.cssSelector("#optionsContent [data-test='option.valuesType'] input[name='valuesType'][value='url']")
-            def eitherVisible = ExpectedConditions.or(
-                    ExpectedConditions.visibilityOfElementLocated(preferred),
-                    ExpectedConditions.visibilityOfElementLocated(fallback))
-            WebElement input = new WebDriverWait(driver, Duration.ofSeconds(60))
+            // ExpectedConditions.or returns Boolean, not WebElement — wait for presence then find the element
+            new WebDriverWait(driver, Duration.ofSeconds(60))
                     .ignoring(StaleElementReferenceException.class)
-                    .until(eitherVisible) as WebElement
+                    .until(ExpectedConditions.or(
+                            ExpectedConditions.presenceOfElementLocated(preferred),
+                            ExpectedConditions.presenceOfElementLocated(fallback)))
+            def inputs = driver.findElements(preferred)
+            WebElement input = inputs.isEmpty() ? driver.findElement(fallback) : inputs.first()
             executeScript("arguments[0].scrollIntoView({block: 'center'});", input)
             return input
         }
@@ -918,7 +921,7 @@ class JobCreatePage extends BasePage {
                 "#optionsContent ul li:last-child .optEditForm input[name='valuesType'][value='url']")
         WebElement input = new WebDriverWait(driver, Duration.ofSeconds(60))
                 .ignoring(StaleElementReferenceException.class)
-                .until(ExpectedConditions.visibilityOfElementLocated(by)) as WebElement
+                .until(ExpectedConditions.presenceOfElementLocated(by))
         executeScript("arguments[0].scrollIntoView({block: 'center'});", input)
         return input
     }
