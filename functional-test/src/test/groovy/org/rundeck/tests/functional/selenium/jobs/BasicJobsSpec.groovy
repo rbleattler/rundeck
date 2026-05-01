@@ -283,8 +283,7 @@ class BasicJobsSpec extends SeleniumBase {
             jobShowPage.waitForRunJobExecFormReady()
             jobShowPage.waitForNodeFilterReplaceCheckboxClickable()
             jobShowPage.clickNodeFilterReplaceCheckbox()
-            jobShowPage.waitForElementToBeClickable jobShowPage.nodeFilterOverride
-            jobShowPage.nodeFilterOverride.click()
+            jobShowPage.waitAndClickNodeFilterOverride()
         expect:
             jobShowPage.schedJobNodeFilter.isDisplayed()
             jobShowPage.nodeFilterInputValue.getDomProperty("value").trim() == 'name: .*'

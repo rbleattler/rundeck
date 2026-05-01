@@ -333,6 +333,19 @@ class JobShowPage extends BasePage implements ActivityListTrait {
         executeScript("arguments[0].click();", cb)
     }
 
+    /**
+     * Waits for the node filter override radio to be present, then clicks it via JS.
+     * Like #doReplaceFilters, #filterradio is a Bootstrap-styled radio with zero dimensions.
+     */
+    void waitAndClickNodeFilterOverride(Duration timeout = Duration.ofSeconds(30)) {
+        new WebDriverWait(driver, timeout)
+                .ignoring(StaleElementReferenceException.class)
+                .until(ExpectedConditions.presenceOfElementLocated(nodeFilterOverrideBy))
+        def radio = driver.findElement(nodeFilterOverrideBy)
+        executeScript("arguments[0].scrollIntoView({block: 'center'});", radio)
+        executeScript("arguments[0].click();", radio)
+    }
+
     WebElement getOptionValidationWarningText() {
         el optionValidationWarningBy
     }

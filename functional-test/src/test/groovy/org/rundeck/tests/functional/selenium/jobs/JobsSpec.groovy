@@ -635,10 +635,10 @@ class JobsSpec extends SeleniumBase {
         def jobUuid = jobShowPage.jobUuid.text
         jobShowPage.goToJob(jobUuid)
 
-        jobShowPage.waitForElementVisible(jobShowPage.getOptionSelectByName(optionListOfNames))
+        jobShowPage.waitForElementVisible(By.name("extra.option.${optionListOfNames}"))
 
         jobShowPage.selectOptionFromOptionListByName(optionListOfNames, selection)
-        jobShowPage.waitForElementToBeClickable(jobShowPage.getOptionSelectByName(optionListOfValues))
+        jobShowPage.waitIgnoringForElementToBeClickable(By.name("extra.option.${optionListOfValues}"))
         jobShowPage.waitForNumberOfElementsToBe(jobShowPage.extraOptionSearchBy, Integer.valueOf(selection))
         then:
         jobShowPage.waitForAllOptionsToBeSelected(optionListOfValues)
