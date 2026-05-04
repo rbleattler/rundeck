@@ -195,16 +195,13 @@ commands:
           use-nvm-cache: true
           nvm-cache-key: cache-{{ .Environment.BUILD_CACHE_VERSION }}-nvm-{{ checksum ".nvmrc" }}
 
-  # Verify Java JDK (pre-installed in cimg/openjdk:17.0 image)
+  # Install/verify Java JDK (pre-installed on cimg/openjdk, installed via apt on machine executor)
   install-java-jdk:
-    description: Verify JDK is available (provided by Docker image)
+    description: Ensure JDK 17 is available
     steps:
-      - run:
-          name: Verify Java JDK
-          command: |
-            echo "JAVA_HOME=${JAVA_HOME}"
-            java -version
-            javac -version
+      - run-build-step:
+          step-name: Install Java JDK
+          command: dependencies_install_zulu17jdk
 
   install-java-jdk-25:
     description: Install JDK 25 for host-side tests (BASH_ENV JAVA_HOME)
@@ -265,7 +262,6 @@ job-defaults: &job-defaults
     CIRCLE_PIPELINE_NUM: << pipeline.number >>
     GRADLE_OPTS: -XX:MaxRAMPercentage=85.0
     JAVA_OPTS: -XX:MaxRAMPercentage=85.0
-    JAVA_HOME: /usr/local/jdk-17.0
 
 jobs:
 

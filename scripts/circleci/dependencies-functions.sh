@@ -31,6 +31,11 @@ dependencies_install_zulu17jdk() {
       sudo apt-get update
       sudo apt-get -y --no-install-recommends install zulu17-jdk-headless
 
+      if [[ -n "${BASH_ENV:-}" ]]; then
+        echo "export JAVA_HOME=/usr/lib/jvm/zulu17" >> "${BASH_ENV}"
+        echo "export PATH=\"/usr/lib/jvm/zulu17/bin:\${PATH}\"" >> "${BASH_ENV}"
+      fi
+      export JAVA_HOME=/usr/lib/jvm/zulu17
 }
 
 # Install Azul Zulu JDK 25 (forward-compat / newer-LTS testing on CI host).
