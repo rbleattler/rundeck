@@ -286,7 +286,7 @@ class BasicJobsSpec extends SeleniumBase {
             jobShowPage.waitAndClickNodeFilterOverride()
         expect:
             jobShowPage.schedJobNodeFilter.isDisplayed()
-            jobShowPage.nodeFilterInputValue.getDomProperty("value").trim() == 'name: .*'
+            jobShowPage.nodeFilterInputValue.getDomProperty("value").trim() == 'name: RunnerBBB'
     }
 
     def "job filter by name results"() {

@@ -15,11 +15,14 @@
     <name>RUN-2383</name>
     <nodeFilterEditable>true</nodeFilterEditable>
     <nodefilters>
-      <!-- Broad filter so CI always gets matched nodes and the exec nodes panel renders. -->
-      <filter>name: .*</filter>
+      <filter>name: RunnerBBB </filter>
     </nodefilters>
     <nodesSelectedByDefault>true</nodesSelectedByDefault>
     <plugins />
+    <runnerSelector>
+      <runnerFilterMode>LOCAL</runnerFilterMode>
+      <runnerFilterType>LOCAL_RUNNER</runnerFilterType>
+    </runnerSelector>
     <scheduleEnabled>true</scheduleEnabled>
     <schedules />
     <sequence keepgoing='false' strategy='node-first'>
