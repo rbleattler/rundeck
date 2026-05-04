@@ -2,7 +2,6 @@
 
 set -euo pipefail
 
-export RUNDECK_VERSION=${RUNDECK_VERSION:-2.9.2}
 export CLI_VERS=${CLI_VERS:-2.0.10-1}
 
 # Builds the rdtest:latest image which is required as a base image by many test images
