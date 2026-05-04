@@ -15,6 +15,8 @@ if [ -f rd.deb ] ; then
 	mv rd.deb dockers/rundeck/data/
 fi
 
+build_rdtest_docker
+
 # clean up docker env
 docker-compose -f $DOCKER_COMPOSE_SPEC down --volumes --remove-orphans
 

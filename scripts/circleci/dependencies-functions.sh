@@ -16,9 +16,10 @@ dependencies_install_zulu11jdk() {
 
 # Install JDK 17 (skips if already provided by the Docker image, e.g. cimg/openjdk:17.0)
 dependencies_install_zulu17jdk() {
-      if java -version 2>&1 | grep -q 'version "17'; then
+      if java -version 2>&1 | grep -q 'version "17' && javac -version >/dev/null 2>&1; then
         echo "JDK 17 already installed — skipping apt install"
         java -version
+        javac -version
         return 0
       fi
 
