@@ -14,9 +14,15 @@ dependencies_install_zulu11jdk() {
 
 }
 
-# Install Azul Zulu JDK 17 (for Grails 7)
+# Install JDK 17 (skips if already provided by the Docker image, e.g. cimg/openjdk:17.0)
 dependencies_install_zulu17jdk() {
-      # Azul Zulu JDK 17 Install
+      if java -version 2>&1 | grep -q 'version "17'; then
+        echo "JDK 17 already installed — skipping apt install"
+        java -version
+        return 0
+      fi
+
+      echo "JDK 17 not found — installing Azul Zulu JDK 17 via apt"
       sudo apt-get update
       sudo apt install gnupg ca-certificates curl
       curl -s https://repos.azul.com/azul-repo.key | sudo gpg --dearmor -o /usr/share/keyrings/azul.gpg
