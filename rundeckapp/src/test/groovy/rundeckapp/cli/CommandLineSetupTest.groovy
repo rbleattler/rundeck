@@ -143,6 +143,16 @@ class CommandLineSetupTest extends Specification {
         opts.dataDir == "/tmp/base/server/data"
     }
 
+    def "JASYPT alias resolves to ENCRYPTABLE PROPERTIES encrypter"() {
+        when:
+        def encrypters = CommandLineSetup.getEncrypters()
+
+        then:
+        encrypters.containsKey("JASYPT")
+        encrypters["JASYPT"] != null
+        encrypters["JASYPT"].is(encrypters["ENCRYPTABLE PROPERTIES"])
+    }
+
     def "Test cli system props #prop #sysprop"() {
         setup:
             System.setProperty(sysprop, expected)

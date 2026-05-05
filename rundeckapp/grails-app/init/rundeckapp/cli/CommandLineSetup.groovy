@@ -258,12 +258,21 @@ class CommandLineSetup implements Runnable {
         true
     }
 
+    static final Map<String, String> ENCRYPTER_ALIASES = [
+            'JASYPT': 'ENCRYPTABLE PROPERTIES'
+    ]
+
     static Map<String,PasswordUtilityEncrypter> getEncrypters() {
         Map<String,PasswordUtilityEncrypter> encrypters= [:]
         ServiceLoader<PasswordUtilityEncrypter> encrypterServices = ServiceLoader.load(
                 PasswordUtilityEncrypter
         )
         encrypterServices.each { encrypters[it.name().toUpperCase()] = it }
+        ENCRYPTER_ALIASES.each { alias, target ->
+            if (encrypters.containsKey(target) && !encrypters.containsKey(alias)) {
+                encrypters[alias] = encrypters[target]
+            }
+        }
         return encrypters
     };
 }
