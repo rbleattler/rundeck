@@ -19,7 +19,7 @@
  * Replaces jasypt-encryption-plugin with dual-read support for legacy Jasypt data.
  */
 
-ext.pluginClassNames = 'org.rundeck.plugin.encryption.ModernEncryptionConverterPlugin'
+ext.pluginClassNames = 'org.rundeck.plugin.encryption.ModernEncryptionConverterPlugin,org.rundeck.plugin.encryption.JasyptEncryptionAliasPlugin'
 ext.pluginName = 'AES-GCM Encryption Plugin'
 ext.pluginDescription = 'AES-GCM storage encryption with legacy Jasypt read support'
 
