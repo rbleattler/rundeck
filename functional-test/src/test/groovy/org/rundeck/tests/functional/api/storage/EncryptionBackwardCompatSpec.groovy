@@ -61,7 +61,7 @@ class EncryptionBackwardCompatSpec extends BaseContainer {
         json.path == "keys/encryption-test/db-password"
         json.type == "file"
         json.meta["Rundeck-content-type"] == "application/x-rundeck-data-password"
-        json.meta["Rundeck-key-type"] == "password"
+        json.meta["Rundeck-data-type"] == "password"
     }
 
     def "update the password key with a new value"() {
@@ -89,7 +89,7 @@ class EncryptionBackwardCompatSpec extends BaseContainer {
         response.code() == 200
         def json = jsonValue(response.body(), Map)
         json.path == "keys/encryption-test/db-password"
-        json.meta["Rundeck-key-type"] == "password"
+        json.meta["Rundeck-data-type"] == "password"
     }
 
     def "store a second password key in a different path"() {
