@@ -17,8 +17,11 @@
 package org.rundeck.plugin.encryption;
 
 import com.dtolabs.rundeck.core.plugins.Plugin;
+import com.dtolabs.rundeck.core.storage.ResourceMetaBuilder;
 import com.dtolabs.rundeck.plugins.ServiceNameConstants;
 import com.dtolabs.rundeck.plugins.descriptions.PluginDescription;
+import org.rundeck.storage.api.HasInputStream;
+import org.rundeck.storage.api.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,9 +45,34 @@ import org.slf4j.LoggerFactory;
 public class JasyptEncryptionAliasPlugin extends ModernEncryptionConverterPlugin {
 
     private static final Logger logger = LoggerFactory.getLogger(JasyptEncryptionAliasPlugin.class);
+    private volatile boolean logged = false;
 
-    public JasyptEncryptionAliasPlugin() {
-        logger.info("Using 'jasypt-encryption' provider name (legacy alias). " +
-                "Consider updating rundeck-config.properties to use 'aes-gcm-encryption'.");
+    private void logLegacyUsageOnce() {
+        if (!logged) {
+            logged = true;
+            logger.warn("Using 'jasypt-encryption' provider name (legacy alias). " +
+                    "Consider updating rundeck-config.properties to use 'aes-gcm-encryption'.");
+        }
+    }
+
+    @Override
+    public HasInputStream readResource(Path path, ResourceMetaBuilder resourceMetaBuilder,
+                                       HasInputStream hasInputStream) {
+        logLegacyUsageOnce();
+        return super.readResource(path, resourceMetaBuilder, hasInputStream);
+    }
+
+    @Override
+    public HasInputStream createResource(Path path, ResourceMetaBuilder resourceMetaBuilder,
+                                         HasInputStream hasInputStream) {
+        logLegacyUsageOnce();
+        return super.createResource(path, resourceMetaBuilder, hasInputStream);
+    }
+
+    @Override
+    public HasInputStream updateResource(Path path, ResourceMetaBuilder resourceMetaBuilder,
+                                         HasInputStream hasInputStream) {
+        logLegacyUsageOnce();
+        return super.updateResource(path, resourceMetaBuilder, hasInputStream);
     }
 }
