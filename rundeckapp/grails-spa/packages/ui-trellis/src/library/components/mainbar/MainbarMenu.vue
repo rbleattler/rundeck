@@ -91,15 +91,11 @@ export default defineComponent({
             v-else-if="link.links && link.links.length > 0"
             class="dropdown-submenu"
           >
-            <a
-              id="plugins-menu-button"
-              href="#"
-              @click="submenuClick(x, $event)"
+            <a href="#" @click="submenuClick(x, $event)"
               >{{ link.title }} <span class="caret"></span
             ></a>
 
             <ul
-              id="plugins-menu"
               class="dropdown-menu dropdown-menu-right"
               :style="{ display: submenuOpen === x ? 'block' : 'none' }"
             >
