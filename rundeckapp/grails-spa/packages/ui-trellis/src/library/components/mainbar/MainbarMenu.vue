@@ -32,9 +32,9 @@ export default defineComponent({
     };
   },
   computed: {
-    enabledLinks() {
+    enabledLinks(): Link[] {
       const filtered = this.links.filter(
-        (link) =>
+        (link: Link) =>
           link &&
           link.enabled !== false &&
           (link.url ||
@@ -43,13 +43,9 @@ export default defineComponent({
             link.group),
       );
       return filtered.sort((a, b) => {
-        if (b.order !== undefined && a.order === undefined) return 0 - b.order;
-        if (a.order !== undefined && b.order === undefined) return b.order - 0;
-        if (a.order !== undefined && b.order !== undefined) {
-          return a.order - b.order;
-        }
-
-        return 0;
+        const ao = a.order ?? 0;
+        const bo = b.order ?? 0;
+        return ao - bo;
       });
     },
   },
