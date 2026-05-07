@@ -52,6 +52,7 @@ export default defineComponent({
   methods: {
     submenuClick(id: any, event: Event) {
       event.stopPropagation();
+      event.preventDefault();
       this.submenuOpen = this.submenuOpen === id ? null : id;
     },
   },
