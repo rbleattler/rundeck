@@ -9,7 +9,7 @@
 
 <script>
 import { getRundeckContext } from "../../../../library";
-import MainbarMenu from "../../../..//library/components/mainbar/MainbarMenu.vue";
+import MainbarMenu from "../../../../library/components/mainbar/MainbarMenu.vue";
 
 /**
  * AppUserMenu component - wraps MainbarMenu and provides data from Rundeck context
@@ -47,9 +47,9 @@ export default {
     const context = getRundeckContext();
     this.username = context.profile?.username || "(Unknown User)";
     this.profileLink =
-      context.profile?.links?.profile || `${context.rdBase}user/profile`;
+      context.profile?.links?.profile || `${context.rdBase}/user/profile`;
     this.logoutLink =
-      context.profile?.links?.logout || `${context.rdBase}user/logout`;
+      context.profile?.links?.logout || `${context.rdBase}/user/logout`;
   },
 };
 </script>

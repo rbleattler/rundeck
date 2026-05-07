@@ -2,7 +2,7 @@
 import { loadJsonData } from "../../../utilities/loadJsonData";
 import { defineComponent } from "vue";
 import { Link } from "../../../../library/components/mainbar/types/menuTypes";
-import MainbarMenu from "../../../..//library/components/mainbar/MainbarMenu.vue";
+import MainbarMenu from "../../../../library/components/mainbar/MainbarMenu.vue";
 
 /**
  * AppSysConfigMenu - wraps MainbarMenu and provides data from JSON script tag
