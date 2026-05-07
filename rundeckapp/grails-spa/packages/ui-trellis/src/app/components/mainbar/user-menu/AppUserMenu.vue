@@ -27,7 +27,7 @@ export default {
   },
   computed: {
     subHeader() {
-      return `Hi ${this.username}!`;
+      return this.$t("userMenuGreeting", [this.username]);
     },
     links() {
       return [
@@ -45,7 +45,7 @@ export default {
   },
   mounted() {
     const context = getRundeckContext();
-    this.username = context.profile?.username || "(Unknown User)";
+    this.username = context.profile?.username || this.$t("unknownUser");
     this.profileLink =
       context.profile?.links?.profile || `${context.rdBase}/user/profile`;
     this.logoutLink =

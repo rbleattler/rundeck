@@ -19,7 +19,7 @@ export default defineComponent({
   },
   computed: {
     header() {
-      return "System";
+      return this.$t("sysConfigMenuHeader");
     },
   },
   mounted() {

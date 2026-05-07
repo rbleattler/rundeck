@@ -18,7 +18,8 @@ const createWrapper = async (): Promise<VueWrapper<any>> => {
   const wrapper = mount(AppUserMenu, {
     global: {
       mocks: {
-        $t: (key: string) => key,
+        $t: (key: string, args?: unknown[]) =>
+          args && args.length ? `${key}:${args.join(",")}` : key,
       },
       provide: {
         rootStore: {},
@@ -54,7 +55,7 @@ describe("AppUserMenu", () => {
 
       expect(
         wrapper.find('[data-testid="mainbar-menu-subheader"]').text(),
-      ).toBe("Hi testuser!");
+      ).toBe("userMenuGreeting:testuser");
     });
 
     it("should use the profile link from context", async () => {
@@ -88,7 +89,7 @@ describe("AppUserMenu", () => {
 
       expect(
         wrapper.find('[data-testid="mainbar-menu-subheader"]').text(),
-      ).toBe("Hi (Unknown User)!");
+      ).toBe("userMenuGreeting:unknownUser");
     });
 
     it("should fall back to default profile link when unavailable in context", async () => {

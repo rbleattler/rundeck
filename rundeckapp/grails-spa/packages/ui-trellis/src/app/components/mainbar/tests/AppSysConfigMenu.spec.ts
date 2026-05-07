@@ -26,6 +26,9 @@ const createWrapper = async (
   const wrapper = mount(AppSysConfigMenu, {
     ...options,
     global: {
+      mocks: {
+        $t: (key: string) => key,
+      },
       components: { Dropdown, Btn, MainbarMenu },
     },
   });
@@ -82,7 +85,7 @@ describe("AppSysConfigMenu", () => {
 
       expect(
         wrapper.find('[data-testid="mainbar-menu-header"]').text(),
-      ).toBe("System");
+      ).toBe("sysConfigMenuHeader");
     });
   });
 });
