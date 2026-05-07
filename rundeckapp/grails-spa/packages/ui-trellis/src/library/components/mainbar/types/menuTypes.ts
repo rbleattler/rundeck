@@ -5,5 +5,6 @@ export interface Link {
   iconCss?: string;
   enabled?: boolean;
   separator?: boolean;
-  group?: [id: string];
+  order?: number;
+  group?: { id: string };
 }
