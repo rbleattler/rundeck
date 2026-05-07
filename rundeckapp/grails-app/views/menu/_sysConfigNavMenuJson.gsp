@@ -1,4 +1,5 @@
 <%@ page import="org.rundeck.core.auth.AuthConstants" %>
+<g:if test="${session?.user && request.subject}">
 <g:set var="authAclRead" value="${auth.resourceAllowedTest(
         type: AuthConstants.TYPE_RESOURCE,
         kind: AuthConstants.TYPE_SYSTEM_ACL,
@@ -113,3 +114,4 @@
     }
 }%
 <g:embedJSON id="sysConfigNavJSON" data="${links.findAll{it}}"/>
+</g:if>
