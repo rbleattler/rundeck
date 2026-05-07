@@ -1,94 +1,88 @@
-import { shallowMount, mount, VueWrapper } from "@vue/test-utils";
+import { mount, VueWrapper } from "@vue/test-utils";
 import { Btn, Dropdown } from "uiv";
 import { nextTick } from "vue";
 
-// Mock the loadJsonData function
 jest.mock("../../../utilities/loadJsonData", () => ({
   loadJsonData: jest.fn(),
 }));
 
-// Import the mocked function
 import { loadJsonData } from "../../../utilities/loadJsonData";
 import AppSysConfigMenu from "../sysconfig/AppSysConfigMenu.vue";
+import MainbarMenu from "../../../../library/components/mainbar/MainbarMenu.vue";
 
 const mockLoadJsonData = loadJsonData as jest.MockedFunction<
   typeof loadJsonData
 >;
 
-// Test fixtures
 const simpleLinks = [
   { url: "/system/info", title: "System Info", enabled: true },
   { url: "/system/log", title: "Logs" },
   { url: "/system/config", title: "Configuration", enabled: false },
 ];
 
+const createWrapper = async (
+  options: Record<string, any> = {},
+): Promise<VueWrapper<any>> => {
+  const wrapper = mount(AppSysConfigMenu, {
+    ...options,
+    global: {
+      components: { Dropdown, Btn, MainbarMenu },
+    },
+  });
+  await nextTick();
+  return wrapper;
+};
+
 describe("AppSysConfigMenu", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  const mountSysConfigMenu = async (
-    options?: Record<string, any>,
-  ): Promise<VueWrapper<any>> => {
-    const wrapper = shallowMount(AppSysConfigMenu, {
-      ...options,
-      global: {
-        components: {
-          Dropdown,
-          Btn,
-        },
-        stubs: {
-          SysConfigMenu: {
-            template: `<div data-test="sys-config-menu-stub" asdf></div>`,
-          },
-        },
-      },
-    });
-
-    // Wait for component to mount and update
-    await nextTick();
-
-    return wrapper;
-  };
-
-  // Test Case 1: Data Loading
   describe("Data Loading", () => {
-    it("should load and parse valid JSON data from DOM", async () => {
-      // Setup: Mock loadJsonData to return a mix of enabled and disabled links
+    it("should load valid JSON data and pass it to MainbarMenu", async () => {
       mockLoadJsonData.mockReturnValue(simpleLinks);
-      // Mount the component
-      const wrapper = await mountSysConfigMenu();
 
-      // Verify that loadJsonData was called with the correct ID
+      const wrapper = await createWrapper();
+
       expect(mockLoadJsonData).toHaveBeenCalledWith("sysConfigNavJSON");
 
-      // Verify the data was loaded correctly
-      expect(wrapper.vm.links).toEqual(simpleLinks);
+      const inner = wrapper.findComponent(MainbarMenu);
+      expect(inner.props("links")).toEqual(simpleLinks);
+
+      const renderedLinks = wrapper.findAll(
+        '[data-testid^="mainbar-menu-link-"]',
+      );
+      expect(renderedLinks.length).toBe(2);
+      expect(renderedLinks.at(0)?.attributes("href")).toBe("/system/info");
+      expect(renderedLinks.at(1)?.attributes("href")).toBe("/system/log");
     });
 
-    it("should handle case when DOM element does not exist or contains invalid data", async () => {
-      // Setup: Mock loadJsonData to return a mix of enabled and disabled links
+    it("should not render MainbarMenu when loadJsonData returns an empty array", async () => {
       mockLoadJsonData.mockReturnValue([]);
-      // Mount the component
-      const wrapper = await mountSysConfigMenu();
 
-      // Verify that loadJsonData was called
-      expect(mockLoadJsonData).toHaveBeenCalled();
+      const wrapper = await createWrapper();
 
-      // Verify the links array is empty
-      expect(wrapper.vm.links).toEqual([]);
+      expect(mockLoadJsonData).toHaveBeenCalledWith("sysConfigNavJSON");
+      expect(wrapper.findComponent(MainbarMenu).exists()).toBe(false);
     });
-    it("should handle null data from loadJsonData", async () => {
-      // Setup: Mock loadJsonData to return a mix of enabled and disabled links
+
+    it("should not render MainbarMenu when loadJsonData returns null", async () => {
       mockLoadJsonData.mockReturnValue(null);
-      // Mount the component
-      const wrapper = await mountSysConfigMenu();
 
-      // Verify that loadJsonData was called
-      expect(mockLoadJsonData).toHaveBeenCalled();
+      const wrapper = await createWrapper();
 
-      // Verify the links array is empty
-      expect(wrapper.vm.links).toEqual([]);
+      expect(mockLoadJsonData).toHaveBeenCalledWith("sysConfigNavJSON");
+      expect(wrapper.findComponent(MainbarMenu).exists()).toBe(false);
+    });
+
+    it("should render the System header when data is loaded", async () => {
+      mockLoadJsonData.mockReturnValue(simpleLinks);
+
+      const wrapper = await createWrapper();
+
+      expect(
+        wrapper.find('[data-testid="mainbar-menu-header"]').text(),
+      ).toBe("System");
     });
   });
 });

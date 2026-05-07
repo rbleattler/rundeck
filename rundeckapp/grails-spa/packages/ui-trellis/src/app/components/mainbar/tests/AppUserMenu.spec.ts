@@ -1,51 +1,44 @@
-import { mount, shallowMount, VueWrapper } from "@vue/test-utils";
+import { mount, VueWrapper } from "@vue/test-utils";
 import { Btn, Dropdown } from "uiv";
-// Import the mocked function for use in tests
+import { nextTick } from "vue";
+
+jest.mock("../../../../library", () => ({
+  getRundeckContext: jest.fn(),
+}));
+
 import { getRundeckContext } from "../../../../library";
 import AppUserMenu from "../user-menu/AppUserMenu.vue";
 import MainbarMenu from "../../../../library/components/mainbar/MainbarMenu.vue";
-// Mock the getRundeckContext function
-jest.mock("../../../../library", () => ({
-  getRundeckContext: jest.fn().mockImplementation(() => ({
-    rdBase: "http://localhost:4440/",
-    apiVersion: "44",
-  })),
-}));
 
 const mockGetRundeckContext = getRundeckContext as jest.MockedFunction<
   typeof getRundeckContext
 >;
+
+const createWrapper = async (): Promise<VueWrapper<any>> => {
+  const wrapper = mount(AppUserMenu, {
+    global: {
+      mocks: {
+        $t: (key: string) => key,
+      },
+      provide: {
+        rootStore: {},
+      },
+      components: { Dropdown, Btn, MainbarMenu },
+    },
+  });
+  await nextTick();
+  return wrapper;
+};
 
 describe("AppUserMenu", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  const mountAppUserMenu = async (): Promise<VueWrapper<any>> => {
-    return mount(AppUserMenu, {
-      global: {
-        mocks: {
-          $t: (key: string) => key, // Simple mock for translation function
-        },
-        components: {
-          Dropdown,
-          Btn,
-          MainbarMenu,
-        },
-      },
-    });
-  };
-
-  describe("Test Case 1: Context data available", () => {
+  describe("Context data available", () => {
     beforeEach(() => {
-      // Mock the context with profile data
-    });
-
-    it("should pass the correct username", async () => {
-      (
-        getRundeckContext as jest.MockedFunction<typeof getRundeckContext>
-      ).mockReturnValue({
-        rdBase: "http://localhost:4440/",
+      mockGetRundeckContext.mockReturnValue({
+        rdBase: "http://localhost:4440",
         profile: {
           username: "testuser",
           links: {
@@ -54,104 +47,93 @@ describe("AppUserMenu", () => {
           },
         },
       } as any);
-      const wrapper = await mountAppUserMenu();
+    });
 
-      // Wait for the component to be mounted and data to be populated
-      await wrapper.vm.$nextTick();
+    it("should display the username in the subheader", async () => {
+      const wrapper = await createWrapper();
 
-      expect(wrapper.find("div").text()).toContain("testuser");
+      expect(
+        wrapper.find('[data-testid="mainbar-menu-subheader"]').text(),
+      ).toBe("Hi testuser!");
     });
 
     it("should use the profile link from context", async () => {
-      const wrapper = await mountAppUserMenu();
+      const wrapper = await createWrapper();
 
-      // Wait for the component to be mounted and data to be populated
-      await wrapper.vm.$nextTick();
-
-      const profileLink = wrapper.find(
-        'a[href="http://localhost:4440/user/profile/custom"]',
+      const links = wrapper.findAll('[data-testid^="mainbar-menu-link-"]');
+      expect(links.at(0)?.attributes("href")).toBe(
+        "http://localhost:4440/user/profile/custom",
       );
-      expect(profileLink.exists()).toBe(true);
     });
 
     it("should use the logout link from context", async () => {
-      const wrapper = await mountAppUserMenu();
+      const wrapper = await createWrapper();
 
-      // Wait for the component to be mounted and data to be populated
-      await wrapper.vm.$nextTick();
-
-      const logoutLink = wrapper.find(
-        'a[href="http://localhost:4440/user/logout/custom"]',
+      const links = wrapper.findAll('[data-testid^="mainbar-menu-link-"]');
+      expect(links.at(1)?.attributes("href")).toBe(
+        "http://localhost:4440/user/logout/custom",
       );
-      expect(logoutLink.exists()).toBe(true);
     });
   });
 
-  describe("Test Case 2: Context data unavailable", () => {
+  describe("Context data unavailable", () => {
     beforeEach(() => {
-      // Mock the context without profile data
       mockGetRundeckContext.mockReturnValue({
-        rdBase: "http://localhost:4440/",
-        // No profile data
+        rdBase: "http://localhost:4440",
       } as any);
     });
 
     it("should display the unknown user text when username is unavailable", async () => {
-      const wrapper = await mountAppUserMenu();
+      const wrapper = await createWrapper();
 
-      // Wait for the component to be mounted and data to be populated
-      await wrapper.vm.$nextTick();
-
-      expect(wrapper.find("div").text()).toContain("Hi (Unknown User)!");
+      expect(
+        wrapper.find('[data-testid="mainbar-menu-subheader"]').text(),
+      ).toBe("Hi (Unknown User)!");
     });
 
-    it("should fallback to default profile link when unavailable in context", async () => {
-      const wrapper = await mountAppUserMenu();
+    it("should fall back to default profile link when unavailable in context", async () => {
+      const wrapper = await createWrapper();
 
-      // Wait for the component to be mounted and data to be populated
-      await wrapper.vm.$nextTick();
-
-      const profileLink = wrapper.find(
-        'a[href="http://localhost:4440/user/profile"]',
+      const links = wrapper.findAll('[data-testid^="mainbar-menu-link-"]');
+      expect(links.at(0)?.attributes("href")).toBe(
+        "http://localhost:4440/user/profile",
       );
-      expect(profileLink.exists()).toBe(true);
     });
 
-    it("should fallback to default logout link when unavailable in context", async () => {
-      const wrapper = await mountAppUserMenu();
+    it("should fall back to default logout link when unavailable in context", async () => {
+      const wrapper = await createWrapper();
 
-      // Wait for the component to be mounted and data to be populated
-      await wrapper.vm.$nextTick();
-
-      const logoutLink = wrapper.find(
-        'a[href="http://localhost:4440/user/logout"]',
+      const links = wrapper.findAll('[data-testid^="mainbar-menu-link-"]');
+      expect(links.at(1)?.attributes("href")).toBe(
+        "http://localhost:4440/user/logout",
       );
-      expect(logoutLink.exists()).toBe(true);
     });
   });
 
-  // Additional comprehensive tests
-  it("should render the MainbarMenu component", async () => {
-    const wrapper = await mountAppUserMenu();
+  describe("Rendering", () => {
+    beforeEach(() => {
+      mockGetRundeckContext.mockReturnValue({
+        rdBase: "http://localhost:4440",
+        profile: {
+          username: "testuser",
+        },
+      } as any);
+    });
 
-    expect(wrapper.find(".dropdown-menu").exists()).toBe(true);
-    expect(wrapper.findComponent({ name: "MainbarMenu" }).exists()).toBe(true);
-  });
+    it("should render the user icon in the toggle", async () => {
+      const wrapper = await createWrapper();
 
-  it("should render the user icon", async () => {
-    const wrapper = await mountAppUserMenu();
+      const icon = wrapper.find('[data-testid="mainbar-menu-icon"]');
+      expect(icon.classes()).toContain("fa-user");
+    });
 
-    expect(wrapper.find("i.fa-user").exists()).toBe(true);
-  });
+    it("should render translated profile and logout menu items", async () => {
+      const wrapper = await createWrapper();
 
-  it("should have the correct translations for menu items", async () => {
-    const wrapper = await mountAppUserMenu();
-    await wrapper.vm.$nextTick();
-
-    const profileMenuItem = wrapper.findAll("a").at(0);
-    const logoutMenuItem = wrapper.findAll("a").at(1);
-
-    expect(profileMenuItem?.text()).toBe("profile");
-    expect(logoutMenuItem?.text()).toBe("logout");
+      const links = wrapper.findAll('[data-testid^="mainbar-menu-link-"]');
+      expect(links.length).toBe(2);
+      expect(links.at(0)?.text()).toBe("profile");
+      expect(links.at(1)?.text()).toBe("logout");
+    });
   });
 });

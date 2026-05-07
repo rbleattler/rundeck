@@ -31,6 +31,7 @@ export default defineComponent({
 <template>
   <mainbar-menu
     v-if="links && links.length > 0"
+    id="appSysConfigMenu"
     :links="links"
     icon-css="fas fa-cog fa-lg"
     :header="header"

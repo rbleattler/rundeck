@@ -61,17 +61,31 @@ export default defineComponent({
 
 <template>
   <dropdown tag="div" placement="bottom-right" menu-right>
-    <btn class="dropdown-toggle btn-menu-item" size="med" type="link">
-      <i v-if="iconCss" :class="iconCss"></i> {{ title }}
+    <btn
+      class="dropdown-toggle btn-menu-item"
+      size="med"
+      type="link"
+      data-testid="mainbar-menu-toggle"
+    >
+      <i v-if="iconCss" :class="iconCss" data-testid="mainbar-menu-icon"></i>
+      {{ title }}
     </btn>
     <template #dropdown>
       <ul
         class="dropdown-menu dropdown-menu-right scroll-area"
         style="max-height: 95vh"
       >
-        <li v-if="header" class="dropdown-header">{{ header }}</li>
+        <li
+          v-if="header"
+          class="dropdown-header"
+          data-testid="mainbar-menu-header"
+        >
+          {{ header }}
+        </li>
         <li v-if="subHeader">
-          <div style="padding: 10px 15px">{{ subHeader }}</div>
+          <div style="padding: 10px 15px" data-testid="mainbar-menu-subheader">
+            {{ subHeader }}
+          </div>
         </li>
         <template v-for="(link, x) in enabledLinks" :key="x">
           <li
@@ -79,9 +93,10 @@ export default defineComponent({
             :id="link.group?.id || null"
             role="separator"
             class="divider"
+            :data-testid="`mainbar-menu-separator-${x}`"
           ></li>
           <li v-if="link.url && (!link.links || link.links.length === 0)">
-            <a :href="link.url">
+            <a :href="link.url" :data-testid="`mainbar-menu-link-${x}`">
               <i v-if="link.iconCss" :class="link.iconCss"></i>
               {{ link.title }}
             </a>
@@ -90,18 +105,26 @@ export default defineComponent({
           <li
             v-else-if="link.links && link.links.length > 0"
             class="dropdown-submenu"
+            :data-testid="`mainbar-submenu-${x}`"
           >
-            <a href="#" @click="submenuClick(x, $event)"
+            <a
+              href="#"
+              :data-testid="`mainbar-submenu-toggle-${x}`"
+              @click="submenuClick(x, $event)"
               >{{ link.title }} <span class="caret"></span
             ></a>
 
             <ul
               class="dropdown-menu dropdown-menu-right"
               :style="{ display: submenuOpen === x ? 'block' : 'none' }"
+              :data-testid="`mainbar-submenu-list-${x}`"
             >
-              <template v-for="link2 in link.links" :key="link2.url">
+              <template v-for="(link2, y) in link.links" :key="link2.url">
                 <li v-if="link2.enabled !== false">
-                  <a :href="link2.url">
+                  <a
+                    :href="link2.url"
+                    :data-testid="`mainbar-submenu-link-${x}-${y}`"
+                  >
                     <i v-if="link2.iconCss" :class="link2.iconCss"></i>
                     {{ link2.title }}
                   </a>

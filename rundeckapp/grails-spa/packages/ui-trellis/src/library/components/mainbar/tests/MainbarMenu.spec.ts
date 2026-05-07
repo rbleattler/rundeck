@@ -4,7 +4,6 @@ import { nextTick } from "vue";
 
 import MainbarMenu from "../MainbarMenu.vue";
 
-// Test fixtures
 const simpleLinks = [
   { url: "/system/info", title: "System Info", enabled: true },
   { url: "/system/log", title: "Logs" },
@@ -53,262 +52,203 @@ const linksWithEmbeddedSeparators = [
   },
 ];
 
-// Test fixtures with various link structures
+const createWrapper = async (
+  options: Record<string, any> = {},
+): Promise<VueWrapper<any>> => {
+  const props = { links: [], ...(options.props || {}) };
+  const wrapper = mount(MainbarMenu, {
+    ...options,
+    props,
+    global: {
+      components: { Dropdown, Btn },
+    },
+  });
+  await nextTick();
+  return wrapper;
+};
 
 describe("MainbarMenu", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  const mountMainbarMenu = async (
-    options?: Record<string, any>,
-  ): Promise<VueWrapper<any>> => {
-    const wrapper = mount(MainbarMenu, {
-      ...options,
-      global: {
-        components: {
-          Dropdown,
-          Btn,
-        },
-      },
-    });
-
-    // Wait for component to mount and update
-    await nextTick();
-
-    return wrapper;
-  };
-
-  // Test Case 1: Data Loading
   describe("Data Loading", () => {
-    it("should load and parse valid JSON data from DOM", async () => {
-      // Mount the component
-      const wrapper = await mountMainbarMenu({
-        props: { links: simpleLinks },
-      });
+    it("should render the provided links", async () => {
+      const wrapper = await createWrapper({ props: { links: simpleLinks } });
 
-      // Verify the data was loaded correctly
-      expect(wrapper.vm.links).toEqual(simpleLinks);
+      const renderedLinks = wrapper.findAll(
+        '[data-testid^="mainbar-menu-link-"]',
+      );
+      expect(renderedLinks.length).toBe(2);
+      expect(renderedLinks.at(0)?.attributes("href")).toBe("/system/info");
+      expect(renderedLinks.at(1)?.attributes("href")).toBe("/system/log");
     });
 
-    it("should handle case when DOM element does not exist or contains invalid data", async () => {
-      // Mount the component
-      const wrapper = await mountMainbarMenu({ props: { links: [] } });
+    it("should render no links when given an empty array", async () => {
+      const wrapper = await createWrapper({ props: { links: [] } });
 
-      // Verify the links array is empty
-      expect(wrapper.vm.links).toEqual([]);
-
-      // Verify that no links are displayed
       expect(
-        wrapper.findAll('li:not(.dropdown-header):not([role="separator"])'),
-      ).toHaveLength(0);
+        wrapper.findAll('[data-testid^="mainbar-menu-link-"]').length,
+      ).toBe(0);
+      expect(
+        wrapper.findAll('[data-testid^="mainbar-submenu-toggle-"]').length,
+      ).toBe(0);
     });
   });
 
-  // Test Case 2: Link Filtering and Sorting
   describe("Link Filtering and Sorting", () => {
     it("should filter out disabled links", async () => {
-      // Mount the component
-      const wrapper = await mountMainbarMenu({
-        props: { links: simpleLinks },
-      });
+      const wrapper = await createWrapper({ props: { links: simpleLinks } });
 
-      // Verify the computed property filters out disabled links
-      expect(wrapper.vm.enabledLinks).toBeDefined();
-      expect(wrapper.vm.enabledLinks.length).toBe(2); // Only 2 of 3 are enabled
-      expect(
-        wrapper.vm.enabledLinks.every((link: any) => link.enabled !== false),
-      ).toBe(true);
-
-      // Verify that only enabled links are rendered
-      const renderedLinks = wrapper.findAll("a[href]");
-      expect(renderedLinks).not.toBeNull();
+      const renderedLinks = wrapper.findAll(
+        '[data-testid^="mainbar-menu-link-"]',
+      );
       expect(renderedLinks.length).toBe(2);
       expect(renderedLinks.at(0)?.attributes("href")).toBe("/system/info");
       expect(renderedLinks.at(1)?.attributes("href")).toBe("/system/log");
     });
 
     it("should sort links by order property if present", async () => {
-      // Setup: All links are enabled
       const allEnabledLinks = [
-        {
-          url: "/test/1",
-          title: "Fifth",
-          enabled: true,
-          order: 100,
-        },
+        { url: "/test/1", title: "Fifth", enabled: true, order: 100 },
         { url: "/test/2", title: "Fourth", enabled: true, order: 50 },
         { url: "/test/3", title: "First", enabled: true, order: -100 },
-        { url: "/test/3", title: "Second", enabled: true },
-        { url: "/test/3", title: "Third", enabled: true },
+        { url: "/test/4", title: "Second", enabled: true },
+        { url: "/test/5", title: "Third", enabled: true },
       ];
-      // Mount the component
-      const wrapper = await mountMainbarMenu({
+
+      const wrapper = await createWrapper({
         props: { links: allEnabledLinks },
       });
 
-      // Verify all links are included in enabledLinks
-      expect(wrapper.vm.enabledLinks.length).toBe(5);
-
-      // Verify the order is correct based on the order property
-      expect(wrapper.vm.enabledLinks[0].title).toBe("First");
-      expect(wrapper.vm.enabledLinks[1].title).toBe("Second");
-      expect(wrapper.vm.enabledLinks[2].title).toBe("Third");
-      expect(wrapper.vm.enabledLinks[3].title).toBe("Fourth");
-      expect(wrapper.vm.enabledLinks[4].title).toBe("Fifth");
+      const renderedLinks = wrapper.findAll(
+        '[data-testid^="mainbar-menu-link-"]',
+      );
+      expect(renderedLinks.length).toBe(5);
+      expect(renderedLinks.at(0)?.text()).toBe("First");
+      expect(renderedLinks.at(1)?.text()).toBe("Second");
+      expect(renderedLinks.at(2)?.text()).toBe("Third");
+      expect(renderedLinks.at(3)?.text()).toBe("Fourth");
+      expect(renderedLinks.at(4)?.text()).toBe("Fifth");
     });
 
-    it("should handle the case when all links are enabled", async () => {
-      // Setup: All links are enabled
+    it("should render all links when all are enabled", async () => {
       const allEnabledLinks = [
         { url: "/system/info", title: "System Info", enabled: true },
         { url: "/system/log", title: "Logs", enabled: true },
         { url: "/system/config", title: "Configuration", enabled: true },
       ];
-      // Mount the component
-      const wrapper = await mountMainbarMenu({
+
+      const wrapper = await createWrapper({
         props: { links: allEnabledLinks },
       });
 
-      // Verify all links are included in enabledLinks
-      expect(wrapper.vm.enabledLinks.length).toBe(3);
+      expect(
+        wrapper.findAll('[data-testid^="mainbar-menu-link-"]').length,
+      ).toBe(3);
     });
-    it("links without enabled property should be considered enabled", async () => {
-      // Setup: All links are enabled
+
+    it("should treat links without an enabled property as enabled", async () => {
       const allEnabledLinks = [
         { url: "/system/info", title: "System Info" },
         { url: "/system/log", title: "Logs" },
         { url: "/system/config", title: "Configuration" },
       ];
 
-      // Mount the component
-      const wrapper = await mountMainbarMenu({
+      const wrapper = await createWrapper({
         props: { links: allEnabledLinks },
       });
 
-      // Verify all links are included in enabledLinks
-      expect(wrapper.vm.enabledLinks.length).toBe(3);
+      expect(
+        wrapper.findAll('[data-testid^="mainbar-menu-link-"]').length,
+      ).toBe(3);
     });
 
-    it("should handle the case when all links are disabled", async () => {
-      // Setup: All links are disabled
+    it("should render no links when all are disabled", async () => {
       const allDisabledLinks = [
         { url: "/system/info", title: "System Info", enabled: false },
         { url: "/system/log", title: "Logs", enabled: false },
         { url: "/system/config", title: "Configuration", enabled: false },
       ];
 
-      // Mount the component
-      const wrapper = await mountMainbarMenu({
+      const wrapper = await createWrapper({
         props: { links: allDisabledLinks },
       });
 
-      // Verify no links are included in enabledLinks
-      expect(wrapper.vm.enabledLinks.length).toBe(0);
+      expect(
+        wrapper.findAll('[data-testid^="mainbar-menu-link-"]').length,
+      ).toBe(0);
     });
 
-    it("should handle an empty links array without header", async () => {
-      // Setup: Empty links array
+    it("should render no header for an empty links array without header prop", async () => {
+      const wrapper = await createWrapper({ props: { links: [] } });
 
-      // Mount the component
-      const wrapper = await mountMainbarMenu({ props: { links: [] } });
-
-      // Verify enabledLinks is also empty
-      expect(wrapper.vm.enabledLinks.length).toBe(0);
-
-      // Verify that only the header is rendered, no links
-      expect(wrapper.findAll(".dropdown-header").length).toBe(0);
-      expect(wrapper.findAll("a").length).toBe(0);
+      expect(
+        wrapper.find('[data-testid="mainbar-menu-header"]').exists(),
+      ).toBe(false);
+      expect(
+        wrapper.findAll('[data-testid^="mainbar-menu-link-"]').length,
+      ).toBe(0);
     });
 
-    it("should handle an empty links array with header", async () => {
-      // Setup: Empty links array
-
-      // Mount the component
-      const wrapper = await mountMainbarMenu({
+    it("should render only the header when links is empty but header is set", async () => {
+      const wrapper = await createWrapper({
         props: { links: [], header: "test" },
       });
 
-      // Verify enabledLinks is also empty
-      expect(wrapper.vm.enabledLinks.length).toBe(0);
-
-      // Verify that only the header is rendered, no links
-      expect(wrapper.findAll(".dropdown-header").length).toBe(1);
-      expect(wrapper.findAll("a").length).toBe(0);
+      const header = wrapper.find('[data-testid="mainbar-menu-header"]');
+      expect(header.exists()).toBe(true);
+      expect(header.text()).toBe("test");
+      expect(
+        wrapper.findAll('[data-testid^="mainbar-menu-link-"]').length,
+      ).toBe(0);
     });
   });
 
-  // Test Case 3: Link and Submenu Rendering
   describe("Link and Submenu Rendering", () => {
-    it("should correctly render simple links without header", async () => {
-      // Mount the component
-      const wrapper = await mountMainbarMenu({
-        props: { links: simpleLinks },
-      });
+    it("should render simple links without header", async () => {
+      const wrapper = await createWrapper({ props: { links: simpleLinks } });
 
-      // Verify that the correct number of links are rendered
-      const renderedLinks = wrapper.findAll("a[href]");
-      expect(renderedLinks.length).toBe(2); // Only the enabled links should be rendered
-
-      // Verify the content of the rendered links
+      const renderedLinks = wrapper.findAll(
+        '[data-testid^="mainbar-menu-link-"]',
+      );
+      expect(renderedLinks.length).toBe(2);
       expect(renderedLinks.at(0)?.text()).toBe("System Info");
       expect(renderedLinks.at(1)?.text()).toBe("Logs");
-
-      // Verify the href attributes
       expect(renderedLinks.at(0)?.attributes("href")).toBe("/system/info");
       expect(renderedLinks.at(1)?.attributes("href")).toBe("/system/log");
 
-      expect(wrapper.findAll(".dropdown-header").length).toBe(0);
+      expect(
+        wrapper.find('[data-testid="mainbar-menu-header"]').exists(),
+      ).toBe(false);
 
-      //verify icon
-      expect(wrapper.findAll("i.fas.fa-cog.fa-lg").length).toBe(1);
+      const icon = wrapper.find('[data-testid="mainbar-menu-icon"]');
+      expect(icon.classes()).toEqual(
+        expect.arrayContaining(["fas", "fa-cog", "fa-lg"]),
+      );
     });
-    it("should correctly render simple links with header", async () => {
-      // Mount the component
-      const wrapper = await mountMainbarMenu({
+
+    it("should render simple links with header", async () => {
+      const wrapper = await createWrapper({
         props: { links: simpleLinks, header: "Something" },
       });
 
-      // Verify that the correct number of links are rendered
-      const renderedLinks = wrapper.findAll("a[href]");
-      expect(renderedLinks.length).toBe(2); // Only the enabled links should be rendered
-
-      // Verify the content of the rendered links
-      expect(renderedLinks.at(0)?.text()).toBe("System Info");
-      expect(renderedLinks.at(1)?.text()).toBe("Logs");
-
-      // Verify the href attributes
-      expect(renderedLinks.at(0)?.attributes("href")).toBe("/system/info");
-      expect(renderedLinks.at(1)?.attributes("href")).toBe("/system/log");
-
-      expect(wrapper.findAll(".dropdown-header").length).toBe(1);
-      expect(wrapper.find(".dropdown-header").text()).toBe("Something");
+      const header = wrapper.find('[data-testid="mainbar-menu-header"]');
+      expect(header.exists()).toBe(true);
+      expect(header.text()).toBe("Something");
     });
-    it("should correctly render simple links with title", async () => {
-      // Mount the component
-      const wrapper = await mountMainbarMenu({
+
+    it("should render the menu title in the toggle", async () => {
+      const wrapper = await createWrapper({
         props: { links: simpleLinks, title: "Menu Title" },
       });
 
-      // Verify that the correct number of links are rendered
-      const renderedLinks = wrapper.findAll("a[href]");
-      expect(renderedLinks.length).toBe(2); // Only the enabled links should be rendered
-
-      // Verify the content of the rendered links
-      expect(renderedLinks.at(0)?.text()).toBe("System Info");
-      expect(renderedLinks.at(1)?.text()).toBe("Logs");
-
-      // Verify the href attributes
-      expect(renderedLinks.at(0)?.attributes("href")).toBe("/system/info");
-      expect(renderedLinks.at(1)?.attributes("href")).toBe("/system/log");
-
-      expect(wrapper.findAll(".dropdown-header").length).toBe(0);
-      expect(wrapper.findAll(".dropdown-toggle").length).toBe(1);
-      expect(wrapper.find(".dropdown-toggle").text()).toContain("Menu Title");
+      const toggle = wrapper.find('[data-testid="mainbar-menu-toggle"]');
+      expect(toggle.text()).toContain("Menu Title");
     });
-    it("should correctly render simple links with icon", async () => {
-      // Mount the component
-      const wrapper = await mountMainbarMenu({
+
+    it("should use a custom iconCss class on the toggle icon", async () => {
+      const wrapper = await createWrapper({
         props: {
           links: simpleLinks,
           header: "Something",
@@ -316,99 +256,82 @@ describe("MainbarMenu", () => {
         },
       });
 
-      // Verify that the correct number of links are rendered
-      const renderedLinks = wrapper.findAll("a[href]");
-      expect(renderedLinks.length).toBe(2); // Only the enabled links should be rendered
-
-      // Verify the content of the rendered links
-      expect(renderedLinks.at(0)?.text()).toBe("System Info");
-      expect(renderedLinks.at(1)?.text()).toBe("Logs");
-
-      // Verify the href attributes
-      expect(renderedLinks.at(0)?.attributes("href")).toBe("/system/info");
-      expect(renderedLinks.at(1)?.attributes("href")).toBe("/system/log");
-
-      expect(wrapper.findAll(".dropdown-header").length).toBe(1);
-      expect(wrapper.find(".dropdown-header").text()).toBe("Something");
-      expect(wrapper.findAll("i.fas.fa-something.fa-xs").length).toBe(1);
+      const icon = wrapper.find('[data-testid="mainbar-menu-icon"]');
+      expect(icon.classes()).toEqual(
+        expect.arrayContaining(["fas", "fa-something", "fa-xs"]),
+      );
     });
 
-    it("should correctly render links with submenus", async () => {
-      // Mount the component
-      const wrapper = await mountMainbarMenu({
+    it("should render links with submenus, hidden by default", async () => {
+      const wrapper = await createWrapper({
         props: {
           links: [
             {
               title: "Plugins",
               enabled: true,
               links: [
-                {
-                  url: "/test/1",
-                  title: "Test1",
-                  enabled: true,
-                },
-                {
-                  url: "/test/2",
-                  title: "Test2",
-                  enabled: true,
-                },
+                { url: "/test/1", title: "Test1", enabled: true },
+                { url: "/test/2", title: "Test2", enabled: true },
               ],
             },
           ],
         },
       });
-      // Verify that the correct number of links are rendered
-      const renderedLinks = wrapper.findAll("a[href]");
-      expect(renderedLinks.length).toBe(3); // Only the enabled links should be rendered
 
-      // Verify the content of the rendered links
-      expect(renderedLinks.at(0)?.text()).toBe("Plugins");
-      expect(renderedLinks.at(0)?.attributes()["href"]).toBe("#");
+      const submenuToggle = wrapper.find(
+        '[data-testid="mainbar-submenu-toggle-0"]',
+      );
+      expect(submenuToggle.exists()).toBe(true);
+      expect(submenuToggle.text()).toContain("Plugins");
+      expect(submenuToggle.attributes("href")).toBe("#");
 
-      expect(renderedLinks.at(1)?.text()).toBe("Test1");
-      expect(renderedLinks.at(2)?.text()).toBe("Test2");
+      const child0 = wrapper.find('[data-testid="mainbar-submenu-link-0-0"]');
+      const child1 = wrapper.find('[data-testid="mainbar-submenu-link-0-1"]');
+      expect(child0.text()).toBe("Test1");
+      expect(child1.text()).toBe("Test2");
+      expect(child0.attributes("href")).toBe("/test/1");
+      expect(child1.attributes("href")).toBe("/test/2");
 
-      // Verify the href attributes
-      expect(renderedLinks.at(1)?.attributes("href")).toBe("/test/1");
-      expect(renderedLinks.at(2)?.attributes("href")).toBe("/test/2");
-
-      //submenu should be hidden before click
-      const submenu = wrapper.find(".dropdown-submenu ul");
-      expect(submenu.attributes()["style"]).toContain("display: none");
+      const submenuList = wrapper.find(
+        '[data-testid="mainbar-submenu-list-0"]',
+      );
+      expect(submenuList.attributes("style")).toContain("display: none");
     });
 
-    it("should correctly render links with separators", async () => {
-      // Mount the component
-      const wrapper = await mountMainbarMenu({
+    it("should render separator and group entries", async () => {
+      const wrapper = await createWrapper({
         props: { links: linksWithSeparators },
       });
 
-      // Verify that separators are rendered
-      const separators = wrapper.findAll('li[role="separator"]');
-      expect(separators.length).toBe(2); // One for the separator, one for the group
+      const separators = wrapper.findAll(
+        '[data-testid^="mainbar-menu-separator-"]',
+      );
+      expect(separators.length).toBe(2);
 
-      // Verify that the group separator has the correct ID
       const groupSeparator = wrapper.find('li[id="my-group"]');
-      expect(groupSeparator.exists()).toBe(true);
+      expect(groupSeparator.attributes("data-testid")).toMatch(
+        /^mainbar-menu-separator-/,
+      );
     });
-    it("should correctly render links which have urls and separators", async () => {
-      // Mount the component
-      const wrapper = await mountMainbarMenu({
+
+    it("should render entries that combine url with separator/group as both", async () => {
+      const wrapper = await createWrapper({
         props: { links: linksWithEmbeddedSeparators },
       });
 
-      // Verify that separators are rendered
-      const separators = wrapper.findAll('li[role="separator"]');
-      expect(separators.length).toBe(2); // One for the separator, one for the group
+      const separators = wrapper.findAll(
+        '[data-testid^="mainbar-menu-separator-"]',
+      );
+      expect(separators.length).toBe(2);
 
-      // Verify that the group separator has the correct ID
       const groupSeparator = wrapper.find('li[id="my-group"]');
-      expect(groupSeparator.exists()).toBe(true);
+      expect(groupSeparator.attributes("data-testid")).toMatch(
+        /^mainbar-menu-separator-/,
+      );
     });
 
-    it("should correctly render links with icons", async () => {
-      // Mount the component
-      const wrapper = await mountMainbarMenu({
+    it("should render link icons with the supplied iconCss", async () => {
+      const wrapper = await createWrapper({
         props: {
           links: [
             {
@@ -427,196 +350,145 @@ describe("MainbarMenu", () => {
         },
       });
 
-      // Verify that icons are rendered
-      const icons = wrapper.findAll(".dropdown-menu a i");
-      expect(icons.length).toBe(2);
+      const link0 = wrapper.find('[data-testid="mainbar-menu-link-0"]');
+      const link1 = wrapper.find('[data-testid="mainbar-menu-link-1"]');
+      const icon0 = link0.find("i");
+      const icon1 = link1.find("i");
 
-      // Verify that the icons have the correct classes
-      expect(icons.at(0)?.classes()).toContain("glyphicon-info-sign");
-      expect(icons.at(0)?.classes()).toContain("custom-class");
-      expect(icons.at(1)?.classes()).toContain("fas");
-      expect(icons.at(1)?.classes()).toContain("fa-list");
+      expect(icon0.classes()).toEqual(
+        expect.arrayContaining([
+          "glyphicon",
+          "glyphicon-info-sign",
+          "custom-class",
+        ]),
+      );
+      expect(icon1.classes()).toEqual(
+        expect.arrayContaining(["fas", "fa-list", "fa-lg"]),
+      );
     });
   });
 
-  // Test Case 4: Submenu Interaction
   describe("Submenu Interaction", () => {
-    beforeEach(() => {});
+    it("should open a submenu when its toggle is clicked", async () => {
+      const wrapper = await createWrapper({ props: { links: nestedLinks } });
 
-    it("should update submenuOpen state when clicked", async () => {
-      const wrapper = await mountMainbarMenu({
-        props: { links: nestedLinks },
-      });
+      const submenuList = wrapper.find(
+        '[data-testid="mainbar-submenu-list-0"]',
+      );
+      expect(submenuList.attributes("style")).toContain("display: none");
 
-      // Verify initially all submenus are closed
-      expect(wrapper.vm.submenuOpen).toBe(null);
-
-      //submenu should be hidden before click
-      let submenu = wrapper.find(".dropdown-submenu ul");
-      expect(submenu.attributes()["style"]).toContain("display: none");
-
-      // Click the first submenu link by calling the method directly
-      wrapper.vm.submenuClick(0, { stopPropagation: () => {} });
-
-      // Verify the submenu is now tracked as open
-      expect(wrapper.vm.submenuOpen).toBe(0); // First submenu index
-
-      //await next tick
+      await wrapper
+        .find('[data-testid="mainbar-submenu-toggle-0"]')
+        .trigger("click");
       await nextTick();
-      //submenu should be shown after click
-      submenu = wrapper.find(".dropdown-submenu ul");
-      expect(submenu.attributes()["style"]).not.toContain("display: none");
-      expect(submenu.attributes()["style"]).toContain("display: block");
+
+      const reopenedList = wrapper.find(
+        '[data-testid="mainbar-submenu-list-0"]',
+      );
+      expect(reopenedList.attributes("style")).toContain("display: block");
+      expect(reopenedList.attributes("style")).not.toContain("display: none");
     });
 
-    it("should close an open submenu when clicked again", async () => {
-      const wrapper = await mountMainbarMenu({
-        props: { links: nestedLinks },
-      });
+    it("should close an open submenu when its toggle is clicked again", async () => {
+      const wrapper = await createWrapper({ props: { links: nestedLinks } });
 
-      // Verify initially all submenus are closed
-      expect(wrapper.vm.submenuOpen).toBe(null);
+      const toggle = wrapper.find('[data-testid="mainbar-submenu-toggle-0"]');
 
-      // Click the first submenu link by calling the method directly
-      wrapper.vm.submenuClick(0, { stopPropagation: () => {} });
-
-      // Verify the submenu is now tracked as open
-      expect(wrapper.vm.submenuOpen).toBe(0); // First submenu index
-
-      //await next tick
+      await toggle.trigger("click");
       await nextTick();
-      //submenu should be shown after click
-      let submenu = wrapper.find(".dropdown-submenu ul");
-      expect(submenu.attributes()["style"]).not.toContain("display: none");
-      expect(submenu.attributes()["style"]).toContain("display: block");
+      expect(
+        wrapper
+          .find('[data-testid="mainbar-submenu-list-0"]')
+          .attributes("style"),
+      ).toContain("display: block");
 
-      // Click the first submenu link again
-      wrapper.vm.submenuClick(0, { stopPropagation: () => {} });
-
-      // Verify the submenu is now tracked as open
-      expect(wrapper.vm.submenuOpen).toBeNull(); // First submenu index
-
-      //await next tick
+      await toggle.trigger("click");
       await nextTick();
-      //submenu should be hidden again
-      submenu = wrapper.find(".dropdown-submenu ul");
-      expect(submenu.attributes()["style"]).not.toContain("display: block");
-      expect(submenu.attributes()["style"]).toContain("display: none");
+      expect(
+        wrapper
+          .find('[data-testid="mainbar-submenu-list-0"]')
+          .attributes("style"),
+      ).toContain("display: none");
     });
 
-    it("should close an open submenu when another submenu is clicked", async () => {
-      const wrapper = await mountMainbarMenu({
-        props: { links: nestedLinks },
-      });
+    it("should close a previously open submenu when a different one is clicked", async () => {
+      const wrapper = await createWrapper({ props: { links: nestedLinks } });
 
-      const submenus = wrapper.findAll("li.dropdown-submenu ul.dropdown-menu");
-      expect(submenus.length).toBe(2);
-
-      // Verify initially all submenus are closed
-      expect(wrapper.vm.submenuOpen).toBe(null);
-
-      // Click the first submenu link by calling the method directly
-      wrapper.vm.submenuClick(0, { stopPropagation: () => {} });
-
-      // Verify the submenu is now tracked as open
-      expect(wrapper.vm.submenuOpen).toBe(0); // First submenu index
-
-      //await next tick
+      await wrapper
+        .find('[data-testid="mainbar-submenu-toggle-0"]')
+        .trigger("click");
       await nextTick();
 
-      //submenu 0 open
-      expect(submenus[0].attributes()["style"]).not.toContain("display: none");
-      expect(submenus[0].attributes()["style"]).toContain("display: block");
+      expect(
+        wrapper
+          .find('[data-testid="mainbar-submenu-list-0"]')
+          .attributes("style"),
+      ).toContain("display: block");
+      expect(
+        wrapper
+          .find('[data-testid="mainbar-submenu-list-1"]')
+          .attributes("style"),
+      ).toContain("display: none");
 
-      //submenu 1 closed
-      expect(submenus[1].attributes()["style"]).not.toContain("display: block");
-      expect(submenus[1].attributes()["style"]).toContain("display: none");
-
-      // Click the first submenu link again
-      wrapper.vm.submenuClick(1, { stopPropagation: () => {} });
-
-      // Verify the submenu is now tracked as open
-      expect(wrapper.vm.submenuOpen).toBe(1); // First submenu index
-
-      //await next tick
+      await wrapper
+        .find('[data-testid="mainbar-submenu-toggle-1"]')
+        .trigger("click");
       await nextTick();
 
-      //submenu 0 closed
-      expect(submenus[0].attributes()["style"]).not.toContain("display: block");
-      expect(submenus[0].attributes()["style"]).toContain("display: none");
-
-      //submenu 1 open
-      expect(submenus[1].attributes()["style"]).not.toContain("display: none");
-      expect(submenus[1].attributes()["style"]).toContain("display: block");
+      expect(
+        wrapper
+          .find('[data-testid="mainbar-submenu-list-0"]')
+          .attributes("style"),
+      ).toContain("display: none");
+      expect(
+        wrapper
+          .find('[data-testid="mainbar-submenu-list-1"]')
+          .attributes("style"),
+      ).toContain("display: block");
     });
 
-    it("should close a previously open submenu when clicking on a different one", async () => {
-      const wrapper = await mountMainbarMenu({
-        props: { links: nestedLinks },
-      });
+    it("should stop click propagation on submenu toggle", async () => {
+      const wrapper = await createWrapper({ props: { links: nestedLinks } });
 
-      // Click to open the first submenu
-      wrapper.vm.submenuClick(0, { stopPropagation: () => {} });
+      const parentHandler = jest.fn();
+      const submenuList = wrapper.find(
+        '[data-testid="mainbar-submenu-list-0"]',
+      );
+      const parent = submenuList.element.parentElement;
+      parent?.addEventListener("click", parentHandler);
 
-      // Verify first submenu is open
-      expect(wrapper.vm.submenuOpen).toBe(0);
+      await wrapper
+        .find('[data-testid="mainbar-submenu-toggle-0"]')
+        .trigger("click");
+      await nextTick();
 
-      // Click the second submenu
-      wrapper.vm.submenuClick(1, { stopPropagation: () => {} });
-
-      // Verify first is closed and second is open
-      expect(wrapper.vm.submenuOpen).toBe(1); // Index of the second submenu
-    });
-
-    it("should prevent event propagation when clicking on a submenu", async () => {
-      const wrapper = await mountMainbarMenu({
-        props: { links: nestedLinks },
-      });
-
-      // Create a mock event to track propagation
-      const mockEvent = {
-        stopPropagation: jest.fn(),
-      };
-
-      // Call the method directly with the mock event
-      wrapper.vm.submenuClick(0, mockEvent);
-
-      // Verify stopPropagation was called
-      expect(mockEvent.stopPropagation).toHaveBeenCalled();
+      expect(parentHandler).not.toHaveBeenCalled();
     });
   });
 
-  // Test Case 5: Edge Cases
   describe("Edge Cases", () => {
-    it("should handle invalid links", async () => {
-      // Setup: Links with missing properties
+    it("should handle entries missing url, title, or that are null/empty", async () => {
       const incompleteLinks = [
-        { title: "No URL" }, // Missing url
-        { url: "/system/info", title: "Info" }, // Has both properties
-        { url: "/empty" }, // Missing title
-        null, // null
-        {}, // empty object
+        { title: "No URL" },
+        { url: "/system/info", title: "Info" },
+        { url: "/empty" },
+        null,
+        {},
       ];
 
-      // Mount the component
-      const wrapper = await mountMainbarMenu({
+      const wrapper = await createWrapper({
         props: { links: incompleteLinks },
       });
 
-      // Verify the component renders without errors
-      expect(wrapper.vm.links).toEqual(incompleteLinks);
-
-      const enabled = wrapper.vm.enabledLinks;
-      // Verify the links are treated as enabled (no explicit enabled: false)
-      expect(enabled).toEqual([
-        { url: "/system/info", title: "Info" },
-        { url: "/empty" },
-      ]);
-      expect(wrapper.vm.enabledLinks.length).toBe(2);
+      const renderedLinks = wrapper.findAll(
+        '[data-testid^="mainbar-menu-link-"]',
+      );
+      expect(renderedLinks.length).toBe(2);
+      expect(renderedLinks.at(0)?.attributes("href")).toBe("/system/info");
+      expect(renderedLinks.at(1)?.attributes("href")).toBe("/empty");
     });
 
-    it("should handle deeply nested submenus", async () => {
-      // Setup: Create deeply nested links structure
+    it("should render a deeply nested submenu's first level", async () => {
       const deeplyNestedLinks = [
         {
           title: "Level 1",
@@ -631,13 +503,15 @@ describe("MainbarMenu", () => {
           ],
         },
       ];
-      const wrapper = await mountMainbarMenu({
+
+      const wrapper = await createWrapper({
         props: { links: deeplyNestedLinks },
       });
 
-      // Verify the component renders the first level submenu
-      const levelOneLink = wrapper.find(".dropdown-submenu > a");
-      expect(levelOneLink.text()).toContain("Level 1");
+      const submenuToggle = wrapper.find(
+        '[data-testid="mainbar-submenu-toggle-0"]',
+      );
+      expect(submenuToggle.text()).toContain("Level 1");
     });
   });
 });
